@@ -26,30 +26,26 @@ This project aims to provide a native GTK interface for linux-wallpaperengine, m
 
 ### System Dependencies
 
-bash
-sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0
+	sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0
 
 ### On Fedora
 
-bash
-sudo dnf install python3-gobject gtk3
+	sudo dnf install python3-gobject gtk3
 
 ### On Arch Linux
 
-bash
-sudo pacman -S python-gobject gtk3
+	sudo pacman -S python-gobject gtk3
 
 
 ## Installation
 
 1. Install linux-wallpaperengine first:
 
-bash
-git clone https://github.com/Almamu/linux-wallpaperengine.git
-cd linux-wallpaperengine
-mkdir build && cd build
-cmake ..
-make
+		git clone https://github.com/Almamu/linux-wallpaperengine.git
+		cd linux-wallpaperengine
+		mkdir build && cd build
+		cmake ..
+		make
 
 
 
@@ -57,23 +53,19 @@ make
 
 ### From PyPI (Recommended)
 
-
-bash
-pip install linux-wallpaperengine-gtk
+	pip install linux-wallpaperengine-gtk
 
 ### From Source
 
-bash
-git clone https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
-cd linux-wallpaperengine-gtk
-pip install -e .
+	git clone https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
+	cd linux-wallpaperengine-gtk
+	pip install -e .
 
 ## Configuration
 
 On first run, the application will create a configuration file at:
 
-bash
-~/.config/linux-wallpaperengine-gtk/config.json
+	~/.config/linux-wallpaperengine-gtk/config.json
 
 
 Default paths:
@@ -86,11 +78,7 @@ You can change these paths in the settings dialog.
 
 ### Starting the Application
 
-Launch from your applications menu or run:
-
-bash
-linux-wallpaperengine-gtk
-
+Launch the py file from anywhere, it will auto detect all resources if they can be found in common default locations. ###
 
 ### Basic Controls
 
@@ -106,8 +94,7 @@ linux-wallpaperengine-gtk
 Access settings through the gear icon to configure:
 - Linux Wallpaper Engine path
 - Wallpaper directory
-- Volume level
-- Audio muting
+- Audio/Mouse behavior
 
 ### System Tray
 
