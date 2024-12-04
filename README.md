@@ -71,7 +71,7 @@ On first run, the application will create a configuration file at:
 Default paths:
 - Linux Wallpaper Engine: `~/linux-wallpaperengine/build`
 - Wallpapers: `~/.steam/debian-installation/steamapps/workshop/content/431960`
-
+- Others*
 You can change these paths in the settings dialog.
 
 ## Usage
@@ -126,8 +126,7 @@ The application minimizes to system tray. Right-click the tray icon for quick ac
 
 Run with debug logging:
 
-bash
-LINUX_WPE_DEBUG=1 linux-wallpaperengine-gtk
+	LINUX_WPE_DEBUG=1 linux-wallpaperengine-gtk
 
 
 
