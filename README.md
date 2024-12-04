@@ -24,19 +24,6 @@ This project aims to provide a native GTK interface for linux-wallpaperengine, m
 - Python 3.6+
 - GTK 3.0
 
-### System Dependencies
-
-	sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0
-
-### On Fedora
-
-	sudo dnf install python3-gobject gtk3
-
-### On Arch Linux
-
-	sudo pacman -S python-gobject gtk3
-
-
 ## Installation
 
 1. Install linux-wallpaperengine first:
@@ -49,12 +36,10 @@ This project aims to provide a native GTK interface for linux-wallpaperengine, m
 
 2. Install Linux Wallpaper Engine GTK:
 
-### From Source
-
-	git clone https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
-	cd linux-wallpaperengine-gtk
-	chmod +x linux-wallpaperengine-gtk.py
-	python3 linux-wallpaperengine-gtk.py
+		git clone https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
+		cd linux-wallpaperengine-gtk
+		chmod +x linux-wallpaperengine-gtk.py
+		python3 linux-wallpaperengine-gtk.py
 
 ## Configuration
 
@@ -96,7 +81,7 @@ Access settings through the gear icon to configure:
 - Wallpaper directory
 - Audio/Mouse behavior
 
-### System Tray
+### System Tray [WIP]
 
 The application minimizes to system tray. Right-click the tray icon for quick actions:
 - Next/Previous/Random wallpaper
@@ -122,7 +107,7 @@ The application minimizes to system tray. Right-click the tray icon for quick ac
    - Check file permissions
    - Verify GTK and GDK are properly installed
 
-### Debug Mode
+### Debug Mode [WIP]
 
 Run with debug logging enabled:
 
