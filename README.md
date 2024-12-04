@@ -15,7 +15,7 @@ This project aims to provide a native GTK interface for linux-wallpaperengine, m
 - 🎵 Audio controls (volume/mute)
 - 🖥️ Multi-monitor support
 - ⚙️ Graphical settings management
-FUTURE- 🔧 System tray integration with quick controls
+- 🔧 [WIP] System tray integration with quick controls
 
 ## Prerequisites
 
@@ -53,6 +53,7 @@ FUTURE- 🔧 System tray integration with quick controls
 
 	git clone https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
 	cd linux-wallpaperengine-gtk
+	chmod +x linux-wallpaperengine-gtk.py
 	python3 linux-wallpaperengine-gtk.py
 
 ## Configuration
