@@ -15,7 +15,7 @@ This project aims to provide a native GTK interface for linux-wallpaperengine, m
 - 🎵 Audio controls (volume/mute)
 - 🖥️ Multi-monitor support
 - ⚙️ Graphical settings management
-- 🔧 System tray integration with quick controls
+FUTURE- 🔧 System tray integration with quick controls
 
 ## Prerequisites
 
@@ -47,38 +47,37 @@ This project aims to provide a native GTK interface for linux-wallpaperengine, m
 		cmake ..
 		make
 
-
-
 2. Install Linux Wallpaper Engine GTK:
-
-### From PyPI (Recommended)
-
-	pip install linux-wallpaperengine-gtk
 
 ### From Source
 
 	git clone https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
 	cd linux-wallpaperengine-gtk
-	pip install -e .
+	python3 linux-wallpaperengine-gtk.py
 
 ## Configuration
 
 On first run, the application will create a configuration file at:
 
-	~/.config/linux-wallpaperengine-gtk/config.json
-
+    ~/.config/linux-wallpaperengine-gtk/config.json
 
 Default paths:
-- Linux Wallpaper Engine: `~/linux-wallpaperengine/build`
-- Wallpapers: `~/.steam/debian-installation/steamapps/workshop/content/431960`
-- Others*
+  - `~/linux-wallpaperengine/build`
+  - `~/.steam/steam/steamapps/workshop/content/431960`
+  - `~/.steam/debian-installation/steamapps/workshop/content/431960`
+  - `~/.local/share/Steam/steamapps/workshop/content/431960`
+
 You can change these paths in the settings dialog.
 
 ## Usage
 
 ### Starting the Application
 
-Launch the py file from anywhere, it will auto detect all resources if they can be found in common default locations. ###
+Launch the application by running:
+
+    python3 linux-wallpaperengine-gtk.py
+
+The application will automatically detect linux-wallpaperengine and wallpapers in common locations.
 
 ### Basic Controls
 
@@ -124,11 +123,9 @@ The application minimizes to system tray. Right-click the tray icon for quick ac
 
 ### Debug Mode
 
-Run with debug logging:
+Run with debug logging enabled:
 
-	LINUX_WPE_DEBUG=1 linux-wallpaperengine-gtk
-
-
+	python3 linux-wallpaperengine-gtk.py --debug
 
 ## Contributing
 
@@ -140,7 +137,7 @@ Run with debug logging:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## Acknowledgments
 
