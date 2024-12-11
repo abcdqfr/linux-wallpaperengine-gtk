@@ -1,65 +1,99 @@
-# Wallpaper Engine GTK
+# Linux Wallpaper Engine GTK
 
-A GTK frontend for [linux-wallpaperengine](https://github.com/Almamu/linux-wallpaperengine) that provides a user-friendly interface for managing Steam Workshop wallpapers on Linux. This application makes it easy to browse, preview, and switch between your Wallpaper Engine wallpapers.
+## Machine-Optimized Implementation
 
-![Screenshot placeholder]()
+This is a machine-first implementation of a GTK frontend for Linux Wallpaper Engine, designed for optimal ML processing and future automation.
 
-## Overview
+### Code Philosophy
 
-This project aims to provide a native GTK interface for linux-wallpaperengine, making it easier for Linux users to enjoy their Wallpaper Engine collection. While linux-wallpaperengine handles the core functionality of running the wallpapers, this frontend focuses on providing a seamless user experience for managing them.
+- Ultra-compact, machine-optimized code structure
+- Single-source documentation via KEY comment
+- Runtime debugging over human readability
+- Pattern-based implementation for ML analysis
+- External documentation for human transition support
 
-## Features
+### Core Components
 
-- 🖼️ Visual wallpaper browser with thumbnails and previews
-- 🔄 Easy wallpaper switching (next/previous/random)
-- 🎵 Audio controls (volume/mute)
-- 🖥️ Multi-monitor support
-- ⚙️ Graphical settings management
-- 🔧 [WIP] System tray integration with quick controls
+1. **WallpaperEngine (W)**
+   - Display detection and management
+   - Process control and lifecycle
+   - Wallpaper state handling
+   - System path resolution
 
-## Prerequisites
+2. **GTK_Window (G)**
+   - UI component management
+   - Event handling and signals
+   - State updates and rendering
+   - User interaction processing
 
-- [linux-wallpaperengine](https://github.com/Almamu/linux-wallpaperengine) (built and configured)
-- Steam Workshop wallpapers (from Wallpaper Engine)
-- Python 3.6+
-- GTK 3.0
+3. **SettingsDialog**
+   - Configuration management
+   - User preferences handling
+   - Directory and path control
+   - State persistence
 
-## Installation
+### Operation Flow
 
-1. Install linux-wallpaperengine first:
+```mermaid
+graph TD
+    A[Initialize GTK Window] --> B[Load Configuration]
+    B --> C[Detect Display]
+    C --> D[Scan Wallpapers]
+    D --> E[Render UI]
+    E --> F[Event Loop]
+    F --> G{User Action}
+    G --> |Settings| H[Update Config]
+    G --> |Select| I[Change Wallpaper]
+    G --> |Exit| J[Cleanup]
+```
 
-		git clone https://github.com/Almamu/linux-wallpaperengine.git
-		cd linux-wallpaperengine
-		mkdir build && cd build
-		cmake ..
-		make
+### Variable Pattern System
 
-2. Install Linux Wallpaper Engine GTK:
+Pattern | Purpose | Example
+--------|---------|--------
+s | self reference | `s.w=None`
+p | process/parent | `s.p=next()`
+w | wallpaper/window | `s.w=[p for d in[]]`
+l | logger/list | `s.l=L('WE')`
+d | display/directory | `s.d=next()`
+c | current/command | `s.c=None`
 
-		git clone https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
-		cd linux-wallpaperengine-gtk
-		chmod +x linux-wallpaperengine-gtk.py
-		python3 linux-wallpaperengine-gtk.py
+### Operation Patterns
 
-## Configuration
+Pattern | Purpose | Example
+--------|---------|--------
+:= | check+assign | `(i:=s.e.gn())`
+; | chain ops | `s.c=None;return 1`
+and/or | flow control | `x and y or z`
+next() | first match | `next((p for p))`
++=[x] | append | `l+=[x]`
+1/0 | boolean | `'enabled':1`
 
-On first run, the application will create a configuration file at:
+### Installation
 
-    ~/.config/linux-wallpaperengine-gtk/config.json
+```bash
+# Option 1: Python Environment
+pip install -r requirements.txt
 
-Default paths:
-  - `~/linux-wallpaperengine/build`
-  - `~/.steam/steam/steamapps/workshop/content/431960`
-  - `~/.steam/debian-installation/steamapps/workshop/content/431960`
-  - `~/.local/share/Steam/steamapps/workshop/content/431960`
+# Option 2: System Packages (Preferred)
+## Ubuntu/Mint
+sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0
 
-You can change these paths in the settings dialog.
+## Fedora
+sudo dnf install python3-gobject gtk3
 
-## Usage
+## Arch Linux
+sudo pacman -S python-gobject gtk3
 
-### Starting the Application
+# Requirements
+- GTK 3.36+
+- Python 3.8+
+- linux-wallpaperengine
+```
 
-Launch the application by running:
+### Launch
+
+```bash
 
     python3 linux-wallpaperengine-gtk.py
 
