@@ -3,7 +3,7 @@ name = "linux-wallpaperengine-gtk"
 version = "0.1.0"
 description = "GTK frontend for linux-wallpaperengine"
 authors = [
-    {name = "Brandon", email = "brandon@example.com"},
+    {name = "abcdqfr", email = "abcdqfr@users.noreply.github.com"},
 ]
 dependencies = [
     "PyGObject>=3.42.0",
