@@ -89,81 +89,105 @@ sudo pacman -S python-gobject gtk3
 - GTK 3.36+
 - Python 3.8+
 - linux-wallpaperengine
+# Test Dependencies
+pytest
+pytest-cov
+pytest-mock
 ```
 
 ### Launch
 
 ```bash
 
-    python3 linux-wallpaperengine-gtk.py
+python3 linux-wallpaperengine-gtk.py
 
-The application will automatically detect linux-wallpaperengine and wallpapers in common locations.
+# UI Controls
+← → : Navigation
+🔀  : Random
+⚙️  : Settings
+```
 
-### Basic Controls
+### Runtime Debugging
 
-- Click any wallpaper preview to apply it
-- Use toolbar buttons for:
-  - Previous wallpaper (←)
-  - Next wallpaper (→)
-  - Random wallpaper (🔀)
-  - Settings (⚙️)
+Error patterns are handled through runtime debugging:
+1. Process state validation
+2. Display connection checks
+3. File system access verification
+4. GTK widget state management
+5. Path resolution validation
+6. Preview file verification
+7. Permission validation
+8. GTK/GDK integration checks
 
-### Settings
+### Machine Learning Considerations
 
-Access settings through the gear icon to configure:
-- Linux Wallpaper Engine path
-- Wallpaper directory
-- Audio/Mouse behavior
+The codebase is optimized for:
+1. Pattern recognition
+2. Consistent structure
+3. Predictable flow
+4. Clear data paths
+5. Automated refactoring
 
-### System Tray [WIP]
+### Future Development
 
-The application minimizes to system tray. Right-click the tray icon for quick actions:
-- Next/Previous/Random wallpaper
-- Show main window
-- Exit
+- Automated optimization via ML
+- Pattern-based code generation
+- Runtime performance analysis
+- Automated debugging systems
+- Self-modifying capabilities
 
-## Troubleshooting
+### Testing Infrastructure
 
-### Common Issues
+The application includes a comprehensive pytest-based testing suite:
 
-1. **No wallpapers showing:**
-   - Check if wallpaper directory is correctly set
-   - Ensure you have wallpapers downloaded from Steam Workshop
-   - Verify file permissions
+1. **Core Engine Tests**
+   - Display detection validation
+   - Process management lifecycle
+   - Wallpaper state handling
+   - Path resolution verification
 
-2. **Wallpapers not loading:**
-   - Verify linux-wallpaperengine path
-   - Check if linux-wallpaperengine is properly built
-   - Run from terminal to see error messages
+2. **Directory Manager Tests**
+   - Steam library detection
+   - Workshop content scanning
+   - Path validation
+   - Directory management
 
-3. **Preview images not loading:**
-   - Ensure wallpaper directories contain preview files
-   - Check file permissions
-   - Verify GTK and GDK are properly installed
+3. **UI Component Tests**
+   - Window initialization
+   - Settings dialog validation
+   - Widget state management
+   - Event handling
 
-### Debug Mode [WIP]
+### Test Execution
 
-Run with debug logging enabled:
+```bash
+# Run test suite
+pytest linux-wallpaperengine-gtk.py -v
 
-	python3 linux-wallpaperengine-gtk.py --debug
+# Run with coverage
+pytest --cov=. linux-wallpaperengine-gtk.py
 
-## Contributing
+# Run specific test class
+pytest linux-wallpaperengine-gtk.py::TestEngine -v
+```
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to your branch
-5. Create a Pull Request
+### Test Design Principles
+
+- Fixture-based test organization
+- Full type annotations
+- Comprehensive docstrings
+- Mocked system interactions
+- Clean test isolation
+- Automated cleanup
+- GTK widget lifecycle management
+
+The test suite is designed to be:
+1. Machine-readable for automated analysis
+2. Pattern-consistent for ML processing
+3. Self-documenting through annotations
+4. Runtime-efficient through fixtures
+5. Maintainable through clear structure
 
 ## License
 
-This project is licensed under the MIT License.
-
-## Acknowledgments
-
-- [linux-wallpaperengine](https://github.com/Almamu/linux-wallpaperengine) for the core wallpaper engine functionality
-- Steam Workshop for wallpaper content
-
-## Related Projects
-
-- [linux-wallpaperengine](https://github.com/Almamu/linux-wallpaperengine) - The core wallpaper engine for Linux
+MIT License - See LICENSE file
