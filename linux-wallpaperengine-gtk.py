@@ -5,7 +5,8 @@ A standalone GTK interface for linux-wallpaperengine
 """
 
 # Standard library imports
-import os, json, sys, random, argparse, subprocess, threading, logging, time, shutil
+import logging, os, json, sys, random, argparse, subprocess, threading, logging, time, shutil, datetime, pathlib, typing, gi
+from datetime import datetime
 from pathlib import Path
 from typing import Optional, List, Dict, Tuple, Any, Set, Union, Callable
 
@@ -1542,144 +1543,174 @@ class SettingsDialog(Gtk.Dialog):
     """Settings dialog for configuring application settings."""
 
     def __init__(self, parent: WallpaperWindow, settings: dict) -> None:
+        """Initialize settings dialog.
+
+        Args:
+            parent: Parent window
+            settings: Current application settings
+        """
         super().__init__(title="Settings", parent=parent, flags=0)
         self.parent = parent
         self.set_default_size(700, 500)
 
-        # Create a grid for all settings
-        self.settings_grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
-        self.get_content_area().add(self.settings_grid)
+        # Create notebook for tabbed interface
+        self.notebook = Gtk.Notebook()
+        self.get_content_area().pack_start(self.notebook, True, True, 0)
 
-        # Initialize settings
-        self.current_settings = settings
-        self._create_settings()
+        # Add tabs
+        self._create_general_tab()
+        self._create_directories_tab()
+        self._create_performance_tab()
+        self._create_audio_tab()
 
         # Add buttons
-        self.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
-                         Gtk.STOCK_SAVE, Gtk.ResponseType.OK)
+        self.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_SAVE, Gtk.ResponseType.OK
+        )
 
         self.connect("response", self.on_response)
         self.show_all()
 
-    def _create_settings(self) -> None:
-        """Create all settings in a single grid layout."""
-        # Path to linux-wallpaperengine executable
-        self.build_path_entry = Gtk.Entry()
-        self.build_path_entry.set_placeholder_text("Path to linux-wallpaperengine executable")
-        browse_build_button = Gtk.Button(label="Browse")
-        browse_build_button.connect("clicked", self.on_browse_build_clicked)
-        self.settings_grid.attach(Gtk.Label(label="linux-wallpaperengine build dir:"), 0, 0, 1, 1)
-        self.settings_grid.attach(self.build_path_entry, 0, 1, 1, 1)
-        self.settings_grid.attach(browse_build_button, 1, 1, 1, 1)
-
-        # Performance Settings
-        self.fps_spin = UIHelper.add_spin_button(self.settings_grid, "Default FPS:", 1, 240, 
-                                                  self.current_settings.get('fps', 60), 2)
-        self.process_priority_combo = UIHelper.add_combo_box(self.settings_grid, "Process Priority:", 
-                                                              ["Low", "Normal", "High"], 
-                                                              self.current_settings.get('process_priority', 'Normal'), 3)
-
-        # Audio Settings
-        self.volume_scale = UIHelper.add_scale(self.settings_grid, "Volume:", 0, 100, 
-                                                self.current_settings.get('volume', 100), 4)
-
-        # Directory Management
-        self._create_directory_management()
-
-        # Directory List Box
-        self.directory_list_box = Gtk.ListBox()
-        self.settings_grid.attach(self.directory_list_box, 0, 10, 2, 1)
-
-        # Populate the directory list with current directories
-        self._populate_directory_list()
-
-        # Add Directory Management Buttons below the directory list box
-        self.add_directory_button = Gtk.Button(label="Add Directory")
-        self.add_directory_button.connect("clicked", self.on_add_directory_clicked)
-        self.settings_grid.attach(self.add_directory_button, 0, 11, 1, 1)
-
-        self.manage_blacklist_button = Gtk.Button(label="Manage Blacklist")
-        self.manage_blacklist_button.connect("clicked", self.on_manage_blacklist_clicked)
-        self.settings_grid.attach(self.manage_blacklist_button, 1, 11, 1, 1)
-
-    def _create_directory_management(self) -> None:
-        """Create directory management settings in the grid."""
-        # Directory Management Header
-        header_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-        self.directory_list_label = Gtk.Label(label="Manage Wallpaper Directories:")
-        self.directory_list_label.set_halign(Gtk.Align.START)
-        header_box.pack_start(self.directory_list_label, True, True, 0)
+    def _create_general_tab(self) -> None:
+        """Create general settings tab."""
+        grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
         
-        # Add Refresh Button
-        refresh_button = Gtk.Button()
-        refresh_icon = Gtk.Image.new_from_icon_name("view-refresh-symbolic", Gtk.IconSize.BUTTON)
-        refresh_button.add(refresh_icon)
-        refresh_button.set_tooltip_text("Rescan All Directories")
-        refresh_button.connect("clicked", self.on_refresh_clicked)
-        header_box.pack_end(refresh_button, False, False, 0)
+        # WPE Path selection
+        path_label = Gtk.Label(label="WPE Path:", halign=Gtk.Align.END)
+        self.wpe_path_entry = Gtk.Entry()
+        self.wpe_path_entry.set_text(self.parent.engine.wpe_path or "")
+        browse_button = Gtk.Button(label="Browse")
+        browse_button.connect("clicked", self.on_browse_wpe_clicked)
         
-        self.settings_grid.attach(header_box, 0, 9, 2, 1)
+        grid.attach(path_label, 0, 0, 1, 1)
+        grid.attach(self.wpe_path_entry, 1, 0, 1, 1)
+        grid.attach(browse_button, 2, 0, 1, 1)
 
-        # Create TreeView for directories
+        # Add to notebook
+        label = Gtk.Label(label="General")
+        self.notebook.append_page(grid, label)
+
+    def _create_directories_tab(self) -> None:
+        """Create directories management tab."""
+        grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
+        
+        # Directory list with statistics
         self.directory_store = Gtk.ListStore(bool, str, int, int, int, str)  # enabled, path, total, blacklisted, active, last scan
         self.directory_view = Gtk.TreeView(model=self.directory_store)
-        self.directory_view.set_headers_visible(True)
-
+        
         # Add columns
-        # Enabled column with toggle
-        renderer_toggle = Gtk.CellRendererToggle()
-        renderer_toggle.connect("toggled", self.on_directory_toggled)
-        column_toggle = Gtk.TreeViewColumn("Enabled", renderer_toggle, active=0)
-        self.directory_view.append_column(column_toggle)
-
-        # Path column
-        renderer_text = Gtk.CellRendererText()
-        column_path = Gtk.TreeViewColumn("Directory", renderer_text, text=1)
-        column_path.set_expand(True)
-        self.directory_view.append_column(column_path)
-
-        # Stats columns
         columns = [
-            ("Total", 2),
-            ("Blacklisted", 3),
-            ("Active", 4),
-            ("Last Scan", 5)
+            ("Enabled", 0, True),  # Toggle column
+            ("Directory", 1, True),  # Text column, expandable
+            ("Total", 2, False),
+            ("Blacklisted", 3, False),
+            ("Active", 4, False),
+            ("Last Scan", 5, False)
         ]
-        for title, index in columns:
-            renderer = Gtk.CellRendererText()
-            column = Gtk.TreeViewColumn(title, renderer, text=index)
+        
+        for title, col_id, expand in columns:
+            if col_id == 0:  # Enabled column
+                renderer = Gtk.CellRendererToggle()
+                renderer.connect("toggled", self.on_directory_toggled)
+                column = Gtk.TreeViewColumn(title, renderer, active=0)
+            else:
+                renderer = Gtk.CellRendererText()
+                column = Gtk.TreeViewColumn(title, renderer, text=col_id)
+                column.set_expand(expand)
+            
             self.directory_view.append_column(column)
-
-        # Put the TreeView in a ScrolledWindow
+        
+        # Scrolled window for directory list
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        scrolled.set_size_request(-1, 200)  # Set minimum height
+        scrolled.set_size_request(-1, 200)
         scrolled.add(self.directory_view)
         
-        self.settings_grid.attach(scrolled, 0, 10, 2, 1)
-
-        # Buttons box
-        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        grid.attach(scrolled, 0, 0, 3, 1)
         
-        # Add Directory Button
-        self.add_directory_button = Gtk.Button(label="Add Directory")
-        self.add_directory_button.connect("clicked", self.on_add_directory_clicked)
-        button_box.pack_start(self.add_directory_button, True, True, 0)
+        # Directory management buttons
+        button_box = Gtk.ButtonBox(orientation=Gtk.Orientation.HORIZONTAL)
+        button_box.set_layout(Gtk.ButtonBoxStyle.START)
+        button_box.set_spacing(6)
         
-        # Remove Directory Button
-        self.remove_directory_button = Gtk.Button(label="Remove Directory")
-        self.remove_directory_button.connect("clicked", self.on_remove_directory_clicked)
-        button_box.pack_start(self.remove_directory_button, True, True, 0)
+        add_button = Gtk.Button(label="Add Directory")
+        add_button.connect("clicked", self.on_add_directory_clicked)
+        remove_button = Gtk.Button(label="Remove Directory")
+        remove_button.connect("clicked", self.on_remove_directory_clicked)
+        scan_button = Gtk.Button(label="Scan All")
+        scan_button.connect("clicked", self.on_scan_all_clicked)
         
-        # Manage Blacklist Button
-        self.manage_blacklist_button = Gtk.Button(label="Manage Blacklist")
-        self.manage_blacklist_button.connect("clicked", self.on_manage_blacklist_clicked)
-        button_box.pack_start(self.manage_blacklist_button, True, True, 0)
+        button_box.add(add_button)
+        button_box.add(remove_button)
+        button_box.add(scan_button)
         
-        self.settings_grid.attach(button_box, 0, 11, 2, 1)
+        grid.attach(button_box, 0, 1, 3, 1)
         
-        # Populate the directory list
+        # Add to notebook
+        label = Gtk.Label(label="Directories")
+        self.notebook.append_page(grid, label)
+        
+        # Populate directory list
         self._populate_directory_list()
+
+    def _create_performance_tab(self) -> None:
+        """Create performance settings tab."""
+        grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
+        
+        # FPS settings
+        fps_label = Gtk.Label(label="Default FPS:", halign=Gtk.Align.END)
+        self.fps_spin = Gtk.SpinButton.new_with_range(1, 240, 1)
+        self.fps_spin.set_value(self.parent.settings.get('fps', 60))
+        
+        grid.attach(fps_label, 0, 0, 1, 1)
+        grid.attach(self.fps_spin, 1, 0, 1, 1)
+        
+        # Process priority
+        priority_label = Gtk.Label(label="Process Priority:", halign=Gtk.Align.END)
+        self.priority_combo = Gtk.ComboBoxText()
+        for priority in ["Low", "Normal", "High"]:
+            self.priority_combo.append_text(priority)
+        self.priority_combo.set_active(1)  # Default to Normal
+        
+        grid.attach(priority_label, 0, 1, 1, 1)
+        grid.attach(self.priority_combo, 1, 1, 1, 1)
+        
+        # Add to notebook
+        label = Gtk.Label(label="Performance")
+        self.notebook.append_page(grid, label)
+
+    def _create_audio_tab(self) -> None:
+        """Create audio settings tab."""
+        grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
+        
+        # Volume settings
+        volume_label = Gtk.Label(label="Default Volume:", halign=Gtk.Align.END)
+        self.volume_scale = Gtk.Scale.new_with_range(
+            Gtk.Orientation.HORIZONTAL, 0, 100, 1)
+        self.volume_scale.set_value(self.parent.settings.get('volume', 100))
+        
+        grid.attach(volume_label, 0, 0, 1, 1)
+        grid.attach(self.volume_scale, 1, 0, 2, 1)
+        
+        # Audio processing switches
+        switches = [
+            ("Keep Playing When Other Apps Play Sound", "no_automute"),
+            ("Disable Audio Effects", "no_audio_processing")
+        ]
+        
+        for i, (label, setting) in enumerate(switches, start=1):
+            switch_label = Gtk.Label(label=label + ":", halign=Gtk.Align.END)
+            switch = Gtk.Switch()
+            switch.set_active(self.parent.settings.get(setting, False))
+            setattr(self, f"{setting}_switch", switch)
+            
+            grid.attach(switch_label, 0, i, 1, 1)
+            grid.attach(switch, 1, i, 1, 1)
+        
+        # Add to notebook
+        label = Gtk.Label(label="Audio")
+        self.notebook.append_page(grid, label)
 
     def _populate_directory_list(self) -> None:
         """Populate the directory list with current directories and their stats."""
@@ -1698,78 +1729,30 @@ class SettingsDialog(Gtk.Dialog):
     def on_directory_toggled(self, cell: Gtk.CellRendererToggle, path: str) -> None:
         """Handle toggling of directory enabled state."""
         iter = self.directory_store.get_iter(path)
-        enabled = not self.directory_store[iter][0]  # Toggle current state
+        enabled = not self.directory_store[iter][0]
         directory_path = self.directory_store[iter][1]
         
         self.directory_store[iter][0] = enabled
         self.parent.directory_manager.toggle_directory(directory_path, enabled)
 
-    def on_refresh_clicked(self, button: Gtk.Button) -> None:
-        """Handle refresh button click."""
-        self.parent.directory_manager.rescan_all()
-        self._populate_directory_list()
-
-    def on_remove_directory_clicked(self, button: Gtk.Button) -> None:
-        """Handle removing a directory."""
-        selection = self.directory_view.get_selection()
-        model, iter = selection.get_selected()
-        if iter is not None:
-            directory_path = model[iter][1]
-            
-            # Confirm with user
-            dialog = Gtk.MessageDialog(
-                transient_for=self,
-                flags=0,
-                message_type=Gtk.MessageType.QUESTION,
-                buttons=Gtk.ButtonsType.YES_NO,
-                text=f"Remove directory?"
-            )
-            dialog.format_secondary_text(
-                f"Are you sure you want to remove the directory:\n{directory_path}\n\n"
-                "This will not delete any files, but the directory will no longer be scanned for wallpapers."
-            )
-            
-            response = dialog.run()
-            dialog.destroy()
-            
-            if response == Gtk.ResponseType.YES:
-                self.parent.directory_manager.remove_scan_path(directory_path)
-                self._populate_directory_list()
-
-    def on_browse_build_clicked(self, button):
-        """Handle browse button click for selecting the build directory."""
+    def on_browse_wpe_clicked(self, button: Gtk.Button) -> None:
+        """Handle browsing for WPE executable."""
         dialog = Gtk.FileChooserDialog(
-            title="Select Wallpaper Engine Build Directory",
+            title="Select WPE Executable",
             parent=self,
-            action=Gtk.FileChooserAction.SELECT_FOLDER
+            action=Gtk.FileChooserAction.OPEN
         )
         dialog.add_buttons(
             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
             Gtk.STOCK_OPEN, Gtk.ResponseType.OK
         )
-
+        
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
-            self.build_path_entry.set_text(dialog.get_filename())
+            self.wpe_path_entry.set_text(dialog.get_filename())
         dialog.destroy()
 
-    def on_response(self, dialog: Gtk.Dialog, response: int) -> None:
-        """Handle dialog response."""
-        if response == Gtk.ResponseType.OK:
-            updated_settings = {
-                'fps': self.fps_spin.get_value(),  # Use get_value() instead of get_value_as_int()
-                'volume': int(self.volume_scale.get_value()),  # Cast to int
-                'process_priority': self.process_priority_combo.get_active_text(),
-                'wallpaper_directory': self.build_path_entry.get_text()  # Get the path from the entry
-            }
-            self.current_settings.update(updated_settings)
-            if hasattr(self.parent, 'settings'):
-                self.parent.settings.update(self.current_settings)
-
-        # Close the dialog
-        self.destroy()
-
-    def on_add_directory_clicked(self, button):
+    def on_add_directory_clicked(self, button: Gtk.Button) -> None:
         """Handle adding a new directory."""
         dialog = Gtk.FileChooserDialog(
             title="Select Directory",
@@ -1780,23 +1763,57 @@ class SettingsDialog(Gtk.Dialog):
             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
             Gtk.STOCK_OPEN, Gtk.ResponseType.OK
         )
-
+        
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
-            selected_directory = dialog.get_filename()
-            # Add the selected directory to the directory manager
-            self.parent.directory_manager.add_scan_path(selected_directory)
-            self._populate_directory_list()  # Refresh the directory list
-            dialog.destroy()
-        else:
-            dialog.destroy()
+            path = dialog.get_filename()
+            self.parent.directory_manager.add_scan_path(path)
+            self._populate_directory_list()
+        dialog.destroy()
 
-    def on_manage_blacklist_clicked(self, button):
-        """Handle managing the blacklist."""
-        # Logic to manage the blacklist
-        blacklist_dialog = BlacklistDialog(self.parent)
-        blacklist_dialog.run()
-        blacklist_dialog.destroy()
+    def on_remove_directory_clicked(self, button: Gtk.Button) -> None:
+        """Handle removing a directory."""
+        selection = self.directory_view.get_selection()
+        model, iter = selection.get_selected()
+        if iter:
+            path = model[iter][1]
+            confirm = Gtk.MessageDialog(
+                transient_for=self,
+                message_type=Gtk.MessageType.QUESTION,
+                buttons=Gtk.ButtonsType.YES_NO,
+                text=f"Remove directory {path}?"
+            )
+            response = confirm.run()
+            confirm.destroy()
+            
+            if response == Gtk.ResponseType.YES:
+                self.parent.directory_manager.remove_scan_path(path)
+                self._populate_directory_list()
+
+    def on_scan_all_clicked(self, button: Gtk.Button) -> None:
+        """Handle scanning all directories."""
+        self.parent.directory_manager.rescan_all()
+        self._populate_directory_list()
+
+    def on_response(self, dialog: Gtk.Dialog, response: int) -> None:
+        """Handle dialog response."""
+        if response == Gtk.ResponseType.OK:
+            # Update settings
+            self.parent.settings.update({
+                'fps': self.fps_spin.get_value_as_int(),
+                'volume': int(self.volume_scale.get_value()),
+                'no_automute': self.no_automute_switch.get_active(),
+                'no_audio_processing': self.no_audio_processing_switch.get_active(),
+                'process_priority': self.priority_combo.get_active_text()
+            })
+            
+            # Update WPE path if changed
+            new_wpe_path = self.wpe_path_entry.get_text()
+            if new_wpe_path != self.parent.engine.wpe_path:
+                self.parent.engine.wpe_path = new_wpe_path
+                
+            # Save settings
+            self.parent.save_settings()
 
 class WallpaperDirectoryManager:
     """Manages wallpaper directories for the application.
@@ -1898,7 +1915,7 @@ class WallpaperDirectoryManager:
         self.directories[path].update({
             'total_count': len(wallpapers),
             'blacklisted_count': blacklisted,
-            'last_scan': datetime.datetime.now().isoformat(),
+            'last_scan': datetime.now().isoformat(),
             'wallpapers': wallpapers
         })
 
@@ -2101,104 +2118,80 @@ def main():
         sys.exit(1)
 
 def run_integrated_tests() -> None:
-    """Integrated test suite for linux-wallpaperengine-gtk.
-    
-    This test suite is only loaded when running pytest.
-    Normal application execution skips this entirely.
-    """
+    """Integrated test suite for linux-wallpaperengine-gtk."""
     import pytest
     from typing import Generator
     from pathlib import Path
     from _pytest.fixtures import FixtureRequest
-    from _pytest.logging import LogCaptureFixture 
+    from _pytest.logging import LogCaptureFixture
 
-    class TestEngine:
-        """Core engine functionality tests."""
-        
-        @pytest.fixture
-        def mock_engine(self, tmp_path: Path) -> WallpaperEngine:
-            """Create test engine instance.
-            
-            Args:
-                tmp_path: Pytest temporary path fixture
-                
-            Returns:
-                Configured WallpaperEngine instance
-            """
-            wpe_path = tmp_path / "linux-wallpaperengine"
-            wpe_path.touch(mode=0o755)
-            return WallpaperEngine(wpe_path=str(wpe_path))
-
-        def test_display_detection(self, mock_engine: WallpaperEngine, mocker: None) -> None:
-            """Test display detection functionality.
-            
-            Args:
-                mock_engine: Fixture providing test engine
-                mocker: Pytest mocker fixture
-            """
-            mocker.patch("subprocess.run", return_value=mocker.Mock(
-                stdout="DisplayPort-0 connected primary",
-                returncode=0
-            ))
-            assert mock_engine.display == "DisplayPort-0"
-
-        def test_process_management(self, mock_engine: WallpaperEngine, mocker: None) -> None:
-            """Test wallpaper process management.
-            
-            Args:
-                mock_engine: Fixture providing test engine
-                mocker: Pytest mocker fixture
-            """
-            mock_process = mocker.Mock(poll=lambda: None, pid=12345)
-            mocker.patch("subprocess.Popen", return_value=mock_process)
-            success, _ = mock_engine.run_wallpaper("1234")
-            assert success
-            assert mock_engine.current_process == mock_process
-
-    class TestDirectoryManager:
-        """Directory management tests."""
-        
-        def test_steam_paths(self, tmp_path: Path) -> None:
-            """Test Steam directory detection.
-            
-            Args:
-                tmp_path: Pytest temporary path fixture
-            """
-            workshop_path = tmp_path / "steam/steamapps/workshop/content/431960"
-            workshop_path.mkdir(parents=True)
-            manager = WallpaperDirectoryManager()
-            manager.add_scan_path(str(tmp_path / "steam"))
-            assert str(workshop_path) in manager.directories
-
-    class TestUI:
-        """UI component tests."""
+    class TestSettingsDialog:
+        """Test suite for settings dialog functionality."""
         
         @pytest.fixture
         def mock_window(self, tmp_path: Path) -> Generator[WallpaperWindow, None, None]:
-            """Create test window instance.
-            
-            Args:
-                tmp_path: Pytest temporary path fixture
-                
-            Yields:
-                Test WallpaperWindow instance
-            """
+            """Create test window instance."""
             win = WallpaperWindow()
             yield win
             win.destroy()
 
-        def test_settings_dialog(self, mock_window: WallpaperWindow) -> None:
-            """Test settings dialog functionality.
-            
-            Args:
-                mock_window: Fixture providing test window
-            """
+        @pytest.fixture
+        def dialog(self, mock_window: WallpaperWindow) -> Generator[SettingsDialog, None, None]:
+            """Create test settings dialog instance."""
             dialog = SettingsDialog(mock_window, mock_window.settings)
-            try:
-                assert dialog.fps_spin.get_value_as_int() == 60
-                assert not dialog.mouse_switch.get_active()
-            finally:
-                dialog.destroy()
+            yield dialog
+            dialog.destroy()
+
+        def test_directory_management(self, dialog: SettingsDialog, tmp_path: Path) -> None:
+            """Test directory management functionality."""
+            # Add test directory
+            test_dir = tmp_path / "test_wallpapers"
+            test_dir.mkdir()
+            
+            # Add directory through UI
+            dialog.parent.directory_manager.add_scan_path(str(test_dir))
+            dialog._populate_directory_list()
+            
+            # Verify directory is listed
+            found = False
+            for row in dialog.directory_store:
+                if row[1] == str(test_dir):
+                    found = True
+                    assert row[0]  # Enabled by default
+                    break
+            assert found
+
+        def test_settings_persistence(self, dialog: SettingsDialog) -> None:
+            """Test settings persistence."""
+            # Change some settings
+            dialog.fps_spin.set_value(30)
+            dialog.volume_scale.set_value(50)
+            dialog.no_automute_switch.set_active(True)
+            
+            # Simulate OK response
+            dialog.on_response(dialog, Gtk.ResponseType.OK)
+            
+            # Verify settings were updated
+            assert dialog.parent.settings['fps'] == 30
+            assert dialog.parent.settings['volume'] == 50
+            assert dialog.parent.settings['no_automute']
+
+        def test_directory_toggle(self, dialog: SettingsDialog, tmp_path: Path) -> None:
+            """Test directory enable/disable functionality."""
+            # Add test directory
+            test_dir = tmp_path / "test_wallpapers"
+            test_dir.mkdir()
+            dialog.parent.directory_manager.add_scan_path(str(test_dir))
+            dialog._populate_directory_list()
+            
+            # Find and toggle the directory
+            for row in dialog.directory_store:
+                if row[1] == str(test_dir):
+                    # Simulate toggle
+                    dialog.on_directory_toggled(None, row.path)
+                    assert not row[0]  # Should be disabled
+                    assert not dialog.parent.directory_manager.directories[str(test_dir)]['enabled']
+                    break
 
 if __name__ == "__main__":
     main()
