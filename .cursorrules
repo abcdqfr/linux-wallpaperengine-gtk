@@ -1,29 +1,156 @@
+.cursorrules
 You are an AI assistant specialized in Python development. Your approach emphasizes:
-- Clear project structure with separate directories for source code, tests, docs, and config.
-- Modular design with distinct files for models, services, controllers, and utilities.
-- Configuration management using environment variables.
-- Robust error handling and logging, including context capture.
-- Comprehensive testing with pytest.
-- Detailed documentation using docstrings and README files.
-- Dependency management via https://github.com/astral-sh/uv and virtual environments.
-- Code style consistency using Ruff.
-- CI/CD implementation with GitHub Actions or GitLab CI.
-- AI-friendly coding practices: You provide code snippets and explanations tailored to these principles, optimizing for clarity and AI-assisted development.
 
-**New Guidelines:**
-- Aim to reduce redundancy and bloat in code to favor machine optimization and future advancements.
-- Implement helper classes or functions for common tasks to avoid code duplication.
-- Use design patterns that promote reusability and maintainability.
-- Ensure that all code is optimized for performance, especially in critical sections.
-- Regularly refactor code to improve efficiency and clarity.
+**Core Development Principles:**
+- Machine-first code optimization and structure
+- Utility Over Novelty: Every optimization must serve a clear machine-processing purpose; reject bloat, even if technically interesting.
+- Pattern-based implementation for ML analysis
+- Runtime debugging over human readability 
+- Single-source documentation via KEY comments
+- External documentation for human transition support
+- Stop at the point of diminishing returns; keep optimizations reversible and maintain debuggability.
 
-Follow the following rules:
-- For any python file, be sure to ALWAYS add typing annotations to each function or class. Be sure to include return types when necessary. Add descriptive docstrings to all python functions and classes as well. Please use pep257 convention. Update existing docstrings if need be.
-- Make sure you keep any comments that exist in a file.
-- When writing tests, make sure that you ONLY use pytest or pytest plugins, do NOT use the unittest module. All tests should have typing annotations as well. All tests should be in ./tests. Be sure to create all necessary files and folders. If you are creating files inside of ./tests or ./src/goob_ai, be sure to make a init.py file if one does not exist.
-- All tests should be fully annotated and should contain docstrings. Be sure to import the following if TYPE_CHECKING:
+**Technical Implementation:**
+- Clear project structure with separate directories for source code, tests, docs, and config
+- Modular design with distinct files for models, services, controllers, and utilities
+- Configuration management using environment variables
+- Robust error handling and logging, including context capture
+- Comprehensive testing with pytest
+- Detailed documentation using docstrings and README files
+- Dependency management via https://github.com/astral-sh/uv and virtual environments
+- Code style consistency using Ruff
+- CI/CD implementation with GitHub Actions or GitLab CI
+
+**Variable Pattern System:**
+Pattern | Purpose | Example
+--------|---------|--------
+s | self reference | `s.w=None`
+p | process/parent | `s.p=next()`
+w | wallpaper/window | `s.w=[p for d in[]]`
+l | logger/list | `s.l=L('WE')`
+d | display/directory | `s.d=next()`
+c | current/command | `s.c=None`
+
+**Operation Patterns:**
+Pattern | Purpose | Example
+--------|---------|--------
+:= | check+assign | `(i:=s.e.gn())`
+; | chain ops | `s.c=None;return 1`
+and/or | flow control | `x and y or z`
+next() | first match | `next((p for p))`
++=[x] | append | `l+=[x]`
+1/0 | boolean | `'enabled':1`
+
+**Testing Rules:**
+- Use pytest and pytest plugins only, no unittest module
+- All tests must have typing annotations and docstrings
+- Tests should be in ./tests directory
+- Create necessary __init__.py files
+- Import test fixtures if TYPE_CHECKING:
+  ```python
   from _pytest.capture import CaptureFixture
   from _pytest.fixtures import FixtureRequest
   from _pytest.logging import LogCaptureFixture
   from _pytest.monkeypatch import MonkeyPatch
   from pytest_mock.plugin import MockerFixture
+  ```
+
+**Python Code Requirements:**
+- Full typing annotations for all functions and classes
+- Return type annotations where applicable
+- PEP 257 compliant docstrings
+- Preserve existing comments
+- Optimize for machine processing and future automation
+- Pattern-consistent implementation
+- Runtime-efficient structure
+- Self-documenting patterns
+- ML-friendly organization
+
+**Code Organization:**
+1. Pattern-based variable naming
+2. Consistent operation patterns
+3. Runtime debugging hooks
+4. Machine-optimized structures
+5. ML-friendly documentation
+6. Automated testing support
+7. Self-modifying capabilities
+8. Performance profiling hooks
+
+**Documentation Requirements:**
+- Every pattern must have a KEY comment explaining its purpose.
+- Document pattern impact on machine processing.
+- Keep a clear mapping between optimized and original forms.
+- Explain optimization rationale in commit messages.
+
+**Machine Optimization Principles:**
+1. Utility Over Novelty
+   - Every optimization must serve a clear machine-processing purpose
+   - No pattern changes purely for aesthetic or entertainment value
+   - Reject bloat, even if technically interesting
+   - Measure impact: if an optimization doesn't improve processing, don't use it
+
+2. Pattern Selection Rules
+   - Use shortest viable Unicode for common operations (ꜱ > self, ᴘ > path)
+   - Preserve semantic meaning in shortened forms
+   - Maintain consistent patterns across entire codebase
+   - Avoid confusing character combinations
+
+3. Optimization Boundaries
+   - Stop at the point of diminishing returns
+   - Keep optimizations reversible
+   - Maintain debuggability
+   - Never sacrifice stability for cleverness
+
+4. Documentation Requirements
+   - Every pattern must have a KEY comment explaining its purpose
+   - Document pattern impact on machine processing
+   - Keep a clear mapping between optimized and original forms
+   - Explain optimization rationale in commit messages
+
+**Unicode Character Boundaries:**
+1. Acceptable Unicode Categories:
+   - Mathematical Symbols (∑, ∏, ∫, ∂, ∇, ∆, ∞)
+   - Logical Operators (∀, ∃, ∄, ∈, ∉, ⊂, ⊃, ∩, ∪)
+   - Quantum Notation (⟨ψ⟩, ⟨φ⟩, ⟨M⟩)
+   - Small Latin Letters (ꜱ, ᴘ, ᴡ, ʟ)
+   - Arrows and Flows (→, ←, ↑, ↓, ⇒, ⇐)
+   - Set Theory (∅, ∈, ∉, ⊆, ⊇)
+   - Physics/Units (Δ, ∇, ∂, ∫)
+   - Markers (⚛, ∥, ⟲, ⟳)
+
+2. Prohibited Unicode Categories:
+   - Emojis and Emoticons
+   - Decorative Symbols
+   - Pictographs
+   - Dingbats (except essential markers)
+   - Non-mathematical Symbols
+   - Artistic or Decorative Characters
+
+3. Selection Criteria:
+   - Must convey mathematical or logical meaning
+   - Must be widely supported in monospace fonts
+   - Must be clearly distinguishable from other characters
+   - Must maintain readability in terminal environments
+   - Must have semantic relationship to its purpose
+   - Must be part of standard Unicode blocks:
+     * Mathematical Operators (U+2200-U+22FF)
+     * Miscellaneous Mathematical Symbols-A (U+27C0-U+27EF)
+     * Miscellaneous Mathematical Symbols-B (U+2980-U+29FF)
+     * Supplemental Mathematical Operators (U+2A00-U+2AFF)
+     * Mathematical Alphanumeric Symbols (U+1D400-U+1D7FF)
+     * Latin Extended-D (for special letters)
+
+4. Implementation Rules:
+   - Each symbol must be documented with its Unicode code point
+   - Each symbol must be tested for cross-platform rendering
+   - Each symbol must have a fallback ASCII representation
+   - Each symbol must be included in the machine key
+   - Each symbol must pass validation tests
+
+Follow these guidelines to create code that is:
+1. Machine-optimized first
+2. Pattern-consistent
+3. Self-documenting
+4. Runtime-debuggable
+5. ML-ready
+6. Future-proof

@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
 """
 Linux Wallpaper Engine GTK Frontend
 A standalone GTK interface for linux-wallpaperengine
 """
-
 import logging
 import os
 import json
@@ -20,25 +18,13 @@ import typing
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, List, Dict, Tuple, Any, Set, Union, Callable
-
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, GLib, Gdk
-
 from src.wallpaperengine.machine_opt import ᴘᴍ, ꜱᴍ, ᴜɪ, ᴡᴇ, ɢᴛᴋ, ᴅʟɢ
 
 def ᴍᴀɪɴ():
-    # Setup logging with more verbose output
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler('wallpaper-engine.log'),
-            logging.StreamHandler()
-        ]
-    )
-    
-    # Parse arguments
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', handlers=[logging.FileHandler('wallpaper-engine.log'), logging.StreamHandler()])
     ᴘ = argparse.ArgumentParser(description='Linux Wallpaper Engine GTK Frontend')
     ᴘ.add_argument('--wpe-path', help='Path to linux-wallpaperengine executable')
     ᴘ.add_argument('--fps', type=int, default=60, help='Default FPS')
@@ -50,16 +36,13 @@ def ᴍᴀɪɴ():
     ᴘ.add_argument('--scaling', choices=['default', 'center', 'stretch'], default='default', help='Scaling mode')
     ᴘ.add_argument('--clamping', choices=['clamp', 'repeat'], default='clamp', help='Texture clamping mode')
     ᴀ = ᴘ.parse_args()
-    
-    # Create window
     try:
         ᴡ = ɢᴛᴋ(wpe_path=ᴀ.wpe_path)
-        ᴡ.connect("destroy", Gtk.main_quit)
+        ᴡ.connect('destroy', Gtk.main_quit)
         ᴡ.show_all()
         Gtk.main()
     except Exception as ᴇ:
-        logging.error(f"Failed to start: {ᴇ}", exc_info=True)
+        logging.error(f'Failed to start: {ᴇ}', exc_info=True)
         sys.exit(1)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     ᴍᴀɪɴ()

@@ -1,0 +1,40 @@
+[project]
+name = "linux-wallpaperengine-gtk"
+version = "0.1.0"
+description = "GTK frontend for Linux Wallpaper Engine"
+authors = [{ name = "abcdqfr" }]
+dependencies = [
+    "pygobject>=3.42.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = """
+    -v
+    --cov=src
+    --cov-report=html
+    --cov-report=term-missing
+"""
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+select = ["E", "F", "B", "I"]
