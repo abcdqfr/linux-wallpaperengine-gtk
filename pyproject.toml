@@ -34,8 +34,25 @@ pythonpath = ["src"]
 [tool.ruff]
 line-length = 100
 target-version = "py38"
+
+[tool.ruff.lint]
 select = ["E", "F", "B", "I"]
 ignore = []
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+# Build tools for creating standalone monolith
+[tool.hatch.build.targets.wheel]
+packages = ["src/wallpaperengine"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/README.md",
+    "/LICENSE",
+]
+
+# Custom build script for standalone monolith
+[tool.hatch.build.hooks.custom]
+path = "scripts/build_monolith.py"

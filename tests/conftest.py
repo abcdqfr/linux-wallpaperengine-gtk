@@ -1,21 +1,20 @@
 """Test configuration and shared fixtures."""
 
-import pytest
-from pathlib import Path
-from typing import Generator, Any
-import os
-import json
-import logging
-from unittest.mock import MagicMock
-
 # Mock GTK imports for testing
 import sys
-sys.modules['gi'] = MagicMock()
-sys.modules['gi.repository'] = MagicMock()
-sys.modules['gi.repository.Gtk'] = MagicMock()
-sys.modules['gi.repository.GdkPixbuf'] = MagicMock()
-sys.modules['gi.repository.GLib'] = MagicMock()
-sys.modules['gi.repository.Gdk'] = MagicMock()
+from pathlib import Path
+from typing import Generator
+from unittest.mock import MagicMock
+
+import pytest
+
+sys.modules["gi"] = MagicMock()
+sys.modules["gi.repository"] = MagicMock()
+sys.modules["gi.repository.Gtk"] = MagicMock()
+sys.modules["gi.repository.GdkPixbuf"] = MagicMock()
+sys.modules["gi.repository.GLib"] = MagicMock()
+sys.modules["gi.repository.Gdk"] = MagicMock()
+
 
 @pytest.fixture
 def tmp_config(tmp_path: Path) -> Generator[Path, None, None]:
@@ -24,10 +23,12 @@ def tmp_config(tmp_path: Path) -> Generator[Path, None, None]:
     config_dir.mkdir(parents=True)
     yield config_dir
 
+
 @pytest.fixture
 def mock_display() -> Generator[str, None, None]:
     """Mock display detection."""
     yield "DISPLAY-1"
+
 
 @pytest.fixture
 def mock_wallpapers(tmp_path: Path) -> Generator[Path, None, None]:

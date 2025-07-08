@@ -1,5 +1,16 @@
-"""Linux Wallpaper Engine GTK Frontend Package"""
-from .main import PathManager, SettingsManager, WallpaperEngine, MainWindow, SettingsDialog, main
+"""Linux Wallpaper Engine GTK.
 
-__version__ = '0.1.0'
-__all__ = ['PathManager', 'SettingsManager', 'WallpaperEngine', 'MainWindow', 'SettingsDialog', 'main'] 
+Extracted from mature monolith v0.2.1.
+"""
+
+from .settings_dialog import SettingsDialog
+from .wallpaper_context_menu import WallpaperContextMenu
+from .wallpaper_engine import WallpaperEngine
+from .wallpaper_window import WallpaperWindow
+
+__all__ = [
+    "WallpaperEngine",
+    "WallpaperWindow",
+    "SettingsDialog",
+    "WallpaperContextMenu",
+]

@@ -1,193 +1,200 @@
 # Linux Wallpaper Engine GTK
 
-## Machine-Optimized Implementation
+A professional GTK frontend for [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine),
+providing an intuitive interface for managing animated wallpapers on Linux.
 
-This is a machine-first implementation of a GTK frontend for Linux Wallpaper Engine, designed for optimal ML processing and future automation.
+## Features
 
-### Code Philosophy
+- **Advanced CEF Arguments**: Custom CEF arguments with presets for Intel Graphics Fix, Debug Mode, and Performance Mode
+- **Smart Argument Filtering**: Automatically omits problematic arguments in single-process mode
+- **Wallpaper Management**: Browse, select, and launch wallpapers with ease
+- **Settings Dialog**: Configure wallpaper engine settings and CEF arguments
+- **Refresh Functionality**: Reload wallpaper list when new wallpapers are added
+- **Professional Development**: Modern Python packaging with `src/` structure and comprehensive testing
 
-- Ultra-compact, machine-optimized code structure
-- Single-source documentation via KEY comment
-- Runtime debugging over human readability
-- Pattern-based implementation for ML analysis
-- External documentation for human transition support
+## Installation
+
+### Quick Start (Standalone)
+
+Download the standalone file and run:
+
+```bash
+# Download the standalone file
+wget https://github.com/abcdqfr/linux-wallpaperengine-gtk/releases/latest/download/linux-wallpaperengine-gtk-standalone.py
+
+# Make executable
+chmod +x linux-wallpaperengine-gtk-standalone.py
+
+# Run
+./linux-wallpaperengine-gtk-standalone.py
+```
+
+### Development Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
+cd linux-wallpaperengine-gtk
+
+# Install in development mode
+make install
+
+# Run
+make run
+```
+
+### System Dependencies
+
+#### Ubuntu/Debian/Mint
+
+```bash
+sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0
+```
+
+#### Fedora
+
+```bash
+sudo dnf install python3-gobject gtk3
+```
+
+#### Arch Linux
+
+```bash
+sudo pacman -S python-gobject gtk3
+```
+
+## Usage
+
+### Basic Usage
+
+1. **Launch the application**
+
+   ```bash
+   ./linux-wallpaperengine-gtk-standalone.py
+   ```
+
+2. **Browse wallpapers** using the arrow keys or mouse
+
+3. **Select a wallpaper** to launch it
+
+4. **Access settings** via the settings button (⚙️)
+
+### Advanced Features
+
+#### CEF Arguments
+
+The Advanced tab in settings allows you to configure custom CEF arguments:
+
+- **Intel Graphics Fix**: Optimized settings for Intel graphics cards
+- **Debug Mode**: Enable CEF debugging and logging
+- **Performance Mode**: Optimize for performance over visual quality
+- **Custom Arguments**: Add your own CEF arguments
+
+#### Smart Argument Filtering
+
+The application automatically detects single-process mode and omits problematic arguments like `--scaling` and `--clamping` to prevent crashes.
+
+## Development
+
+### Project Structure
+
+```text
+linux-wallpaperengine-gtk/
+├── src/wallpaperengine/     # Source code modules
+├── tests/                   # Test suite
+├── scripts/                 # Build scripts
+├── pyproject.toml          # Modern Python packaging
+└── Makefile                # Development commands
+```
+
+### Development Commands
+
+```bash
+make install      # Install in development mode
+make test         # Run tests
+make format       # Format code
+make lint         # Lint code
+make check        # Run all checks
+make monolith     # Build standalone file
+make release      # Prepare release
+```
+
+### Testing
+
+```bash
+# Run all tests
+make test
+
+# Run with coverage
+pytest --cov=src tests/
+
+# Run specific test
+pytest tests/pytest_suite_test.py -v
+```
+
+## Architecture
 
 ### Core Components
 
-1. **WallpaperEngine (W)**
-   - Display detection and management
-   - Process control and lifecycle
-   - Wallpaper state handling
-   - System path resolution
+- **WallpaperEngine**: Core wallpaper management and CEF integration
+- **WallpaperWindow**: Main GTK UI window and event handling
+- **SettingsDialog**: Configuration management and CEF arguments
+- **WallpaperContextMenu**: Right-click context menu functionality
 
-2. **GTK_Window (G)**
-   - UI component management
-   - Event handling and signals
-   - State updates and rendering
-   - User interaction processing
+### Professional Workflow
 
-3. **SettingsDialog**
-   - Configuration management
-   - User preferences handling
-   - Directory and path control
-   - State persistence
+The project uses a **round-trip refactoring system**:
 
-### Operation Flow
+1. **Development**: Clean `src/` structure with modern tooling
+2. **Distribution**: Standalone monolith for end users
+3. **Build System**: Automated conversion between modes
 
-```mermaid
-graph TD
-    A[Initialize GTK Window] --> B[Load Configuration]
-    B --> C[Detect Display]
-    C --> D[Scan Wallpapers]
-    D --> E[Render UI]
-    E --> F[Event Loop]
-    F --> G{User Action}
-    G --> |Settings| H[Update Config]
-    G --> |Select| I[Change Wallpaper]
-    G --> |Exit| J[Cleanup]
-```
+This provides the best of both worlds: professional development experience and simple distribution.
 
-### Variable Pattern System
+## Troubleshooting
 
-Pattern | Purpose | Example
---------|---------|--------
-s | self reference | `s.w=None`
-p | process/parent | `s.p=next()`
-w | wallpaper/window | `s.w=[p for d in[]]`
-l | logger/list | `s.l=L('WE')`
-d | display/directory | `s.d=next()`
-c | current/command | `s.c=None`
+### Common Issues
 
-### Operation Patterns
+**Wallpaper not launching**: Check that `linux-wallpaperengine` is installed and accessible in your PATH.
 
-Pattern | Purpose | Example
---------|---------|--------
-:= | check+assign | `(i:=s.e.gn())`
-; | chain ops | `s.c=None;return 1`
-and/or | flow control | `x and y or z`
-next() | first match | `next((p for p))`
-+=[x] | append | `l+=[x]`
-1/0 | boolean | `'enabled':1`
+**CEF crashes**: Try the Intel Graphics Fix preset in Advanced settings.
 
-### Installation
+**UI not responding**: Ensure GTK 3.36+ is installed on your system.
+
+### Debug Mode
+
+Enable debug logging by setting the `DEBUG` environment variable:
 
 ```bash
-# Option 1: Python Environment
-pip install -r requirements.txt
-
-# Option 2: System Packages (Preferred)
-## Ubuntu/Mint
-sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0
-
-## Fedora
-sudo dnf install python3-gobject gtk3
-
-## Arch Linux
-sudo pacman -S python-gobject gtk3
-
-# Requirements
-- GTK 3.36+
-- Python 3.8+
-- linux-wallpaperengine
-# Test Dependencies
-pytest
-pytest-cov
-pytest-mock
+DEBUG=1 ./linux-wallpaperengine-gtk-standalone.py
 ```
 
-### Launch
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes
+4. Run tests: `make check`
+5. Commit your changes: `git commit -m 'Add amazing feature'`
+6. Push to the branch: `git push origin feature/amazing-feature`
+7. Open a Pull Request
+
+### Development Setup
 
 ```bash
+# Install development dependencies
+make dev-setup
 
-python3 linux-wallpaperengine-gtk.py
-
-# UI Controls
-← → : Navigation
-🔀  : Random
-⚙️  : Settings
+# Install pre-commit hooks
+pre-commit install
 ```
-
-### Runtime Debugging
-
-Error patterns are handled through runtime debugging:
-1. Process state validation
-2. Display connection checks
-3. File system access verification
-4. GTK widget state management
-5. Path resolution validation
-6. Preview file verification
-7. Permission validation
-8. GTK/GDK integration checks
-
-### Machine Learning Considerations
-
-The codebase is optimized for:
-1. Pattern recognition
-2. Consistent structure
-3. Predictable flow
-4. Clear data paths
-5. Automated refactoring
-
-### Future Development
-
-- Automated optimization via ML
-- Pattern-based code generation
-- Runtime performance analysis
-- Automated debugging systems
-- Self-modifying capabilities
-
-### Testing Infrastructure
-
-The application includes a comprehensive pytest-based testing suite:
-
-1. **Core Engine Tests**
-   - Display detection validation
-   - Process management lifecycle
-   - Wallpaper state handling
-   - Path resolution verification
-
-2. **Directory Manager Tests**
-   - Steam library detection
-   - Workshop content scanning
-   - Path validation
-   - Directory management
-
-3. **UI Component Tests**
-   - Window initialization
-   - Settings dialog validation
-   - Widget state management
-   - Event handling
-
-### Test Execution
-
-```bash
-# Run test suite
-pytest linux-wallpaperengine-gtk.py -v
-
-# Run with coverage
-pytest --cov=. linux-wallpaperengine-gtk.py
-
-# Run specific test class
-pytest linux-wallpaperengine-gtk.py::TestEngine -v
-```
-
-### Test Design Principles
-
-- Fixture-based test organization
-- Full type annotations
-- Comprehensive docstrings
-- Mocked system interactions
-- Clean test isolation
-- Automated cleanup
-- GTK widget lifecycle management
-
-The test suite is designed to be:
-1. Machine-readable for automated analysis
-2. Pattern-consistent for ML processing
-3. Self-documenting through annotations
-4. Runtime-efficient through fixtures
-5. Maintainable through clear structure
 
 ## License
 
-MIT License - See LICENSE file
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine) - The core wallpaper engine
+- [almamu](https://github.com/almamu) - Original GTK implementation inspiration
+- GTK community for the excellent UI framework
