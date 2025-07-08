@@ -17,6 +17,12 @@ class WallpaperEngine:
     
     def __init__(self):
         self.log = logging.getLogger('WallpaperEngine')
+        
+        # Check for Wayland compatibility
+        if self._is_wayland():
+            self.log.error("WAYLAND DETECTED - Linux Wallpaper Engine is NOT compatible with Wayland!")
+            self.log.error("Please switch to X11 session or the wallpapers will not work properly.")
+        
         self.display = self._detect_display()
         self.wpe_path = self._find_wpe_path()
         self.wallpaper_dir = self._find_wallpaper_dir()
@@ -49,9 +55,24 @@ class WallpaperEngine:
     def _find_wpe_path(self):
         """Find linux-wallpaperengine executable"""
         common_paths = [
+            # User home directories
             "~/linux-wallpaperengine/build/linux-wallpaperengine",
+            "~/linux-wallpaperengine/build/output/linux-wallpaperengine",
             "~/src/linux-wallpaperengine/build/linux-wallpaperengine",
-            "/usr/local/bin/linux-wallpaperengine"
+            "~/src/linux-wallpaperengine/build/output/linux-wallpaperengine",
+            "~/Documents/linux-wallpaperengine/build/linux-wallpaperengine",
+            "~/Documents/linux-wallpaperengine/build/output/linux-wallpaperengine",
+            "~/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine",
+            "~/Projects/linux-wallpaperengine/build/linux-wallpaperengine",
+            "~/Projects/linux-wallpaperengine/build/output/linux-wallpaperengine",
+            # Relative paths
+            "../linux-wallpaperengine/build/linux-wallpaperengine",
+            "../linux-wallpaperengine/build/output/linux-wallpaperengine",
+            "./linux-wallpaperengine",
+            # System paths
+            "/usr/local/bin/linux-wallpaperengine",
+            "/usr/bin/linux-wallpaperengine",
+            "/opt/linux-wallpaperengine/linux-wallpaperengine"
         ]
         
         for path in common_paths:
@@ -172,10 +193,35 @@ class WallpaperEngine:
             if options.get('clamping'):
                 cmd.extend(['--clamping', options['clamping']])
             
+            # Add custom arguments if enabled
+            if options.get('enable_custom_args') and options.get('custom_args'):
+                custom_args = options['custom_args'].strip()
+                if custom_args:
+                    # Split custom arguments properly (handle quoted strings)
+                    import shlex
+                    try:
+                        custom_args_list = shlex.split(custom_args)
+                        cmd.extend(custom_args_list)
+                        self.log.info(f"Added custom arguments: {custom_args_list}")
+                    except ValueError as e:
+                        self.log.error(f"Invalid custom arguments syntax: {e}")
+            
             # Add display and wallpaper ID
             cmd.extend(['--screen-root', self.display, wallpaper_id])
             
             self.log.info(f"Running command: {' '.join(map(str, cmd))}")
+            
+            # Setup environment variables
+            env = os.environ.copy()
+            
+            # Add LD_PRELOAD if enabled
+            if options.get('enable_ld_preload'):
+                libcef_path = os.path.join(wpe_dir, 'libcef.so')
+                if os.path.exists(libcef_path):
+                    env['LD_PRELOAD'] = libcef_path
+                    self.log.info(f"Added LD_PRELOAD: {libcef_path}")
+                else:
+                    self.log.warning(f"libcef.so not found at {libcef_path}, skipping LD_PRELOAD")
             
             # Create new process with stable configuration
             process = subprocess.Popen(
@@ -185,7 +231,8 @@ class WallpaperEngine:
                 stdin=subprocess.DEVNULL,
                 start_new_session=True,
                 close_fds=True,
-                cwd=wpe_dir
+                cwd=wpe_dir,
+                env=env
             )
             
             # Brief pause to check if process started
@@ -255,6 +302,11 @@ class WallpaperEngine:
             self.log.error(f"Failed to stop wallpaper: {e}", exc_info=True)
             return False
 
+    def _is_wayland(self):
+        """Check if running under Wayland"""
+        return os.environ.get('WAYLAND_DISPLAY') is not None or \
+               os.environ.get('XDG_SESSION_TYPE') == 'wayland'
+
 class WallpaperWindow(Gtk.Window):
     def __init__(self, initial_settings=None):
         super().__init__(title="Linux Wallpaper Engine")
@@ -286,12 +338,18 @@ class WallpaperWindow(Gtk.Window):
             'no_audio_processing': False,
             'no_fullscreen_pause': False,
             'scaling': 'default',
-            'clamping': 'clamp'
+            'clamping': 'clamp',
+            'enable_custom_args': False,
+            'custom_args': '',
+            'enable_ld_preload': False
         }
         
         # Merge initial settings with defaults
         if initial_settings:
             self.settings.update(initial_settings)
+        
+        # Load saved settings (including paths) BEFORE anything else
+        self.load_settings()
         
         # Initialize UI
         self._setup_ui()
@@ -315,6 +373,9 @@ class WallpaperWindow(Gtk.Window):
             css_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
+        
+        # Check if setup is needed
+        GLib.idle_add(self.check_initial_setup)
 
     def _setup_ui(self):
         """Setup main UI components"""
@@ -420,6 +481,7 @@ class WallpaperWindow(Gtk.Window):
             ("media-skip-backward-symbolic", "Previous", self.on_prev_clicked),
             ("media-skip-forward-symbolic", "Next", self.on_next_clicked),
             ("media-playlist-shuffle-symbolic", "Random", self.on_random_clicked),
+            ("applications-system-symbolic", "Setup Paths", self.on_setup_clicked),
             ("preferences-system-symbolic", "Settings", self.on_settings_clicked)
         ]
         
@@ -442,122 +504,117 @@ class WallpaperWindow(Gtk.Window):
     def load_wallpapers(self):
         """Load and display wallpaper previews"""
         def load_preview(wallpaper_id):
-            preview_path = None
             wallpaper_path = os.path.join(self.engine.wallpaper_dir, wallpaper_id)
             
+            # Skip if directory doesn't exist
+            if not os.path.exists(wallpaper_path):
+                return
+            
+            preview_path = None
+            
             # Look for preview image
-            for ext in ['.gif', '.png', '.jpg', '.webp', '.jpeg']:  # Prioritize GIFs
+            for ext in ['.gif', '.png', '.jpg', '.webp', '.jpeg']:
                 path = os.path.join(wallpaper_path, f'preview{ext}')
                 if os.path.exists(path):
                     preview_path = path
                     break
             
-            if preview_path:
+            # If no preview.* file found, look for any image file as fallback
+            if not preview_path:
+                for filename in os.listdir(wallpaper_path):
+                    if filename.lower().endswith(('.gif', '.png', '.jpg', '.jpeg', '.webp')):
+                        preview_path = os.path.join(wallpaper_path, filename)
+                        break
+            
+            # Skip if no image found at all
+            if not preview_path:
+                return
+                
+            # Load actual image preview
+            def add_preview():
                 try:
-                    def add_preview():
-                        # Create a container for the image
-                        box = Gtk.Box()
-                        box.set_margin_start(2)
-                        box.set_margin_end(2)
-                        box.set_margin_top(2)
-                        box.set_margin_bottom(2)
-                        
-                        # Handle GIF animations
-                        if preview_path.lower().endswith('.gif'):
-                            try:
-                                # Load animation
-                                animation = GdkPixbuf.PixbufAnimation.new_from_file(preview_path)
-                                if animation.is_static_image():
-                                    # Handle static GIFs like normal images
-                                    pixbuf = animation.get_static_image().scale_simple(
-                                        self.preview_width,
-                                        self.preview_height,
-                                        GdkPixbuf.InterpType.BILINEAR
-                                    )
-                                    image = Gtk.Image.new_from_pixbuf(pixbuf)
-                                else:
-                                    # Create an iterator for the animation
-                                    iter = animation.get_iter(None)
-                                    # Get the first frame for scaling reference
-                                    first_frame = iter.get_pixbuf()
-                                    # Calculate scaling factors
-                                    scale_x = self.preview_width / first_frame.get_width()
-                                    scale_y = self.preview_height / first_frame.get_height()
-                                    scale = min(scale_x, scale_y)
-                                    
-                                    # Create a scaled animation
-                                    def create_scaled_animation():
-                                        frames = []
-                                        iter = animation.get_iter(None)
-                                        while True:
-                                            pixbuf = iter.get_pixbuf()
-                                            new_width = int(pixbuf.get_width() * scale)
-                                            new_height = int(pixbuf.get_height() * scale)
-                                            scaled_frame = pixbuf.scale_simple(
-                                                new_width,
-                                                new_height,
-                                                GdkPixbuf.InterpType.BILINEAR
-                                            )
-                                            frames.append(scaled_frame)
-                                            if not iter.advance():
-                                                break
-                                        return frames
-                                    
-                                    frames = create_scaled_animation()
-                                    
-                                    # Create image widget with animation
-                                    image = Gtk.Image()
-                                    current_frame = 0
-                                    
-                                    def update_frame():
-                                        nonlocal current_frame
+                    box = Gtk.Box()
+                    box.set_margin_start(2)
+                    box.set_margin_end(2)
+                    box.set_margin_top(2)
+                    box.set_margin_bottom(2)
+                    
+                    # Handle GIF animations
+                    if preview_path.lower().endswith('.gif'):
+                        try:
+                            animation = GdkPixbuf.PixbufAnimation.new_from_file(preview_path)
+                            if animation.is_static_image():
+                                pixbuf = animation.get_static_image().scale_simple(
+                                    self.preview_width, self.preview_height, GdkPixbuf.InterpType.BILINEAR)
+                                image = Gtk.Image.new_from_pixbuf(pixbuf)
+                            else:
+                                # Animated GIF
+                                iter = animation.get_iter(None)
+                                first_frame = iter.get_pixbuf()
+                                scale_x = self.preview_width / first_frame.get_width()
+                                scale_y = self.preview_height / first_frame.get_height()
+                                scale = min(scale_x, scale_y)
+                                
+                                frames = []
+                                iter = animation.get_iter(None)
+                                while True:
+                                    pixbuf = iter.get_pixbuf()
+                                    new_width = int(pixbuf.get_width() * scale)
+                                    new_height = int(pixbuf.get_height() * scale)
+                                    scaled_frame = pixbuf.scale_simple(new_width, new_height, GdkPixbuf.InterpType.BILINEAR)
+                                    frames.append(scaled_frame)
+                                    if not iter.advance():
+                                        break
+                                
+                                image = Gtk.Image()
+                                current_frame = 0
+                                
+                                def update_frame():
+                                    nonlocal current_frame
+                                    if len(frames) > 0:
                                         image.set_from_pixbuf(frames[current_frame])
                                         current_frame = (current_frame + 1) % len(frames)
-                                        return True
-                                    
-                                    # Update frame every 50ms (20fps)
-                                    GLib.timeout_add(50, update_frame)
-                            except GLib.Error:
-                                # Fallback to static image if animation fails
-                                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                                    preview_path,
-                                    self.preview_width,
-                                    self.preview_height,
-                                    True)
-                                image = Gtk.Image.new_from_pixbuf(pixbuf)
-                        else:
-                            # Handle static images
+                                    return True
+                                
+                                GLib.timeout_add(50, update_frame)
+                        except Exception:
+                            # Fallback to static image
                             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                                preview_path,
-                                self.preview_width,
-                                self.preview_height,
-                                True)
+                                preview_path, self.preview_width, self.preview_height, True)
                             image = Gtk.Image.new_from_pixbuf(pixbuf)
-                        
-                        box.add(image)
-                        box.wallpaper_id = wallpaper_id
-                        self.flowbox.add(box)
-                        box.show_all()
-                        
-                        if wallpaper_id == self.engine.current_wallpaper:
-                            self.highlight_current_wallpaper(box)
+                    else:
+                        # Static images
+                        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                            preview_path, self.preview_width, self.preview_height, True)
+                        image = Gtk.Image.new_from_pixbuf(pixbuf)
                     
-                    GLib.idle_add(add_preview)
+                    box.add(image)
+                    box.wallpaper_id = wallpaper_id
+                    self.flowbox.add(box)
+                    box.show_all()
                     
+                    if wallpaper_id == self.engine.current_wallpaper:
+                        self.highlight_current_wallpaper(box)
+                        
                 except Exception as e:
-                    self.log.error(f"Failed to load preview for {wallpaper_id}: {e}")
+                    self.log.error(f"Failed to load preview {preview_path}: {e}")
+            
+            GLib.idle_add(add_preview)
 
         # Clear existing previews
         self.flowbox.foreach(lambda w: w.destroy())
         
-        # Load new previews in background
+        # Load new previews 
         wallpapers = self.engine.get_wallpaper_list()
         self.status_label.set_text(f"Loading {len(wallpapers)} wallpapers...")
         
-        for wallpaper_id in wallpapers:
-            thread = threading.Thread(target=load_preview, args=(wallpaper_id,))
-            thread.daemon = True
-            thread.start()
+        for i, wallpaper_id in enumerate(wallpapers):
+            def load_with_delay(wid):
+                thread = threading.Thread(target=load_preview, args=(wid,))
+                thread.daemon = True
+                thread.start()
+            
+            GLib.timeout_add(i * 5, lambda wid=wallpaper_id: load_with_delay(wid) or False)
 
     def reload_wallpapers(self):
         """Reload wallpapers with current preview size"""
@@ -615,7 +672,10 @@ class WallpaperWindow(Gtk.Window):
             disable_mouse=self.settings['mouse_enabled'],
             no_fullscreen_pause=self.settings['no_fullscreen_pause'],
             scaling=self.settings['scaling'],
-            clamping=self.settings['clamping']
+            clamping=self.settings['clamping'],
+            enable_custom_args=self.settings['enable_custom_args'],
+            custom_args=self.settings['custom_args'],
+            enable_ld_preload=self.settings['enable_ld_preload']
         )
 
     def on_prev_clicked(self, button):
@@ -645,18 +705,70 @@ class WallpaperWindow(Gtk.Window):
                 if cmd:
                     self.update_command_status(cmd)
 
+    def on_setup_clicked(self, button):
+        """Open setup dialog for path configuration"""
+        dialog = SettingsDialog(self)
+        
+        # Switch to the Paths tab automatically
+        notebook = dialog.get_content_area().get_children()[0]
+        notebook.set_current_page(5)  # Paths tab is the 6th tab (0-indexed)
+        
+        response = dialog.run()
+        
+        if response != Gtk.ResponseType.OK:
+            dialog.destroy()
+            return
+            
+        try:
+            # Handle path changes only
+            new_wpe_path = dialog.wpe_entry.get_text().strip()
+            new_wallpaper_dir = dialog.wallpaper_entry.get_text().strip()
+            
+            paths_changed = False
+            if new_wpe_path != (self.engine.wpe_path or ""):
+                if new_wpe_path and os.path.isfile(new_wpe_path):
+                    self.engine.wpe_path = new_wpe_path
+                    paths_changed = True
+                    self.log.info(f"Updated wallpaper engine path: {new_wpe_path}")
+                elif new_wpe_path:
+                    self.status_label.set_text("Error: Invalid wallpaper engine path")
+                    dialog.destroy()
+                    return
+            
+            if new_wallpaper_dir != (self.engine.wallpaper_dir or ""):
+                if new_wallpaper_dir and os.path.isdir(new_wallpaper_dir):
+                    self.engine.wallpaper_dir = new_wallpaper_dir
+                    paths_changed = True
+                    self.log.info(f"Updated wallpaper directory: {new_wallpaper_dir}")
+                elif new_wallpaper_dir:
+                    self.status_label.set_text("Error: Invalid wallpaper directory")
+                    dialog.destroy()
+                    return
+            
+            # Reload wallpapers if paths changed
+            if paths_changed:
+                self.status_label.set_text("Reloading wallpapers...")
+                self.save_settings()  # Save paths immediately
+                self.load_wallpapers()
+            else:
+                self.status_label.set_text("No path changes made")
+                
+        except Exception as e:
+            self.log.error(f"Failed to apply setup: {e}")
+        finally:
+            dialog.destroy()
+
     def on_settings_clicked(self, button):
         """Open settings dialog"""
         dialog = SettingsDialog(self)
         response = dialog.run()
         
-        dialog.destroy()  # Destroy dialog first to prevent GTK warnings
-        
         if response != Gtk.ResponseType.OK:
+            dialog.destroy()  # Destroy dialog first to prevent GTK warnings
             return  # Don't apply settings if cancelled
             
         try:
-            # Save settings
+            # Save settings including paths
             settings = {
                 'fps': dialog.fps_spin.get_value_as_int(),
                 'volume': self.settings['volume'],  # Keep current volume
@@ -668,13 +780,50 @@ class WallpaperWindow(Gtk.Window):
                 'no_audio_processing': dialog.no_audio_processing_switch.get_active(),
                 'no_fullscreen_pause': dialog.no_fullscreen_pause_switch.get_active(),
                 'scaling': dialog.scaling_combo.get_active_text(),
-                'clamping': dialog.clamping_combo.get_active_text()
+                'clamping': dialog.clamping_combo.get_active_text(),
+                'enable_custom_args': dialog.custom_args_switch.get_active(),
+                'custom_args': dialog.custom_args_entry.get_text().strip(),
+                'enable_ld_preload': dialog.ld_preload_switch.get_active()
             }
+            
+            # Handle path changes
+            new_wpe_path = dialog.wpe_entry.get_text().strip()
+            new_wallpaper_dir = dialog.wallpaper_entry.get_text().strip()
+            
+            paths_changed = False
+            if new_wpe_path != (self.engine.wpe_path or ""):
+                if new_wpe_path and os.path.isfile(new_wpe_path):
+                    self.engine.wpe_path = new_wpe_path
+                    paths_changed = True
+                    self.log.info(f"Updated wallpaper engine path: {new_wpe_path}")
+                elif new_wpe_path:
+                    self.status_label.set_text("Error: Invalid wallpaper engine path")
+                    dialog.destroy()
+                    return
+            
+            if new_wallpaper_dir != (self.engine.wallpaper_dir or ""):
+                if new_wallpaper_dir and os.path.isdir(new_wallpaper_dir):
+                    self.engine.wallpaper_dir = new_wallpaper_dir
+                    paths_changed = True
+                    self.log.info(f"Updated wallpaper directory: {new_wallpaper_dir}")
+                elif new_wallpaper_dir:
+                    self.status_label.set_text("Error: Invalid wallpaper directory")
+                    dialog.destroy()
+                    return
             
             # Apply settings
             self.apply_settings(settings)
+            
+            # Reload wallpapers if paths changed
+            if paths_changed:
+                self.status_label.set_text("Reloading wallpapers...")
+                self.save_settings()  # Save paths immediately
+                self.load_wallpapers()
+                
         except Exception as e:
             self.log.error(f"Failed to apply settings: {e}")
+        finally:
+            dialog.destroy()  # Destroy dialog
     
     def apply_settings(self, settings):
         """Apply settings to current and future wallpapers"""
@@ -694,7 +843,10 @@ class WallpaperWindow(Gtk.Window):
                 disable_mouse=settings['mouse_enabled'],
                 no_fullscreen_pause=settings['no_fullscreen_pause'],
                 scaling=settings['scaling'],
-                clamping=settings['clamping']
+                clamping=settings['clamping'],
+                enable_custom_args=settings['enable_custom_args'],
+                custom_args=settings['custom_args'],
+                enable_ld_preload=settings['enable_ld_preload']
             )
             if success and cmd:
                 self.update_command_status(cmd)
@@ -815,6 +967,16 @@ class WallpaperWindow(Gtk.Window):
                     saved_settings = json.load(f)
                     # Update defaults with saved settings
                     self.settings.update(saved_settings)
+                    
+                    # Load engine paths if saved
+                    if 'wpe_path' in saved_settings and saved_settings['wpe_path']:
+                        self.engine.wpe_path = saved_settings['wpe_path']
+                        self.log.info(f"Loaded saved wallpaper engine path: {saved_settings['wpe_path']}")
+                    
+                    if 'wallpaper_dir' in saved_settings and saved_settings['wallpaper_dir']:
+                        self.engine.wallpaper_dir = saved_settings['wallpaper_dir']
+                        self.log.info(f"Loaded saved wallpaper directory: {saved_settings['wallpaper_dir']}")
+                    
                     self.log.debug(f"Loaded settings: {self.settings}")
         except Exception as e:
             self.log.error(f"Failed to load settings: {e}")
@@ -828,11 +990,61 @@ class WallpaperWindow(Gtk.Window):
             # Create config directory if it doesn't exist
             os.makedirs(config_dir, exist_ok=True)
             
+            # Include engine paths in settings
+            settings_to_save = self.settings.copy()
+            settings_to_save['wpe_path'] = self.engine.wpe_path
+            settings_to_save['wallpaper_dir'] = self.engine.wallpaper_dir
+            
             with open(config_file, 'w') as f:
-                json.dump(self.settings, f, indent=4)
-                self.log.debug(f"Saved settings: {self.settings}")
+                json.dump(settings_to_save, f, indent=4)
+                self.log.debug(f"Saved settings with paths: {settings_to_save}")
         except Exception as e:
             self.log.error(f"Failed to save settings: {e}")
+
+    def check_initial_setup(self):
+        """Check if initial setup is needed"""
+        # Check for Wayland first
+        if self.engine._is_wayland():
+            dialog = Gtk.MessageDialog(
+                parent=self,
+                modal=True,
+                message_type=Gtk.MessageType.WARNING,
+                buttons=Gtk.ButtonsType.OK,
+                text="Wayland Session Detected!"
+            )
+            dialog.format_secondary_text(
+                "⚠️ Linux Wallpaper Engine is NOT compatible with Wayland sessions.\n\n"
+                "Wallpapers will not display properly or may not work at all.\n\n"
+                "Please log out and select an X11/Xorg session instead.\n"
+                "Look for options like 'Ubuntu on Xorg' or 'GNOME on Xorg' on your login screen."
+            )
+            dialog.run()
+            dialog.destroy()
+            
+        if not self.engine.wpe_path or not self.engine.wallpaper_dir:
+            self.log.info("Initial setup needed - opening settings dialog")
+            
+            # Show a helpful message
+            dialog = Gtk.MessageDialog(
+                parent=self,
+                modal=True,
+                message_type=Gtk.MessageType.INFO,
+                buttons=Gtk.ButtonsType.OK,
+                text="Setup Required"
+            )
+            dialog.format_secondary_text(
+                "Linux Wallpaper Engine GTK needs to be configured.\n\n"
+                "Please specify:\n"
+                "• Path to linux-wallpaperengine executable\n"
+                "• Steam Workshop wallpaper directory\n\n"
+                "The settings dialog will open to configure these paths."
+            )
+            dialog.run()
+            dialog.destroy()
+            
+            # Open settings dialog
+            self.on_setup_clicked(None)
+        return False  # Don't repeat this idle callback
 
 class SettingsDialog(Gtk.Dialog):
     def __init__(self, parent):
@@ -953,7 +1165,186 @@ class SettingsDialog(Gtk.Dialog):
         playlist_grid.attach(interval_label, 0, 1, 1, 1)
         playlist_grid.attach(self.interval_spin, 1, 1, 1, 1)
         
+        # Add paths configuration tab
+        paths_grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
+        notebook.append_page(paths_grid, Gtk.Label(label="Paths"))
+        
+        # Wallpaper Engine Path
+        wpe_label = Gtk.Label(label="Wallpaper Engine Path:", halign=Gtk.Align.END)
+        wpe_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+        self.wpe_entry = Gtk.Entry()
+        self.wpe_entry.set_text(parent.engine.wpe_path or "")
+        self.wpe_entry.set_placeholder_text("Path to linux-wallpaperengine executable")
+        wpe_browse_btn = Gtk.Button(label="Browse...")
+        wpe_browse_btn.connect("clicked", self.on_browse_wpe_path)
+        wpe_box.pack_start(self.wpe_entry, True, True, 0)
+        wpe_box.pack_start(wpe_browse_btn, False, False, 0)
+        paths_grid.attach(wpe_label, 0, 0, 1, 1)
+        paths_grid.attach(wpe_box, 1, 0, 1, 1)
+        
+        # Wallpaper Directory Path
+        wallpaper_label = Gtk.Label(label="Wallpaper Directory:", halign=Gtk.Align.END)
+        wallpaper_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+        self.wallpaper_entry = Gtk.Entry()
+        self.wallpaper_entry.set_text(parent.engine.wallpaper_dir or "")
+        self.wallpaper_entry.set_placeholder_text("Steam Workshop wallpaper directory")
+        wallpaper_browse_btn = Gtk.Button(label="Browse...")
+        wallpaper_browse_btn.connect("clicked", self.on_browse_wallpaper_dir)
+        wallpaper_box.pack_start(self.wallpaper_entry, True, True, 0)
+        wallpaper_box.pack_start(wallpaper_browse_btn, False, False, 0)
+        paths_grid.attach(wallpaper_label, 0, 1, 1, 1)
+        paths_grid.attach(wallpaper_box, 1, 1, 1, 1)
+        
+        # Help text
+        help_label = Gtk.Label()
+        help_label.set_markup("<i>If paths are not detected automatically, use the Browse buttons to locate:\n• linux-wallpaperengine executable\n• Steam Workshop content directory (usually ~/.steam/steam/steamapps/workshop/content/431960)</i>")
+        help_label.set_line_wrap(True)
+        help_label.set_max_width_chars(50)
+        paths_grid.attach(help_label, 0, 2, 2, 1)
+        
+        # Add Advanced CEF Arguments tab (after paths configuration)
+        advanced_grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
+        notebook.append_page(advanced_grid, Gtk.Label(label="Advanced"))
+        
+        # Enable custom arguments
+        self.custom_args_switch = Gtk.Switch()
+        self.custom_args_switch.set_active(self.current_settings.get('enable_custom_args', False))
+        custom_args_label = Gtk.Label(label="Enable Custom CEF Arguments:", halign=Gtk.Align.END)
+        custom_args_label.set_tooltip_text("Enable custom CEF arguments for compatibility fixes and advanced options")
+        advanced_grid.attach(custom_args_label, 0, 0, 1, 1)
+        advanced_grid.attach(self.custom_args_switch, 1, 0, 1, 1)
+        
+        # Custom arguments entry
+        args_label = Gtk.Label(label="Custom Arguments:", halign=Gtk.Align.END)
+        self.custom_args_entry = Gtk.Entry()
+        self.custom_args_entry.set_text(self.current_settings.get('custom_args', ''))
+        self.custom_args_entry.set_placeholder_text("e.g., --no-sandbox --single-process")
+        self.custom_args_entry.set_tooltip_text("Additional command-line arguments for linux-wallpaperengine")
+        advanced_grid.attach(args_label, 0, 1, 1, 1)
+        advanced_grid.attach(self.custom_args_entry, 1, 1, 1, 1)
+        
+        # Presets dropdown
+        presets_label = Gtk.Label(label="Quick Presets:", halign=Gtk.Align.END)
+        self.presets_combo = Gtk.ComboBoxText()
+        self.presets_combo.append_text("Custom...")
+        self.presets_combo.append_text("Intel Graphics Fix (CEF v119+)")
+        self.presets_combo.append_text("Debug Mode")
+        self.presets_combo.append_text("Performance Mode")
+        self.presets_combo.set_active(0)
+        self.presets_combo.connect("changed", self.on_preset_changed)
+        advanced_grid.attach(presets_label, 0, 2, 1, 1)
+        advanced_grid.attach(self.presets_combo, 1, 2, 1, 1)
+        
+        # LD_PRELOAD option
+        self.ld_preload_switch = Gtk.Switch()
+        self.ld_preload_switch.set_active(self.current_settings.get('enable_ld_preload', False))
+        ld_preload_label = Gtk.Label(label="Enable LD_PRELOAD Fix:", halign=Gtk.Align.END)
+        ld_preload_label.set_tooltip_text("Preload libcef.so to fix CEF v119+ static TLS allocation issues")
+        advanced_grid.attach(ld_preload_label, 0, 3, 1, 1)
+        advanced_grid.attach(self.ld_preload_switch, 1, 3, 1, 1)
+        
+        # Help text for advanced options
+        advanced_help = Gtk.Label()
+        advanced_help.set_markup("<b>Advanced CEF Options Help:</b>\n\n" +
+                                "<b>Intel Graphics Fix:</b> Solves CEF v119+ crashes with --no-sandbox --single-process\n" +
+                                "<b>LD_PRELOAD Fix:</b> Fixes static TLS allocation issues on modern CEF versions\n" +
+                                "<b>Debug Mode:</b> Enables CEF debugging and verbose logging\n" +
+                                "<b>Performance Mode:</b> Optimizes for better performance on low-end systems\n\n" +
+                                "<i>⚠️ These options fix known compatibility issues but may affect stability</i>")
+        advanced_help.set_line_wrap(True)
+        advanced_help.set_max_width_chars(60)
+        advanced_help.set_halign(Gtk.Align.START)
+        advanced_grid.attach(advanced_help, 0, 4, 2, 1)
+        
+        # Connect switch to enable/disable entry
+        self.custom_args_switch.connect("notify::active", self.on_custom_args_toggled)
+        
+        # Initialize the UI state
+        self.on_custom_args_toggled(self.custom_args_switch, None)
+        
         self.show_all()
+    
+    def on_browse_wpe_path(self, button):
+        """Browse for wallpaper engine executable"""
+        dialog = Gtk.FileChooserDialog(
+            title="Select linux-wallpaperengine executable",
+            parent=self,
+            action=Gtk.FileChooserAction.OPEN
+        )
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN, Gtk.ResponseType.OK
+        )
+        
+        # Set initial directory
+        if self.wpe_entry.get_text():
+            dialog.set_filename(self.wpe_entry.get_text())
+        else:
+            dialog.set_current_folder(os.path.expanduser("~"))
+        
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            self.wpe_entry.set_text(dialog.get_filename())
+        dialog.destroy()
+    
+    def on_browse_wallpaper_dir(self, button):
+        """Browse for wallpaper directory"""
+        dialog = Gtk.FileChooserDialog(
+            title="Select wallpaper directory",
+            parent=self,
+            action=Gtk.FileChooserAction.SELECT_FOLDER
+        )
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN, Gtk.ResponseType.OK
+        )
+        
+        # Set initial directory
+        if self.wallpaper_entry.get_text():
+            dialog.set_current_folder(self.wallpaper_entry.get_text())
+        else:
+            # Try to find Steam directory
+            for steam_path in ["~/.steam/steam/steamapps/workshop/content/431960",
+                              "~/.local/share/Steam/steamapps/workshop/content/431960"]:
+                expanded = os.path.expanduser(steam_path)
+                if os.path.exists(expanded):
+                    dialog.set_current_folder(expanded)
+                    break
+            else:
+                dialog.set_current_folder(os.path.expanduser("~"))
+        
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            self.wallpaper_entry.set_text(dialog.get_filename())
+        dialog.destroy()
+
+    def on_preset_changed(self, combo):
+        """Handle selection of a preset from the advanced options combo box"""
+        selected_preset = self.presets_combo.get_active_text()
+        if selected_preset == "Intel Graphics Fix (CEF v119+)":
+            self.custom_args_entry.set_text("--no-sandbox --single-process")
+            self.ld_preload_switch.set_active(True)
+        elif selected_preset == "Debug Mode":
+            self.custom_args_entry.set_text("--debug-level=2")
+            self.ld_preload_switch.set_active(False)
+        elif selected_preset == "Performance Mode":
+            self.custom_args_entry.set_text("--disable-gpu-vsync --disable-gpu-compositing")
+            self.ld_preload_switch.set_active(False)
+        elif selected_preset == "Custom...":
+            self.custom_args_entry.set_text("")
+            self.ld_preload_switch.set_active(False)
+
+    def on_custom_args_toggled(self, switch, gparam):
+        """Handle the custom arguments switch toggle"""
+        is_active = switch.get_active()
+        if is_active:
+            self.custom_args_entry.set_sensitive(True)
+            self.presets_combo.set_sensitive(True)
+            self.ld_preload_switch.set_sensitive(True)
+        else:
+            self.custom_args_entry.set_sensitive(False)
+            self.presets_combo.set_sensitive(False)
+            self.ld_preload_switch.set_sensitive(False)
 
 class WallpaperContextMenu(Gtk.Menu):
     def __init__(self, parent, wallpaper_id):
