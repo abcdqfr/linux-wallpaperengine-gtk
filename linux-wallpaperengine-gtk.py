@@ -173,25 +173,52 @@ class WallpaperEngine:
             # Build command
             cmd = [self.wpe_path]
             
-            # Add common options
-            if options.get('fps'):
-                cmd.extend(['--fps', str(options['fps'])])
-            if options.get('mute'):
-                cmd.append('--silent')
-            if 'volume' in options:
-                cmd.extend(['--volume', str(int(options['volume']))])
-            if options.get('no_automute'):
-                cmd.append('--noautomute')
-            if options.get('no_audio_processing'):
-                cmd.append('--no-audio-processing')
-            if options.get('no_fullscreen_pause'):
-                cmd.append('--no-fullscreen-pause')
-            if options.get('disable_mouse'):
-                cmd.append('--disable-mouse')
-            if options.get('scaling'):
-                cmd.extend(['--scaling', options['scaling']])
-            if options.get('clamping'):
-                cmd.extend(['--clamping', options['clamping']])
+            # Check if custom arguments contain single-process mode
+            using_single_process = (options.get('enable_custom_args') and 
+                                  options.get('custom_args') and 
+                                  '--single-process' in options.get('custom_args', ''))
+            
+            self.log.debug(f"Single-process detection: enable_custom_args={options.get('enable_custom_args')}, custom_args='{options.get('custom_args')}', using_single_process={using_single_process}")
+            
+            # Add common options (skip problematic ones if using single-process mode)
+            if not using_single_process:
+                # Full argument set for normal mode
+                if options.get('fps'):
+                    cmd.extend(['--fps', str(options['fps'])])
+                if options.get('mute'):
+                    cmd.append('--silent')
+                if 'volume' in options:
+                    cmd.extend(['--volume', str(int(options['volume']))])
+                if options.get('no_automute'):
+                    cmd.append('--noautomute')
+                if options.get('no_audio_processing'):
+                    cmd.append('--no-audio-processing')
+                if options.get('no_fullscreen_pause'):
+                    cmd.append('--no-fullscreen-pause')
+                if options.get('disable_mouse'):
+                    cmd.append('--disable-mouse')
+                if options.get('scaling'):
+                    cmd.extend(['--scaling', options['scaling']])
+                if options.get('clamping'):
+                    cmd.extend(['--clamping', options['clamping']])
+            else:
+                # Limited argument set for single-process mode (exclude scaling/clamping)
+                self.log.info("Single-process mode detected - excluding problematic scaling/clamping arguments")
+                if options.get('fps'):
+                    cmd.extend(['--fps', str(options['fps'])])
+                if options.get('mute'):
+                    cmd.append('--silent')
+                if 'volume' in options:
+                    cmd.extend(['--volume', str(int(options['volume']))])
+                if options.get('no_automute'):
+                    cmd.append('--noautomute')
+                if options.get('no_audio_processing'):
+                    cmd.append('--no-audio-processing')
+                if options.get('no_fullscreen_pause'):
+                    cmd.append('--no-fullscreen-pause')
+                if options.get('disable_mouse'):
+                    cmd.append('--disable-mouse')
+                # Skip scaling and clamping - they break argument parsing in single-process mode
             
             # Add custom arguments if enabled
             if options.get('enable_custom_args') and options.get('custom_args'):
@@ -481,6 +508,7 @@ class WallpaperWindow(Gtk.Window):
             ("media-skip-backward-symbolic", "Previous", self.on_prev_clicked),
             ("media-skip-forward-symbolic", "Next", self.on_next_clicked),
             ("media-playlist-shuffle-symbolic", "Random", self.on_random_clicked),
+            ("view-refresh-symbolic", "Refresh Wallpapers", self.on_refresh_clicked),
             ("applications-system-symbolic", "Setup Paths", self.on_setup_clicked),
             ("preferences-system-symbolic", "Settings", self.on_settings_clicked)
         ]
@@ -704,6 +732,12 @@ class WallpaperWindow(Gtk.Window):
                 self.update_current_wallpaper(wallpaper_id)
                 if cmd:
                     self.update_command_status(cmd)
+
+    def on_refresh_clicked(self, button):
+        """Refresh wallpaper list"""
+        self.status_label.set_text("Refreshing wallpaper list...")
+        self.load_wallpapers()
+        self.status_label.set_text("Wallpaper list refreshed")
 
     def on_setup_clicked(self, button):
         """Open setup dialog for path configuration"""
