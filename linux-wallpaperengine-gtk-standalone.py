@@ -1468,7 +1468,7 @@ class WallpaperWindow(Gtk.Window):
 
         try:
             if os.path.exists(config_file):
-                with open(config_file, "r") as f:
+                with open(config_file) as f:
                     saved_settings = json.load(f)
                     # Update defaults with saved settings
                     self.settings.update(saved_settings)

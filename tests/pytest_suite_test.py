@@ -6,9 +6,8 @@ import pytest
 
 
 def test_wallpaper_engine_initialization():
-        """Test WallpaperEngine can be initialized."""
-
-from wallpaperengine.wallpaper_engine import WallpaperEngine
+    """Test WallpaperEngine can be initialized."""
+    from wallpaperengine.wallpaper_engine import WallpaperEngine
 
     with patch("os.environ.get") as mock_env:
         mock_env.return_value = None  # Not Wayland
@@ -17,21 +16,19 @@ from wallpaperengine.wallpaper_engine import WallpaperEngine
 
 
 def test_wallpaper_engine_wayland_detection():
-        """Test Wayland detection."""
-
-from wallpaperengine.wallpaper_engine import WallpaperEngine
+    """Test Wayland detection."""
+    from wallpaperengine.wallpaper_engine import WallpaperEngine
 
     with patch("os.environ.get") as mock_env:
-        mock_env.side_effect = lambda key: "wayland" if key == "XDG_SESSION_TYPE" else None
+        mock_env.side_effect = lambda key: ("wayland" if key == "XDG_SESSION_TYPE" else None)
         engine = WallpaperEngine()
         # Should log error but not crash
         assert engine is not None
 
 
 def test_wallpaper_engine_get_wallpaper_list():
-        """Test wallpaper list retrieval."""
-
-from wallpaperengine.wallpaper_engine import WallpaperEngine
+    """Test wallpaper list retrieval."""
+    from wallpaperengine.wallpaper_engine import WallpaperEngine
 
     with patch("os.environ.get") as mock_env, patch("os.path.exists") as mock_exists, patch(
         "os.listdir"
@@ -52,9 +49,8 @@ from wallpaperengine.wallpaper_engine import WallpaperEngine
 
 
 def test_wallpaper_engine_stop_wallpaper():
-        """Test wallpaper stopping functionality."""
-
-from wallpaperengine.wallpaper_engine import WallpaperEngine
+    """Test wallpaper stopping functionality."""
+    from wallpaperengine.wallpaper_engine import WallpaperEngine
 
     with patch("os.environ.get") as mock_env, patch("subprocess.run") as mock_run:
         mock_env.return_value = None
@@ -66,12 +62,13 @@ from wallpaperengine.wallpaper_engine import WallpaperEngine
 
 
 def test_wallpaper_engine_display_detection():
-        """Test display detection."""
+    """Test display detection."""
     from wallpaperengine.wallpaper_engine import WallpaperEngine
 
     with patch("os.environ.get") as mock_env, patch("subprocess.run") as mock_run:
         mock_env.return_value = None
-        mock_run.return_value.stdout = "HDMI-0\n"
+        # Mock xrandr output with proper format
+        mock_run.return_value.stdout = "HDMI-0 connected 1920x1080+0+0\n"
         mock_run.return_value.returncode = 0
 
         engine = WallpaperEngine()

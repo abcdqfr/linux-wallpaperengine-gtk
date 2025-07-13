@@ -1,0 +1,176 @@
+{
+  "folders": [
+    {
+      "path": "../version-aware-precommit"
+    },
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "./linux-wallpaperengine-gtk/.venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "always",
+      "source.fixAll.ruff": "explicit"
+    },
+
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+
+    "[python]": {
+      "editor.defaultFormatter": "charliermarsh.ruff",
+      "editor.rulers": [88, 100]
+    },
+
+    "ruff.enable": true,
+    "ruff.organizeImports": true,
+    "ruff.fixAll": true,
+    "ruff.showNotifications": "always",
+
+    "python.linting.enabled": true,
+    "python.linting.ruffEnabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.lintOnSave": true,
+
+    "python.testing.pytestEnabled": true,
+    "python.testing.autoTestDiscoverOnSaveEnabled": true,
+
+    "git.enableSmartCommit": true,
+    "git.autofetch": true,
+
+    "terminal.integrated.cwd": "${workspaceFolder}",
+
+    "search.exclude": {
+      "**/.venv": true,
+      "**/__pycache__": true,
+      "**/build": true,
+      "**/dist": true,
+      "**/.pytest_cache": true,
+      "**/.ruff_cache": true,
+      "**/.mypy_cache": true,
+      "**/node_modules": true
+    },
+
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/.pytest_cache": true,
+      "**/.ruff_cache": true,
+      "**/.mypy_cache": true
+    },
+
+    "workbench.editor.enablePreview": false,
+    "explorer.confirmDelete": false,
+
+    "problems.decorations.enabled": true,
+    "problems.showCurrentInStatus": true,
+
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": "active",
+    "editor.guides.indentation": true,
+
+    "editor.inlineSuggest.enabled": true,
+    "github.copilot.enable": {
+      "*": true,
+      "yaml": true,
+      "plaintext": false
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "charliermarsh.ruff",
+      "ms-python.black-formatter",
+      "esbenp.prettier-vscode",
+      "github.copilot",
+      "github.copilot-chat",
+      "eamodio.gitlens",
+      "ms-python.pytest",
+      "njpwerner.autodocstring"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🚀 Quick Setup",
+        "type": "shell",
+        "command": "cd linux-wallpaperengine-gtk && python -m pip install -e .[dev]",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "new"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "🔍 Lint & Fix All",
+        "type": "shell",
+        "command": "cd linux-wallpaperengine-gtk && python -m ruff check --fix . && python -m ruff format .",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "🧪 Run Tests",
+        "type": "shell",
+        "command": "cd linux-wallpaperengine-gtk && python -m pytest tests/ -v",
+        "group": "test",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "✅ Pre-commit Check",
+        "type": "shell",
+        "command": "cd linux-wallpaperengine-gtk && python -m ruff check . && python -m ruff format --check . && python -m pytest tests/ -x",
+        "group": "test",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "shared"
+        }
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "🐍 Debug Main App",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/linux-wallpaperengine-gtk/src/wallpaperengine/main.py",
+        "console": "integratedTerminal",
+        "cwd": "${workspaceFolder}/linux-wallpaperengine-gtk",
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}/linux-wallpaperengine-gtk/src"
+        }
+      },
+      {
+        "name": "🧪 Debug Tests",
+        "type": "python",
+        "request": "launch",
+        "module": "pytest",
+        "args": ["${workspaceFolder}/linux-wallpaperengine-gtk/tests", "-v"],
+        "console": "integratedTerminal",
+        "cwd": "${workspaceFolder}/linux-wallpaperengine-gtk",
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}/linux-wallpaperengine-gtk/src"
+        }
+      }
+    ]
+  }
+}

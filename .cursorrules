@@ -1,0 +1,133 @@
+# Instructions
+
+During your interaction with the user, if you find anything reusable in this project (e.g. version of a library, model name), especially about a fix to a mistake you made or a correction you received, you should take note in the `Lessons` section in the `.cursorrules` file so you will not make the same mistake again.
+
+You should also use the `.cursorrules` file as a Scratchpad to organize your thoughts. Especially when you receive a new task, you should first review the content of the Scratchpad, clear old different task if necessary, first explain the task, and plan the steps you need to take to complete the task. You can use todo markers to indicate the progress, e.g.
+[X] Task 1
+[ ] Task 2
+
+Also update the progress of the task in the Scratchpad when you finish a subtask.
+Especially when you finished a milestone, it will help to improve your depth of task accomplishment to use the Scratchpad to reflect and plan.
+The goal is to help you maintain a big picture as well as the progress of the task. Always refer to the Scratchpad when you plan the next step.
+
+# Tools
+
+Note all the tools are in python3. So in the case you need to do batch processing, you can always consult the python files and write your own script.
+
+Example workflow:
+```python
+from screenshot_utils import take_screenshot_sync
+from llm_api import query_llm
+
+# Take a screenshot
+
+screenshot_path = take_screenshot_sync('https://example.com', 'screenshot.png')
+
+# Verify with LLM
+
+response = query_llm(
+    "What is the background color and title of this webpage?",
+    provider="openai",  # or "anthropic"
+    image_path=screenshot_path
+)
+print(response)
+```
+
+## Web browser
+
+You could use the `tools/web_scraper.py` file to scrape the web.
+```bash
+python3 ./tools/web_scraper.py --max-concurrent 3 URL1 URL2 URL3
+```
+This will output the content of the web pages.
+
+## Search engine
+
+You could use the `tools/search_engine.py` file to search the web.
+```bash
+python3 ./tools/search_engine.py "your search keywords"
+```
+This will output the search results in the following format:
+```
+URL: https://example.com
+Title: This is the title of the search result
+Snippet: This is a snippet of the search result
+```
+If needed, you can further use the `web_scraper.py` file to scrape the web page content.
+
+# Lessons
+
+## User Specified Lessons
+
+- NEVER utilize bare venv. Always use nix or npm/pip3 when doing python development. First, to check whether 'uv' is available, use `which uv`. If that's the case, first activate the flake-nix, and then use `uv pip install` to install packages.
+- Due to Cursor's limit, when you use `git` and `gh` and need to submit a multiline commit message, first write the message in a file, and then use `git commit -F <filename>` or similar command to commit. And then remove the file. Include "[Cursor] " in the commit message and PR title.
+
+## Cursor learned
+
+- For search results, ensure proper handling of different character encodings (UTF-8) for international queries
+- When searching for recent news, use the current year (2025) instead of previous years, or simply use the "recent" keyword to get the latest information
+
+# Scratchpad
+
+## CURRENT PROJECT STATE: Linux WallpaperEngine GTK
+
+### Project Overview
+- **Repository**: linux-wallpaperengine-gtk
+- **Location**: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+- **Status**: Working GTK frontend for linux-wallpaperengine with staged changes
+- **Last Commit**: "[Cursor] WIP: Backup commit after regex autofix disaster - Syntax errors in multiple files, manual repair in progress"
+
+### Current Architecture
+- **Main Entry**: `src/wallpaperengine/main.py` - GTK application entry point
+- **Core Engine**: `src/wallpaperengine/wallpaper_engine.py` - Wallpaper process management
+- **UI Window**: `src/wallpaperengine/wallpaper_window.py` - Main GTK window (partially implemented)
+- **Settings**: `src/wallpaperengine/settings_dialog.py` - Settings dialog (placeholder)
+- **Context Menu**: `src/wallpaperengine/wallpaper_context_menu.py` - Right-click menu (basic implementation)
+
+### Working Features
+[X] Wallpaper engine integration with linux-wallpaperengine
+[X] Display detection (HDMI-2 detected)
+[X] Wallpaper directory detection (~/.steam/steam/steamapps/workshop/content/431960)
+[X] Wallpaper process management (start/stop)
+[X] Custom CEF arguments support
+[X] Single-process mode detection and argument filtering
+[X] LD_PRELOAD support for libcef.so
+[X] Settings persistence
+[X] Logging system
+
+### Partially Implemented Features
+[ ] GTK UI toolbar and controls
+[ ] Wallpaper preview display
+[ ] Settings dialog interface
+[ ] Context menu functionality
+[ ] Playlist management
+
+### TODO Items Found
+[ ] Implement toolbar creation (wallpaper_window.py:69)
+[ ] Implement wallpaper loading (wallpaper_window.py:77)
+[ ] Implement initial setup check (wallpaper_window.py:128)
+[ ] Implement settings dialog interface (settings_dialog.py)
+[ ] Implement playlist management (multiple files)
+[ ] Implement import extraction (reverse_demonolith.py:30)
+[ ] Implement module file creation (reverse_demonolith.py:36)
+[ ] Implement monolith building logic (build_monolith.py:18)
+
+### Recent Activity (from logs)
+- Application successfully running wallpapers with custom CEF arguments
+- Single-process mode working with --no-sandbox --single-process
+- LD_PRELOAD integration working
+- Process management (start/stop) working correctly
+- Found 4-6 wallpapers in Steam Workshop directory
+
+### Next Steps
+1. [ ] Complete GTK UI implementation
+2. [ ] Implement wallpaper preview display
+3. [ ] Complete settings dialog
+4. [ ] Add playlist functionality
+5. [ ] Test and commit current working state
+6. [ ] Build standalone monolith for distribution
+
+### Terminal Issue Resolution
+- **Problem**: Terminal trying to access nested directory `/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk/linux-wallpaperengine-gtk`
+- **Solution**: Current working directory is correct at `/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk`
+- **Status**: Ready to proceed with development
