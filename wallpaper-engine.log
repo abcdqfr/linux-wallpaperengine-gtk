@@ -1,0 +1,859 @@
+2025-07-07 00:12:21,689 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 00:12:21,895 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 00:12:21,896 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 00:12:21,911 - WallpaperEngine - INFO - Found 407 wallpapers
+2025-07-07 00:12:22,294 - root - INFO - Entering GTK main loop
+2025-07-07 00:12:31,620 - WallpaperEngine - ERROR - Missing components - path: None, display: HDMI-2, id: 3495289810
+2025-07-07 00:12:35,026 - WallpaperEngine - ERROR - Missing components - path: None, display: HDMI-2, id: 3495244539
+2025-07-07 00:12:51,487 - WallpaperEngine - ERROR - Missing components - path: None, display: HDMI-2, id: 2924520106
+2025-07-07 00:12:53,255 - GUI - INFO - Shutting down...
+2025-07-07 00:17:29,428 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 00:18:07,743 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 00:18:07,816 - SettingsManager - INFO - No settings file found, using defaults.
+2025-07-07 00:18:07,877 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 00:18:07,878 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 00:18:07,879 - GUI - WARNING - Invalid WPE path: None. Prompting user to select.
+2025-07-07 00:18:44,543 - SettingsManager - INFO - Settings saved successfully
+2025-07-07 00:18:44,544 - GUI - INFO - Updated WPE path to: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 00:18:44,689 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 00:18:44,690 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 01:45:33,739 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 01:45:34,013 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 01:45:34,014 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 01:45:34,049 - WallpaperEngine - INFO - Found 407 wallpapers
+2025-07-07 01:45:34,879 - root - INFO - Entering GTK main loop
+2025-07-07 01:45:38,336 - WallpaperEngine - ERROR - Missing components - path: None, display: HDMI-2, id: 3495257934
+2025-07-07 01:45:42,432 - WallpaperEngine - ERROR - Missing components - path: None, display: HDMI-2, id: 3495289810
+2025-07-07 01:45:44,925 - WallpaperEngine - ERROR - Missing components - path: None, display: HDMI-2, id: 3495336747
+2025-07-07 01:51:55,645 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 01:51:55,808 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 01:51:55,818 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 01:51:55,891 - WallpaperEngine - INFO - Found 407 wallpapers
+2025-07-07 01:51:56,565 - root - INFO - Entering GTK main loop
+2025-07-07 01:51:56,782 - GUI - INFO - Initial setup needed - opening settings dialog
+2025-07-07 01:52:45,149 - GUI - INFO - Updated wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 01:52:45,167 - WallpaperEngine - INFO - Found 407 wallpapers
+2025-07-07 01:52:51,495 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 01:52:51,495 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 01:52:51,620 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 01:52:51,620 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 01:52:51,620 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 01:52:51,820 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 01:52:51,821 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 01:52:51,821 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 3495341512
+2025-07-07 01:52:51,925 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 19337)
+2025-07-07 01:52:51,928 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 01:52:55,081 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 01:52:55,084 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 01:52:55,157 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 01:52:55,158 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 01:52:55,168 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 01:52:55,369 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 01:52:55,369 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 01:52:55,369 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 3495270535
+2025-07-07 01:52:55,472 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 19344)
+2025-07-07 01:52:55,473 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 01:52:58,485 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 01:52:58,489 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 01:52:58,582 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 01:52:58,583 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 01:52:58,583 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 01:52:58,786 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 01:52:58,787 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 01:52:58,790 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 3495256523
+2025-07-07 01:52:58,893 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 19364)
+2025-07-07 01:52:58,894 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 01:53:11,442 - GUI - INFO - Shutting down...
+2025-07-07 01:57:03,337 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 01:57:03,440 - WallpaperEngine - ERROR - WAYLAND DETECTED - Linux Wallpaper Engine is NOT compatible with Wayland!
+2025-07-07 01:57:03,441 - WallpaperEngine - ERROR - Please switch to X11 session or the wallpapers will not work properly.
+2025-07-07 01:57:03,515 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 01:57:03,520 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 01:57:03,557 - WallpaperEngine - INFO - Found 407 wallpapers
+2025-07-07 01:57:03,866 - root - INFO - Entering GTK main loop
+2025-07-07 01:57:03,870 - GUI - DEBUG - No preview found for wallpaper 1237084446
+2025-07-07 01:57:03,875 - GUI - DEBUG - No preview found for wallpaper 1374815861
+2025-07-07 01:57:03,876 - GUI - DEBUG - No preview found for wallpaper 1459813310
+2025-07-07 01:57:03,877 - GUI - DEBUG - No preview found for wallpaper 1493773391
+2025-07-07 01:57:03,882 - GUI - DEBUG - No preview found for wallpaper 1597153563
+2025-07-07 01:57:03,885 - GUI - DEBUG - No preview found for wallpaper 1600267172
+2025-07-07 01:57:03,887 - GUI - DEBUG - No preview found for wallpaper 1627501781
+2025-07-07 01:57:03,889 - GUI - DEBUG - No preview found for wallpaper 1738802434
+2025-07-07 01:57:03,898 - GUI - DEBUG - No preview found for wallpaper 1855131550
+2025-07-07 01:57:03,900 - GUI - DEBUG - No preview found for wallpaper 1882027002
+2025-07-07 01:57:03,902 - GUI - DEBUG - No preview found for wallpaper 1905170041
+2025-07-07 01:57:03,902 - GUI - DEBUG - No preview found for wallpaper 1922802918
+2025-07-07 01:57:03,904 - GUI - DEBUG - No preview found for wallpaper 1967365236
+2025-07-07 01:57:03,908 - GUI - DEBUG - No preview found for wallpaper 2051468614
+2025-07-07 01:57:03,909 - GUI - DEBUG - No preview found for wallpaper 2110131513
+2025-07-07 01:57:03,916 - GUI - DEBUG - No preview found for wallpaper 2118284965
+2025-07-07 01:57:03,919 - GUI - DEBUG - No preview found for wallpaper 2169871125
+2025-07-07 01:57:03,919 - GUI - DEBUG - No preview found for wallpaper 2170890572
+2025-07-07 01:57:03,923 - GUI - DEBUG - No preview found for wallpaper 2170890778
+2025-07-07 01:57:03,925 - GUI - DEBUG - No preview found for wallpaper 2172341764
+2025-07-07 01:57:03,927 - GUI - DEBUG - No preview found for wallpaper 2173353868
+2025-07-07 01:57:03,930 - GUI - DEBUG - No preview found for wallpaper 2173354252
+2025-07-07 01:57:03,931 - GUI - DEBUG - No preview found for wallpaper 2178519816
+2025-07-07 01:57:03,933 - GUI - DEBUG - No preview found for wallpaper 2178520573
+2025-07-07 01:57:03,934 - GUI - DEBUG - No preview found for wallpaper 2181990109
+2025-07-07 01:57:03,935 - GUI - DEBUG - No preview found for wallpaper 2184138190
+2025-07-07 01:57:03,936 - GUI - DEBUG - No preview found for wallpaper 2184941165
+2025-07-07 01:57:03,939 - GUI - DEBUG - No preview found for wallpaper 2185184519
+2025-07-07 01:57:03,944 - GUI - DEBUG - No preview found for wallpaper 2189811138
+2025-07-07 01:57:03,941 - GUI - DEBUG - No preview found for wallpaper 2188301368
+2025-07-07 01:57:03,950 - GUI - DEBUG - No preview found for wallpaper 2199905964
+2025-07-07 01:57:03,956 - GUI - DEBUG - No preview found for wallpaper 2203221773
+2025-07-07 01:57:03,960 - GUI - DEBUG - No preview found for wallpaper 2222361695
+2025-07-07 01:57:03,961 - GUI - DEBUG - No preview found for wallpaper 2253174526
+2025-07-07 01:57:03,958 - GUI - DEBUG - No preview found for wallpaper 2222323008
+2025-07-07 01:57:03,965 - GUI - DEBUG - No preview found for wallpaper 2269280949
+2025-07-07 01:57:03,967 - GUI - DEBUG - No preview found for wallpaper 2269277730
+2025-07-07 01:57:03,969 - GUI - DEBUG - No preview found for wallpaper 2269325130
+2025-07-07 01:57:03,971 - GUI - DEBUG - No preview found for wallpaper 2272024943
+2025-07-07 01:57:03,976 - GUI - DEBUG - No preview found for wallpaper 2272026464
+2025-07-07 01:57:03,980 - GUI - DEBUG - No preview found for wallpaper 2272688722
+2025-07-07 01:57:03,989 - GUI - DEBUG - No preview found for wallpaper 2277047725
+2025-07-07 01:57:03,996 - GUI - DEBUG - No preview found for wallpaper 2278951846
+2025-07-07 01:57:04,002 - GUI - DEBUG - No preview found for wallpaper 2279251540
+2025-07-07 01:57:04,008 - GUI - DEBUG - No preview found for wallpaper 2316478936
+2025-07-07 01:57:04,033 - GUI - DEBUG - No preview found for wallpaper 2316518023
+2025-07-07 01:57:04,034 - GUI - DEBUG - No preview found for wallpaper 2364037106
+2025-07-07 01:57:04,034 - GUI - DEBUG - No preview found for wallpaper 2371922110
+2025-07-07 01:57:04,056 - GUI - DEBUG - No preview found for wallpaper 2382099872
+2025-07-07 01:57:04,060 - GUI - DEBUG - No preview found for wallpaper 2382105446
+2025-07-07 01:57:04,066 - GUI - DEBUG - No preview found for wallpaper 2384718133
+2025-07-07 01:57:04,204 - GUI - DEBUG - No preview found for wallpaper 2506530591
+2025-07-07 01:57:04,204 - GUI - DEBUG - No preview found for wallpaper 2426511305
+2025-07-07 01:57:04,215 - GUI - DEBUG - No preview found for wallpaper 2517604301
+2025-07-07 01:57:04,217 - GUI - DEBUG - No preview found for wallpaper 2554974710
+2025-07-07 01:57:04,219 - GUI - DEBUG - No preview found for wallpaper 2561673474
+2025-07-07 01:57:04,221 - GUI - DEBUG - No preview found for wallpaper 2570270989
+2025-07-07 01:57:04,225 - GUI - DEBUG - No preview found for wallpaper 2570309551
+2025-07-07 01:57:04,227 - GUI - DEBUG - No preview found for wallpaper 2570393648
+2025-07-07 01:57:04,228 - GUI - DEBUG - No preview found for wallpaper 2570456635
+2025-07-07 01:57:04,229 - GUI - DEBUG - No preview found for wallpaper 2615673506
+2025-07-07 01:57:04,228 - GUI - DEBUG - No preview found for wallpaper 2612643177
+2025-07-07 01:57:04,228 - GUI - DEBUG - No preview found for wallpaper 2610752266
+2025-07-07 01:57:04,230 - GUI - DEBUG - No preview found for wallpaper 2638399305
+2025-07-07 01:57:04,233 - GUI - DEBUG - No preview found for wallpaper 2654598852
+2025-07-07 01:57:04,269 - GUI - DEBUG - No preview found for wallpaper 2658390025
+2025-07-07 01:57:04,271 - GUI - DEBUG - No preview found for wallpaper 2661423856
+2025-07-07 01:57:04,274 - GUI - DEBUG - No preview found for wallpaper 2670778906
+2025-07-07 01:57:04,277 - GUI - DEBUG - No preview found for wallpaper 2675212509
+2025-07-07 01:57:04,281 - GUI - DEBUG - No preview found for wallpaper 2676568233
+2025-07-07 01:57:04,287 - GUI - DEBUG - No preview found for wallpaper 2678177045
+2025-07-07 01:57:04,290 - GUI - DEBUG - No preview found for wallpaper 2692000609
+2025-07-07 01:57:04,308 - GUI - DEBUG - No preview found for wallpaper 2692041801
+2025-07-07 01:57:04,312 - GUI - DEBUG - No preview found for wallpaper 2692234832
+2025-07-07 01:57:04,313 - GUI - DEBUG - No preview found for wallpaper 2709945555
+2025-07-07 01:57:04,348 - GUI - DEBUG - No preview found for wallpaper 2761749794
+2025-07-07 01:57:04,357 - GUI - DEBUG - No preview found for wallpaper 2755707064
+2025-07-07 01:57:04,359 - GUI - DEBUG - No preview found for wallpaper 2770660004
+2025-07-07 01:57:04,369 - GUI - DEBUG - No preview found for wallpaper 2779306198
+2025-07-07 01:57:04,384 - GUI - DEBUG - No preview found for wallpaper 2781130379
+2025-07-07 01:57:04,404 - GUI - DEBUG - No preview found for wallpaper 2793192292
+2025-07-07 01:57:04,394 - GUI - DEBUG - No preview found for wallpaper 2792372798
+2025-07-07 01:57:04,416 - GUI - DEBUG - No preview found for wallpaper 2795263756
+2025-07-07 01:57:04,422 - GUI - DEBUG - No preview found for wallpaper 2796452921
+2025-07-07 01:57:04,419 - GUI - DEBUG - No preview found for wallpaper 2796268575
+2025-07-07 01:57:04,426 - GUI - DEBUG - No preview found for wallpaper 2798984182
+2025-07-07 01:57:04,428 - GUI - DEBUG - No preview found for wallpaper 2800356236
+2025-07-07 01:57:04,480 - GUI - DEBUG - No preview found for wallpaper 2806985746
+2025-07-07 01:57:04,487 - GUI - DEBUG - No preview found for wallpaper 2809456872
+2025-07-07 01:57:04,498 - GUI - DEBUG - No preview found for wallpaper 2809684458
+2025-07-07 01:57:04,500 - GUI - DEBUG - No preview found for wallpaper 2810648850
+2025-07-07 01:57:04,502 - GUI - DEBUG - No preview found for wallpaper 2810752237
+2025-07-07 01:57:04,509 - GUI - DEBUG - No preview found for wallpaper 2811110319
+2025-07-07 01:57:04,515 - GUI - DEBUG - No preview found for wallpaper 2812660276
+2025-07-07 01:57:04,517 - GUI - DEBUG - No preview found for wallpaper 2813348514
+2025-07-07 01:57:04,520 - GUI - DEBUG - No preview found for wallpaper 2813368025
+2025-07-07 01:57:04,525 - GUI - DEBUG - No preview found for wallpaper 2813380602
+2025-07-07 01:57:04,532 - GUI - DEBUG - No preview found for wallpaper 2813397256
+2025-07-07 01:57:04,548 - GUI - DEBUG - No preview found for wallpaper 2814103711
+2025-07-07 01:57:04,555 - GUI - DEBUG - No preview found for wallpaper 2814113014
+2025-07-07 01:57:04,568 - GUI - DEBUG - No preview found for wallpaper 2814631460
+2025-07-07 01:57:04,575 - GUI - DEBUG - No preview found for wallpaper 2815269745
+2025-07-07 01:57:04,584 - GUI - DEBUG - No preview found for wallpaper 2815284638
+2025-07-07 01:57:04,592 - GUI - DEBUG - No preview found for wallpaper 2815300099
+2025-07-07 01:57:04,607 - GUI - DEBUG - No preview found for wallpaper 2815628055
+2025-07-07 01:57:04,627 - GUI - DEBUG - No preview found for wallpaper 2815986947
+2025-07-07 01:57:04,629 - GUI - DEBUG - No preview found for wallpaper 2817282095
+2025-07-07 01:57:04,638 - GUI - DEBUG - No preview found for wallpaper 2817367293
+2025-07-07 01:57:04,658 - GUI - DEBUG - No preview found for wallpaper 2817386446
+2025-07-07 01:57:04,661 - GUI - DEBUG - No preview found for wallpaper 2818238702
+2025-07-07 01:57:04,664 - GUI - DEBUG - No preview found for wallpaper 2818586606
+2025-07-07 01:57:04,673 - GUI - DEBUG - No preview found for wallpaper 2818962792
+2025-07-07 01:57:04,690 - GUI - DEBUG - No preview found for wallpaper 2822618539
+2025-07-07 01:57:04,701 - GUI - DEBUG - No preview found for wallpaper 2829218004
+2025-07-07 01:57:04,715 - GUI - DEBUG - No preview found for wallpaper 2843674224
+2025-07-07 01:57:04,707 - GUI - DEBUG - No preview found for wallpaper 2831300589
+2025-07-07 01:57:04,727 - GUI - DEBUG - No preview found for wallpaper 2845481461
+2025-07-07 01:57:04,743 - GUI - DEBUG - No preview found for wallpaper 2846110200
+2025-07-07 01:57:04,758 - GUI - DEBUG - No preview found for wallpaper 2846326464
+2025-07-07 01:57:04,764 - GUI - DEBUG - No preview found for wallpaper 2848527251
+2025-07-07 01:57:04,790 - GUI - DEBUG - No preview found for wallpaper 2849068282
+2025-07-07 01:57:04,795 - GUI - DEBUG - No preview found for wallpaper 2850191081
+2025-07-07 01:57:04,807 - GUI - DEBUG - No preview found for wallpaper 2852140430
+2025-07-07 01:57:04,815 - GUI - DEBUG - No preview found for wallpaper 2856327239
+2025-07-07 01:57:04,816 - GUI - DEBUG - No preview found for wallpaper 2856694803
+2025-07-07 01:57:04,819 - GUI - DEBUG - No preview found for wallpaper 2861701058
+2025-07-07 01:57:04,824 - GUI - DEBUG - No preview found for wallpaper 2863163599
+2025-07-07 01:57:04,836 - GUI - DEBUG - No preview found for wallpaper 2865504776
+2025-07-07 01:57:04,844 - GUI - DEBUG - No preview found for wallpaper 2866938885
+2025-07-07 01:57:04,860 - GUI - DEBUG - No preview found for wallpaper 2868899254
+2025-07-07 01:57:04,870 - GUI - DEBUG - No preview found for wallpaper 2870856784
+2025-07-07 01:57:04,872 - GUI - DEBUG - No preview found for wallpaper 2873823484
+2025-07-07 01:57:04,888 - GUI - DEBUG - No preview found for wallpaper 2873875035
+2025-07-07 01:57:04,895 - GUI - DEBUG - No preview found for wallpaper 2875521459
+2025-07-07 01:57:04,905 - GUI - DEBUG - No preview found for wallpaper 2877057992
+2025-07-07 01:57:04,918 - GUI - DEBUG - No preview found for wallpaper 2881048938
+2025-07-07 01:57:04,931 - GUI - DEBUG - No preview found for wallpaper 2881140260
+2025-07-07 01:57:04,936 - GUI - DEBUG - No preview found for wallpaper 2882866032
+2025-07-07 01:57:04,944 - GUI - DEBUG - No preview found for wallpaper 2887099508
+2025-07-07 01:57:04,953 - GUI - DEBUG - No preview found for wallpaper 2888870742
+2025-07-07 01:57:04,964 - GUI - DEBUG - No preview found for wallpaper 2888882093
+2025-07-07 01:57:04,976 - GUI - DEBUG - No preview found for wallpaper 2888885265
+2025-07-07 01:57:04,985 - GUI - DEBUG - No preview found for wallpaper 2888939187
+2025-07-07 01:57:04,994 - GUI - DEBUG - No preview found for wallpaper 2888958671
+2025-07-07 01:57:05,005 - GUI - DEBUG - No preview found for wallpaper 2889243661
+2025-07-07 01:57:05,013 - GUI - DEBUG - No preview found for wallpaper 2889253417
+2025-07-07 01:57:05,026 - GUI - DEBUG - No preview found for wallpaper 2889259561
+2025-07-07 01:57:05,033 - GUI - DEBUG - No preview found for wallpaper 2889264825
+2025-07-07 01:57:05,050 - GUI - DEBUG - No preview found for wallpaper 2889267092
+2025-07-07 01:57:05,059 - GUI - DEBUG - No preview found for wallpaper 2889271490
+2025-07-07 01:57:05,071 - GUI - DEBUG - No preview found for wallpaper 2889275893
+2025-07-07 01:57:05,080 - GUI - DEBUG - No preview found for wallpaper 2889283859
+2025-07-07 01:57:05,091 - GUI - DEBUG - No preview found for wallpaper 2889287651
+2025-07-07 01:57:05,093 - GUI - DEBUG - No preview found for wallpaper 2889391212
+2025-07-07 01:57:05,104 - GUI - DEBUG - No preview found for wallpaper 2889398591
+2025-07-07 01:57:05,114 - GUI - DEBUG - No preview found for wallpaper 2889404466
+2025-07-07 01:57:05,127 - GUI - DEBUG - No preview found for wallpaper 2889408326
+2025-07-07 01:57:05,134 - GUI - DEBUG - No preview found for wallpaper 2889434509
+2025-07-07 01:57:05,144 - GUI - DEBUG - No preview found for wallpaper 2889438716
+2025-07-07 01:57:05,161 - GUI - DEBUG - No preview found for wallpaper 2889443609
+2025-07-07 01:57:05,163 - GUI - DEBUG - No preview found for wallpaper 2889604028
+2025-07-07 01:57:05,175 - GUI - DEBUG - No preview found for wallpaper 2889611867
+2025-07-07 01:57:05,186 - GUI - DEBUG - No preview found for wallpaper 2889613653
+2025-07-07 01:57:05,194 - GUI - DEBUG - No preview found for wallpaper 2889621787
+2025-07-07 01:57:05,206 - GUI - DEBUG - No preview found for wallpaper 2889624249
+2025-07-07 01:57:05,214 - GUI - DEBUG - No preview found for wallpaper 2889629963
+2025-07-07 01:57:05,225 - GUI - DEBUG - No preview found for wallpaper 2889635124
+2025-07-07 01:57:05,237 - GUI - DEBUG - No preview found for wallpaper 2889645832
+2025-07-07 01:57:05,243 - GUI - DEBUG - No preview found for wallpaper 2889669617
+2025-07-07 01:57:05,255 - GUI - DEBUG - No preview found for wallpaper 2889675869
+2025-07-07 01:57:05,263 - GUI - DEBUG - No preview found for wallpaper 2889712290
+2025-07-07 01:57:05,274 - GUI - DEBUG - No preview found for wallpaper 2889716362
+2025-07-07 01:57:05,283 - GUI - DEBUG - No preview found for wallpaper 2889737182
+2025-07-07 01:57:05,298 - GUI - DEBUG - No preview found for wallpaper 2889745551
+2025-07-07 01:57:05,302 - GUI - DEBUG - No preview found for wallpaper 2889780084
+2025-07-07 01:57:05,315 - GUI - DEBUG - No preview found for wallpaper 2889820389
+2025-07-07 01:57:05,325 - GUI - DEBUG - No preview found for wallpaper 2890540063
+2025-07-07 01:57:05,339 - GUI - DEBUG - No preview found for wallpaper 2890614996
+2025-07-07 01:57:05,345 - GUI - DEBUG - No preview found for wallpaper 2892162243
+2025-07-07 01:57:05,356 - GUI - DEBUG - No preview found for wallpaper 2892580577
+2025-07-07 01:57:05,366 - GUI - DEBUG - No preview found for wallpaper 2893568561
+2025-07-07 01:57:05,372 - GUI - DEBUG - No preview found for wallpaper 2893690929
+2025-07-07 01:57:05,385 - GUI - DEBUG - No preview found for wallpaper 2893774401
+2025-07-07 01:57:05,395 - GUI - DEBUG - No preview found for wallpaper 2894152468
+2025-07-07 01:57:05,404 - GUI - DEBUG - No preview found for wallpaper 2894159668
+2025-07-07 01:57:05,413 - GUI - DEBUG - No preview found for wallpaper 2894165783
+2025-07-07 01:57:05,429 - GUI - DEBUG - No preview found for wallpaper 2894170832
+2025-07-07 01:57:05,435 - GUI - DEBUG - No preview found for wallpaper 2894175732
+2025-07-07 01:57:05,447 - GUI - DEBUG - No preview found for wallpaper 2894181160
+2025-07-07 01:57:05,454 - GUI - DEBUG - No preview found for wallpaper 2894186416
+2025-07-07 01:57:05,467 - GUI - DEBUG - No preview found for wallpaper 2894191548
+2025-07-07 01:57:05,477 - GUI - DEBUG - No preview found for wallpaper 2894196787
+2025-07-07 01:57:05,484 - GUI - DEBUG - No preview found for wallpaper 2894201886
+2025-07-07 01:57:05,496 - GUI - DEBUG - No preview found for wallpaper 2894207306
+2025-07-07 01:57:05,504 - GUI - DEBUG - No preview found for wallpaper 2894213813
+2025-07-07 01:57:05,514 - GUI - DEBUG - No preview found for wallpaper 2894219297
+2025-07-07 01:57:05,528 - GUI - DEBUG - No preview found for wallpaper 2894225075
+2025-07-07 01:57:05,535 - GUI - DEBUG - No preview found for wallpaper 2894230366
+2025-07-07 01:57:05,546 - GUI - DEBUG - No preview found for wallpaper 2894239414
+2025-07-07 01:57:05,557 - GUI - DEBUG - No preview found for wallpaper 2894533311
+2025-07-07 01:57:05,563 - GUI - DEBUG - No preview found for wallpaper 2894537991
+2025-07-07 01:57:05,576 - GUI - DEBUG - No preview found for wallpaper 2894541486
+2025-07-07 01:57:05,585 - GUI - DEBUG - No preview found for wallpaper 2894552923
+2025-07-07 01:57:05,595 - GUI - DEBUG - No preview found for wallpaper 2894556681
+2025-07-07 01:57:05,610 - GUI - DEBUG - No preview found for wallpaper 2894564426
+2025-07-07 01:57:05,615 - GUI - DEBUG - No preview found for wallpaper 2894810326
+2025-07-07 01:57:05,627 - GUI - DEBUG - No preview found for wallpaper 2894815953
+2025-07-07 01:57:05,633 - GUI - DEBUG - No preview found for wallpaper 2899081326
+2025-07-07 01:57:05,645 - GUI - DEBUG - No preview found for wallpaper 2901582518
+2025-07-07 01:57:05,653 - GUI - DEBUG - No preview found for wallpaper 2904460511
+2025-07-07 01:57:05,665 - GUI - DEBUG - No preview found for wallpaper 2906267607
+2025-07-07 01:57:05,678 - GUI - DEBUG - No preview found for wallpaper 2907400323
+2025-07-07 01:57:05,684 - GUI - DEBUG - No preview found for wallpaper 2908238247
+2025-07-07 01:57:05,695 - GUI - DEBUG - No preview found for wallpaper 2909446381
+2025-07-07 01:57:05,705 - GUI - DEBUG - No preview found for wallpaper 2911864805
+2025-07-07 01:57:05,713 - GUI - DEBUG - No preview found for wallpaper 2914357008
+2025-07-07 01:57:05,724 - GUI - DEBUG - No preview found for wallpaper 2914372666
+2025-07-07 01:57:05,735 - GUI - DEBUG - No preview found for wallpaper 2914405895
+2025-07-07 01:57:05,747 - GUI - DEBUG - No preview found for wallpaper 2919258728
+2025-07-07 01:57:05,754 - GUI - DEBUG - No preview found for wallpaper 2921675372
+2025-07-07 01:57:05,763 - GUI - DEBUG - No preview found for wallpaper 2923993080
+2025-07-07 01:57:05,840 - GUI - DEBUG - No preview found for wallpaper 2925274691
+2025-07-07 01:57:05,845 - GUI - DEBUG - No preview found for wallpaper 2933329849
+2025-07-07 01:57:05,848 - GUI - DEBUG - No preview found for wallpaper 2937845038
+2025-07-07 01:57:05,850 - GUI - DEBUG - No preview found for wallpaper 2941962073
+2025-07-07 01:57:05,854 - GUI - DEBUG - No preview found for wallpaper 2943042847
+2025-07-07 01:57:05,855 - GUI - DEBUG - No preview found for wallpaper 2943924562
+2025-07-07 01:57:05,862 - GUI - DEBUG - No preview found for wallpaper 2949236982
+2025-07-07 01:57:05,863 - GUI - DEBUG - No preview found for wallpaper 2944073682
+2025-07-07 01:57:05,864 - GUI - DEBUG - No preview found for wallpaper 2950508493
+2025-07-07 01:57:05,878 - GUI - DEBUG - No preview found for wallpaper 2951630026
+2025-07-07 01:57:05,884 - GUI - DEBUG - No preview found for wallpaper 2953846296
+2025-07-07 01:57:05,895 - GUI - DEBUG - No preview found for wallpaper 2961256153
+2025-07-07 01:57:05,904 - GUI - DEBUG - No preview found for wallpaper 2961801273
+2025-07-07 01:57:05,918 - GUI - DEBUG - No preview found for wallpaper 2962770303
+2025-07-07 01:57:05,928 - GUI - DEBUG - No preview found for wallpaper 2964785943
+2025-07-07 01:57:05,935 - GUI - DEBUG - No preview found for wallpaper 2964805029
+2025-07-07 01:57:05,946 - GUI - DEBUG - No preview found for wallpaper 2965936075
+2025-07-07 01:57:05,954 - GUI - DEBUG - No preview found for wallpaper 2968584003
+2025-07-07 01:57:05,966 - GUI - DEBUG - No preview found for wallpaper 2972023144
+2025-07-07 01:57:05,981 - GUI - DEBUG - No preview found for wallpaper 2972056740
+2025-07-07 01:57:05,992 - GUI - DEBUG - No preview found for wallpaper 2972226061
+2025-07-07 01:57:05,995 - GUI - DEBUG - No preview found for wallpaper 2973607514
+2025-07-07 01:57:06,005 - GUI - DEBUG - No preview found for wallpaper 2973655460
+2025-07-07 01:57:06,016 - GUI - DEBUG - No preview found for wallpaper 2975584884
+2025-07-07 01:57:06,023 - GUI - DEBUG - No preview found for wallpaper 2977097269
+2025-07-07 01:57:06,041 - GUI - DEBUG - No preview found for wallpaper 2980181310
+2025-07-07 01:57:06,043 - GUI - DEBUG - No preview found for wallpaper 2980819009
+2025-07-07 01:57:06,059 - GUI - DEBUG - No preview found for wallpaper 2983467388
+2025-07-07 01:57:06,070 - GUI - DEBUG - No preview found for wallpaper 2988442683
+2025-07-07 01:57:06,074 - GUI - DEBUG - No preview found for wallpaper 2991261055
+2025-07-07 01:57:06,084 - GUI - DEBUG - No preview found for wallpaper 2992523272
+2025-07-07 01:57:06,097 - GUI - DEBUG - No preview found for wallpaper 2992882653
+2025-07-07 01:57:06,105 - GUI - DEBUG - No preview found for wallpaper 2994848882
+2025-07-07 01:57:06,126 - GUI - DEBUG - No preview found for wallpaper 2996030471
+2025-07-07 01:57:06,131 - GUI - DEBUG - No preview found for wallpaper 3006668250
+2025-07-07 01:57:06,134 - GUI - DEBUG - No preview found for wallpaper 3009516160
+2025-07-07 01:57:06,151 - GUI - DEBUG - No preview found for wallpaper 3012282758
+2025-07-07 01:57:06,156 - GUI - DEBUG - No preview found for wallpaper 3013262693
+2025-07-07 01:57:06,166 - GUI - DEBUG - No preview found for wallpaper 3016469704
+2025-07-07 01:57:06,179 - GUI - DEBUG - No preview found for wallpaper 3024004337
+2025-07-07 01:57:06,184 - GUI - DEBUG - No preview found for wallpaper 3034190803
+2025-07-07 01:57:06,195 - GUI - DEBUG - No preview found for wallpaper 3054344208
+2025-07-07 01:57:06,209 - GUI - DEBUG - No preview found for wallpaper 3112233707
+2025-07-07 01:57:06,215 - GUI - DEBUG - No preview found for wallpaper 3114654033
+2025-07-07 01:57:06,227 - GUI - DEBUG - No preview found for wallpaper 3115170267
+2025-07-07 01:57:06,236 - GUI - DEBUG - No preview found for wallpaper 3134543499
+2025-07-07 01:57:06,246 - GUI - DEBUG - No preview found for wallpaper 3136351729
+2025-07-07 01:57:06,256 - GUI - DEBUG - No preview found for wallpaper 3147002518
+2025-07-07 01:57:06,284 - GUI - DEBUG - No preview found for wallpaper 3152979607
+2025-07-07 01:57:06,291 - GUI - DEBUG - No preview found for wallpaper 3153160219
+2025-07-07 01:57:06,298 - GUI - DEBUG - No preview found for wallpaper 3153169785
+2025-07-07 01:57:06,301 - GUI - DEBUG - No preview found for wallpaper 3157137646
+2025-07-07 01:57:06,310 - GUI - DEBUG - No preview found for wallpaper 3163894903
+2025-07-07 01:57:06,313 - GUI - DEBUG - No preview found for wallpaper 3166375168
+2025-07-07 01:57:06,325 - GUI - DEBUG - No preview found for wallpaper 3166419887
+2025-07-07 01:57:06,337 - GUI - DEBUG - No preview found for wallpaper 3167108792
+2025-07-07 01:57:06,344 - GUI - DEBUG - No preview found for wallpaper 3169443348
+2025-07-07 01:57:06,357 - GUI - DEBUG - No preview found for wallpaper 3170479153
+2025-07-07 01:57:06,367 - GUI - DEBUG - No preview found for wallpaper 3172122624
+2025-07-07 01:57:06,377 - GUI - DEBUG - No preview found for wallpaper 3173014088
+2025-07-07 01:57:06,393 - GUI - DEBUG - No preview found for wallpaper 3173457736
+2025-07-07 01:57:06,398 - GUI - DEBUG - No preview found for wallpaper 3174556087
+2025-07-07 01:57:06,410 - GUI - DEBUG - No preview found for wallpaper 3194061367
+2025-07-07 01:57:06,415 - GUI - DEBUG - No preview found for wallpaper 3198035593
+2025-07-07 01:57:06,426 - GUI - DEBUG - No preview found for wallpaper 3208782461
+2025-07-07 01:57:06,433 - GUI - DEBUG - No preview found for wallpaper 3219522309
+2025-07-07 01:57:06,479 - GUI - DEBUG - No preview found for wallpaper 3228417007
+2025-07-07 01:57:06,480 - GUI - DEBUG - No preview found for wallpaper 3228409163
+2025-07-07 01:57:06,483 - GUI - DEBUG - No preview found for wallpaper 3228514898
+2025-07-07 01:57:06,485 - GUI - DEBUG - No preview found for wallpaper 3236949271
+2025-07-07 01:57:06,496 - GUI - DEBUG - No preview found for wallpaper 3238389972
+2025-07-07 01:57:06,504 - GUI - DEBUG - No preview found for wallpaper 3240672614
+2025-07-07 01:57:06,514 - GUI - DEBUG - No preview found for wallpaper 3247854465
+2025-07-07 01:57:06,523 - GUI - DEBUG - No preview found for wallpaper 3247896390
+2025-07-07 01:57:06,534 - GUI - DEBUG - No preview found for wallpaper 3255219425
+2025-07-07 01:57:06,549 - GUI - DEBUG - No preview found for wallpaper 3255246455
+2025-07-07 01:57:06,556 - GUI - DEBUG - No preview found for wallpaper 3255251200
+2025-07-07 01:57:06,567 - GUI - DEBUG - No preview found for wallpaper 3258068467
+2025-07-07 01:57:06,577 - GUI - DEBUG - No preview found for wallpaper 3260566360
+2025-07-07 01:57:06,593 - GUI - DEBUG - No preview found for wallpaper 3266045569
+2025-07-07 01:57:06,597 - GUI - DEBUG - No preview found for wallpaper 3266814017
+2025-07-07 01:57:06,608 - GUI - DEBUG - No preview found for wallpaper 3267627667
+2025-07-07 01:57:06,616 - GUI - DEBUG - No preview found for wallpaper 3270952407
+2025-07-07 01:57:06,626 - GUI - DEBUG - No preview found for wallpaper 3271209227
+2025-07-07 01:57:06,637 - GUI - DEBUG - No preview found for wallpaper 3271381076
+2025-07-07 01:57:06,647 - GUI - DEBUG - No preview found for wallpaper 3275233812
+2025-07-07 01:57:06,655 - GUI - DEBUG - No preview found for wallpaper 3277233329
+2025-07-07 01:57:06,665 - GUI - DEBUG - No preview found for wallpaper 3278602892
+2025-07-07 01:57:06,676 - GUI - DEBUG - No preview found for wallpaper 3295289610
+2025-07-07 01:57:06,688 - GUI - DEBUG - No preview found for wallpaper 3296468737
+2025-07-07 01:57:06,701 - GUI - DEBUG - No preview found for wallpaper 3298529044
+2025-07-07 01:57:06,704 - GUI - DEBUG - No preview found for wallpaper 3299283750
+2025-07-07 01:57:06,718 - GUI - DEBUG - No preview found for wallpaper 3302534516
+2025-07-07 01:57:06,724 - GUI - DEBUG - No preview found for wallpaper 3306048577
+2025-07-07 01:57:06,735 - GUI - DEBUG - No preview found for wallpaper 3310280885
+2025-07-07 01:57:06,746 - GUI - DEBUG - No preview found for wallpaper 3310597726
+2025-07-07 01:57:06,754 - GUI - DEBUG - No preview found for wallpaper 3312099561
+2025-07-07 01:57:06,763 - GUI - DEBUG - No preview found for wallpaper 3314551278
+2025-07-07 01:57:06,778 - GUI - DEBUG - No preview found for wallpaper 3315337692
+2025-07-07 01:57:06,785 - GUI - DEBUG - No preview found for wallpaper 3330316497
+2025-07-07 01:57:06,798 - GUI - DEBUG - No preview found for wallpaper 3332073331
+2025-07-07 01:57:06,809 - GUI - DEBUG - No preview found for wallpaper 3332078055
+2025-07-07 01:57:06,818 - GUI - DEBUG - No preview found for wallpaper 3332088408
+2025-07-07 01:57:06,825 - GUI - DEBUG - No preview found for wallpaper 3332097261
+2025-07-07 01:57:06,834 - GUI - DEBUG - No preview found for wallpaper 3332149212
+2025-07-07 01:57:06,849 - GUI - DEBUG - No preview found for wallpaper 3332556409
+2025-07-07 01:57:06,857 - GUI - DEBUG - No preview found for wallpaper 3332703628
+2025-07-07 01:57:06,871 - GUI - DEBUG - No preview found for wallpaper 3332707353
+2025-07-07 01:57:06,876 - GUI - DEBUG - No preview found for wallpaper 3332813280
+2025-07-07 01:57:06,889 - GUI - DEBUG - No preview found for wallpaper 3334213920
+2025-07-07 01:57:06,898 - GUI - DEBUG - No preview found for wallpaper 3335022003
+2025-07-07 01:57:06,905 - GUI - DEBUG - No preview found for wallpaper 3335519602
+2025-07-07 01:57:06,914 - GUI - DEBUG - No preview found for wallpaper 3335723617
+2025-07-07 01:57:06,927 - GUI - DEBUG - No preview found for wallpaper 3335849179
+2025-07-07 01:57:06,949 - GUI - DEBUG - No preview found for wallpaper 3335874267
+2025-07-07 01:57:06,953 - GUI - DEBUG - No preview found for wallpaper 3335895233
+2025-07-07 01:57:06,956 - GUI - DEBUG - No preview found for wallpaper 3335903546
+2025-07-07 01:57:06,965 - GUI - DEBUG - No preview found for wallpaper 3335911452
+2025-07-07 01:57:06,974 - GUI - DEBUG - No preview found for wallpaper 3336389100
+2025-07-07 01:57:06,984 - GUI - DEBUG - No preview found for wallpaper 3337417931
+2025-07-07 01:57:06,995 - GUI - DEBUG - No preview found for wallpaper 3337573553
+2025-07-07 01:57:07,011 - GUI - DEBUG - No preview found for wallpaper 3338136528
+2025-07-07 01:57:07,027 - GUI - DEBUG - No preview found for wallpaper 3345764285
+2025-07-07 01:57:07,028 - GUI - DEBUG - No preview found for wallpaper 3347048515
+2025-07-07 01:57:07,042 - GUI - DEBUG - No preview found for wallpaper 3348416336
+2025-07-07 01:57:07,046 - GUI - DEBUG - No preview found for wallpaper 3357672017
+2025-07-07 01:57:07,059 - GUI - DEBUG - No preview found for wallpaper 3359990528
+2025-07-07 01:57:07,076 - GUI - DEBUG - No preview found for wallpaper 3360241783
+2025-07-07 01:57:07,077 - GUI - DEBUG - No preview found for wallpaper 3360942604
+2025-07-07 01:57:07,099 - GUI - DEBUG - No preview found for wallpaper 3360977760
+2025-07-07 01:57:07,102 - GUI - DEBUG - No preview found for wallpaper 3361429310
+2025-07-07 01:57:07,108 - GUI - DEBUG - No preview found for wallpaper 3361446526
+2025-07-07 01:57:07,123 - GUI - DEBUG - No preview found for wallpaper 3362326051
+2025-07-07 01:57:07,128 - GUI - DEBUG - No preview found for wallpaper 3362346113
+2025-07-07 01:57:07,139 - GUI - DEBUG - No preview found for wallpaper 3362805463
+2025-07-07 01:57:07,147 - GUI - DEBUG - No preview found for wallpaper 3363226265
+2025-07-07 01:57:07,157 - GUI - DEBUG - No preview found for wallpaper 3364463543
+2025-07-07 01:57:07,167 - GUI - DEBUG - No preview found for wallpaper 3366292113
+2025-07-07 01:57:07,175 - GUI - DEBUG - No preview found for wallpaper 3367889553
+2025-07-07 01:57:07,189 - GUI - DEBUG - No preview found for wallpaper 3367915956
+2025-07-07 01:57:07,195 - GUI - DEBUG - No preview found for wallpaper 3368505278
+2025-07-07 01:57:07,203 - GUI - DEBUG - No preview found for wallpaper 3368593619
+2025-07-07 01:57:07,217 - GUI - DEBUG - No preview found for wallpaper 3369131814
+2025-07-07 01:57:07,227 - GUI - DEBUG - No preview found for wallpaper 3369938887
+2025-07-07 01:57:07,248 - GUI - DEBUG - No preview found for wallpaper 3373131676
+2025-07-07 01:57:07,258 - GUI - DEBUG - No preview found for wallpaper 3373189687
+2025-07-07 01:57:07,268 - GUI - DEBUG - No preview found for wallpaper 3373591733
+2025-07-07 01:57:07,275 - GUI - DEBUG - No preview found for wallpaper 3373805887
+2025-07-07 01:57:07,290 - GUI - DEBUG - No preview found for wallpaper 3374022812
+2025-07-07 01:57:07,314 - GUI - DEBUG - No preview found for wallpaper 3375381612
+2025-07-07 01:57:07,324 - GUI - DEBUG - No preview found for wallpaper 3375506852
+2025-07-07 01:57:07,329 - GUI - DEBUG - No preview found for wallpaper 3375690374
+2025-07-07 01:57:07,333 - GUI - DEBUG - No preview found for wallpaper 3376577672
+2025-07-07 01:57:07,335 - GUI - DEBUG - No preview found for wallpaper 3376995975
+2025-07-07 01:57:07,347 - GUI - DEBUG - No preview found for wallpaper 3377018747
+2025-07-07 01:57:07,356 - GUI - DEBUG - No preview found for wallpaper 3377131564
+2025-07-07 01:57:07,365 - GUI - DEBUG - No preview found for wallpaper 3379798119
+2025-07-07 01:57:07,378 - GUI - DEBUG - No preview found for wallpaper 3379978153
+2025-07-07 01:57:07,430 - GUI - DEBUG - No preview found for wallpaper 3491452163
+2025-07-07 01:57:07,434 - GUI - DEBUG - No preview found for wallpaper 3491472870
+2025-07-07 01:57:07,437 - GUI - DEBUG - No preview found for wallpaper 3491479068
+2025-07-07 01:57:07,440 - GUI - DEBUG - No preview found for wallpaper 3491479123
+2025-07-07 01:57:07,443 - GUI - DEBUG - No preview found for wallpaper 3491523127
+2025-07-07 01:57:07,447 - GUI - DEBUG - No preview found for wallpaper 3491536325
+2025-07-07 01:57:07,459 - GUI - DEBUG - No preview found for wallpaper 3491544496
+2025-07-07 01:57:07,466 - GUI - DEBUG - No preview found for wallpaper 3491586153
+2025-07-07 01:57:07,651 - GUI - DEBUG - No preview found for wallpaper 824625624
+2025-07-07 01:57:10,760 - GUI - INFO - Initial setup needed - opening settings dialog
+2025-07-07 01:57:20,349 - GUI - INFO - Shutting down...
+2025-07-07 02:01:36,902 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 02:01:36,976 - WallpaperEngine - ERROR - WAYLAND DETECTED - Linux Wallpaper Engine is NOT compatible with Wayland!
+2025-07-07 02:01:36,978 - WallpaperEngine - ERROR - Please switch to X11 session or the wallpapers will not work properly.
+2025-07-07 02:01:37,095 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 02:01:37,097 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 02:01:37,145 - WallpaperEngine - INFO - Found 407 wallpapers
+2025-07-07 02:01:37,402 - root - INFO - Entering GTK main loop
+2025-07-07 02:02:26,559 - GUI - INFO - Initial setup needed - opening settings dialog
+2025-07-07 02:02:38,780 - GUI - INFO - Shutting down...
+2025-07-07 02:04:44,192 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 02:04:44,270 - WallpaperEngine - ERROR - WAYLAND DETECTED - Linux Wallpaper Engine is NOT compatible with Wayland!
+2025-07-07 02:04:44,274 - WallpaperEngine - ERROR - Please switch to X11 session or the wallpapers will not work properly.
+2025-07-07 02:04:44,401 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 02:04:44,402 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 02:04:44,402 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 02:04:44,404 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 02:04:44,410 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine'}
+2025-07-07 02:04:44,501 - WallpaperEngine - INFO - Found 407 wallpapers
+2025-07-07 02:04:44,677 - root - INFO - Entering GTK main loop
+2025-07-07 02:04:54,195 - GUI - INFO - Shutting down...
+2025-07-07 02:07:19,168 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 02:07:19,273 - WallpaperEngine - ERROR - WAYLAND DETECTED - Linux Wallpaper Engine is NOT compatible with Wayland!
+2025-07-07 02:07:19,274 - WallpaperEngine - ERROR - Please switch to X11 session or the wallpapers will not work properly.
+2025-07-07 02:07:19,309 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 02:07:19,311 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 02:07:19,312 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 02:07:19,312 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 02:07:19,313 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine'}
+2025-07-07 02:07:19,352 - WallpaperEngine - INFO - Found 407 wallpapers
+2025-07-07 02:07:19,487 - root - INFO - Entering GTK main loop
+2025-07-07 02:07:36,259 - GUI - INFO - Shutting down...
+2025-07-07 02:10:41,542 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 02:10:41,590 - WallpaperEngine - ERROR - WAYLAND DETECTED - Linux Wallpaper Engine is NOT compatible with Wayland!
+2025-07-07 02:10:41,591 - WallpaperEngine - ERROR - Please switch to X11 session or the wallpapers will not work properly.
+2025-07-07 02:10:41,622 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 02:10:41,622 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 02:10:41,622 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 02:10:41,623 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 02:10:41,623 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine'}
+2025-07-07 02:10:41,643 - WallpaperEngine - INFO - Found 407 wallpapers
+2025-07-07 02:10:41,755 - root - INFO - Entering GTK main loop
+2025-07-07 02:10:59,264 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 02:10:59,264 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 02:10:59,309 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 02:10:59,311 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 02:10:59,311 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 02:10:59,512 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 02:10:59,513 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 02:10:59,513 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 3495221753
+2025-07-07 02:10:59,616 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 25503)
+2025-07-07 02:10:59,616 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 02:11:04,049 - GUI - INFO - Shutting down...
+2025-07-07 02:25:47,513 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 02:25:47,566 - WallpaperEngine - ERROR - WAYLAND DETECTED - Linux Wallpaper Engine is NOT compatible with Wayland!
+2025-07-07 02:25:47,566 - WallpaperEngine - ERROR - Please switch to X11 session or the wallpapers will not work properly.
+2025-07-07 02:25:47,598 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 02:25:47,598 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 02:25:47,599 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 02:25:47,599 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 02:25:47,599 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine'}
+2025-07-07 02:25:47,616 - WallpaperEngine - INFO - Found 0 wallpapers
+2025-07-07 02:25:47,762 - root - INFO - Entering GTK main loop
+2025-07-07 02:25:52,410 - GUI - INFO - Shutting down...
+2025-07-07 04:20:17,634 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 04:20:17,831 - WallpaperEngine - ERROR - WAYLAND DETECTED - Linux Wallpaper Engine is NOT compatible with Wayland!
+2025-07-07 04:20:17,834 - WallpaperEngine - ERROR - Please switch to X11 session or the wallpapers will not work properly.
+2025-07-07 04:20:17,862 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 04:20:17,869 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 04:20:17,869 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 04:20:17,876 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 04:20:17,876 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine'}
+2025-07-07 04:20:17,906 - WallpaperEngine - INFO - Found 0 wallpapers
+2025-07-07 04:20:18,153 - root - INFO - Entering GTK main loop
+2025-07-07 04:23:49,753 - GUI - INFO - Shutting down...
+2025-07-07 06:07:38,902 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 06:07:38,939 - WallpaperEngine - ERROR - WAYLAND DETECTED - Linux Wallpaper Engine is NOT compatible with Wayland!
+2025-07-07 06:07:38,939 - WallpaperEngine - ERROR - Please switch to X11 session or the wallpapers will not work properly.
+2025-07-07 06:07:38,947 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 06:07:38,948 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 06:07:38,948 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 06:07:38,950 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 06:07:38,950 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine'}
+2025-07-07 06:07:38,959 - WallpaperEngine - INFO - Found 404 wallpapers
+2025-07-07 06:07:39,028 - root - INFO - Entering GTK main loop
+2025-07-07 06:09:17,949 - GUI - INFO - Shutting down...
+2025-07-07 07:01:14,474 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 07:01:14,502 - WallpaperEngine - ERROR - WAYLAND DETECTED - Linux Wallpaper Engine is NOT compatible with Wayland!
+2025-07-07 07:01:14,502 - WallpaperEngine - ERROR - Please switch to X11 session or the wallpapers will not work properly.
+2025-07-07 07:01:14,510 - WallpaperEngine - INFO - Using display: HDMI-2
+2025-07-07 07:01:14,510 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 07:01:14,510 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 07:01:14,510 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 07:01:14,510 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine'}
+2025-07-07 07:01:14,517 - WallpaperEngine - INFO - Found 404 wallpapers
+2025-07-07 07:01:14,576 - root - INFO - Entering GTK main loop
+2025-07-07 07:01:16,531 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 07:01:16,532 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 07:01:16,553 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 07:01:16,553 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 07:01:16,553 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 07:01:16,753 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:01:16,753 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 07:01:16,754 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 2172341764
+2025-07-07 07:01:16,855 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 50847)
+2025-07-07 07:01:16,856 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:01:35,042 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 07:01:35,043 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 07:01:35,060 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 07:01:35,061 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 07:01:35,061 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 07:01:35,261 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:01:35,262 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 07:01:35,262 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 2277047725
+2025-07-07 07:01:35,363 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 50853)
+2025-07-07 07:01:35,364 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:02:25,197 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 07:02:25,197 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 07:02:25,223 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 07:02:25,223 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 07:02:25,223 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 07:02:25,424 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:02:25,424 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 07:02:25,424 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 2118284965
+2025-07-07 07:02:25,526 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 50879)
+2025-07-07 07:02:25,526 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:04:11,183 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 07:04:11,263 - WallpaperEngine - INFO - Found primary display: HDMI-2
+2025-07-07 07:04:11,265 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 07:04:11,267 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 07:04:11,268 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 07:04:11,269 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine'}
+2025-07-07 07:04:11,282 - WallpaperEngine - INFO - Found 404 wallpapers
+2025-07-07 07:04:11,324 - root - INFO - Entering GTK main loop
+2025-07-07 07:04:13,400 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 07:04:13,400 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 07:04:13,416 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 07:04:13,416 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 07:04:13,417 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 07:04:13,617 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:04:13,617 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 07:04:13,618 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 1855131550
+2025-07-07 07:04:13,720 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 2889)
+2025-07-07 07:04:13,720 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:04:16,814 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 07:04:16,814 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 07:04:16,837 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 07:04:16,837 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 07:04:16,837 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 07:04:17,038 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:04:17,038 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 07:04:17,038 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 2118284965
+2025-07-07 07:04:17,140 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 2891)
+2025-07-07 07:04:17,140 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:07:44,923 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 07:07:44,928 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 07:07:44,991 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 07:07:44,992 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 07:07:44,992 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 07:07:45,195 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:07:45,195 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 07:07:45,195 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 2178519816
+2025-07-07 07:07:45,299 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 4399)
+2025-07-07 07:07:45,300 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:10:44,089 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 07:10:44,089 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 07:10:44,122 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 07:10:44,123 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 07:10:44,123 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 07:10:44,325 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:10:44,326 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 07:10:44,326 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 2118284965
+2025-07-07 07:10:44,432 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 4442)
+2025-07-07 07:10:44,433 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:10:59,076 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 07:10:59,079 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 07:10:59,117 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 07:10:59,118 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 07:10:59,118 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 07:10:59,320 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:10:59,321 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 07:10:59,321 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 1237084446
+2025-07-07 07:10:59,426 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 4468)
+2025-07-07 07:10:59,427 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:13:15,202 - WallpaperEngine - INFO - Found 404 wallpapers
+2025-07-07 07:13:15,321 - WallpaperEngine - INFO - Found 404 wallpapers
+2025-07-07 07:13:15,780 - WallpaperEngine - INFO - Found 404 wallpapers
+2025-07-07 07:13:19,367 - WallpaperEngine - INFO - Found 404 wallpapers
+2025-07-07 07:13:29,074 - GUI - INFO - Shutting down...
+2025-07-07 07:13:33,627 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 07:13:33,788 - WallpaperEngine - INFO - Found primary display: HDMI-2
+2025-07-07 07:13:33,789 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 07:13:33,790 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 07:13:33,795 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 07:13:33,795 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine'}
+2025-07-07 07:13:33,808 - WallpaperEngine - INFO - Found 404 wallpapers
+2025-07-07 07:13:34,127 - root - INFO - Entering GTK main loop
+2025-07-07 07:13:37,579 - WallpaperEngine - INFO - Found 404 wallpapers
+2025-07-07 07:13:37,808 - WallpaperEngine - INFO - Found 404 wallpapers
+2025-07-07 07:13:40,793 - WallpaperEngine - INFO - Found 404 wallpapers
+2025-07-07 07:13:56,564 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 07:13:56,568 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 07:13:56,606 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 07:13:56,607 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 07:13:56,607 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 07:13:56,807 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:13:56,811 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 07:13:56,811 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 3136351729
+2025-07-07 07:13:56,917 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 7937)
+2025-07-07 07:13:56,917 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 07:17:55,189 - GUI - INFO - Shutting down...
+2025-07-07 17:06:04,835 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 17:06:05,154 - WallpaperEngine - INFO - Found primary display: HDMI-2
+2025-07-07 17:06:05,159 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 17:06:05,159 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 17:06:05,168 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 17:06:05,173 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine'}
+2025-07-07 17:06:05,315 - WallpaperEngine - INFO - Found 1 wallpapers
+2025-07-07 17:06:05,526 - root - INFO - Entering GTK main loop
+2025-07-07 17:06:08,363 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 17:06:08,366 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 17:06:08,411 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 17:06:08,416 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 17:06:08,426 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 17:06:08,645 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:06:08,645 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 17:06:08,645 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 1237084446
+2025-07-07 17:06:08,752 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 37130)
+2025-07-07 17:06:08,757 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:06:49,571 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 17:06:49,571 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 17:06:49,615 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 17:06:49,617 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 17:06:49,617 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 17:06:49,818 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:06:49,820 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 17:06:49,820 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 1237084446
+2025-07-07 17:06:49,924 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 37156)
+2025-07-07 17:06:49,925 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:35:45,378 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 17:35:45,568 - WallpaperEngine - INFO - Found primary display: HDMI-2
+2025-07-07 17:35:45,577 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 17:35:45,584 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 17:35:45,593 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 17:35:45,597 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine'}
+2025-07-07 17:35:45,646 - WallpaperEngine - INFO - Found 6 wallpapers
+2025-07-07 17:35:45,805 - root - INFO - Entering GTK main loop
+2025-07-07 17:35:47,881 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 17:35:47,882 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 17:35:47,944 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 17:35:47,944 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 17:35:47,944 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 17:35:48,147 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:35:48,148 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 17:35:48,149 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --screen-root HDMI-2 1597153563
+2025-07-07 17:35:48,256 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 39635)
+2025-07-07 17:35:48,257 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:35:57,380 - GUI - DEBUG - Saved settings with paths: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': True, 'custom_args': '--no-sandbox --single-process', 'enable_ld_preload': True, 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-07-07 17:35:57,381 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 17:35:57,381 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 17:35:57,417 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 17:35:57,418 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 17:35:57,418 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 17:35:57,620 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:35:57,621 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 17:35:57,622 - WallpaperEngine - INFO - Added custom arguments: ['--no-sandbox', '--single-process']
+2025-07-07 17:35:57,622 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --no-sandbox --single-process --screen-root HDMI-2 1597153563
+2025-07-07 17:35:57,622 - WallpaperEngine - INFO - Added LD_PRELOAD: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/libcef.so
+2025-07-07 17:35:57,751 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 39638)
+2025-07-07 17:35:57,754 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:35:59,132 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 17:35:59,143 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 17:35:59,226 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 17:35:59,229 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 17:35:59,229 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 17:35:59,430 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:35:59,431 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 17:35:59,431 - WallpaperEngine - INFO - Added custom arguments: ['--no-sandbox', '--single-process']
+2025-07-07 17:35:59,431 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --no-sandbox --single-process --screen-root HDMI-2 824625624
+2025-07-07 17:35:59,431 - WallpaperEngine - INFO - Added LD_PRELOAD: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/libcef.so
+2025-07-07 17:35:59,532 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 39640)
+2025-07-07 17:35:59,535 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:36:02,180 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 17:36:02,181 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 17:36:02,254 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 17:36:02,256 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 17:36:02,262 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 17:36:02,464 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:36:02,469 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 17:36:02,470 - WallpaperEngine - INFO - Added custom arguments: ['--no-sandbox', '--single-process']
+2025-07-07 17:36:02,471 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --no-sandbox --single-process --screen-root HDMI-2 1597153563
+2025-07-07 17:36:02,471 - WallpaperEngine - INFO - Added LD_PRELOAD: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/libcef.so
+2025-07-07 17:36:02,579 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 39643)
+2025-07-07 17:36:02,579 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:36:05,813 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 17:36:05,813 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 17:36:05,883 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 17:36:05,888 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 17:36:05,892 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 17:36:06,105 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:36:06,108 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 17:36:06,108 - WallpaperEngine - INFO - Added custom arguments: ['--no-sandbox', '--single-process']
+2025-07-07 17:36:06,108 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --no-sandbox --single-process --screen-root HDMI-2 1493773391
+2025-07-07 17:36:06,109 - WallpaperEngine - INFO - Added LD_PRELOAD: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/libcef.so
+2025-07-07 17:36:06,211 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 39647)
+2025-07-07 17:36:06,212 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:37:22,396 - GUI - INFO - Shutting down...
+2025-07-07 17:38:02,363 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 17:38:02,598 - WallpaperEngine - INFO - Found primary display: HDMI-2
+2025-07-07 17:38:02,614 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 17:38:02,616 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 17:38:02,628 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 17:38:02,629 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 17:38:02,630 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': True, 'custom_args': '--no-sandbox --single-process', 'enable_ld_preload': True, 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-07-07 17:38:02,642 - WallpaperEngine - INFO - Found 1 wallpapers
+2025-07-07 17:38:02,818 - root - INFO - Entering GTK main loop
+2025-07-07 17:38:10,060 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 17:38:10,060 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 17:38:10,264 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 17:38:10,279 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 17:38:10,289 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 17:38:10,494 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:38:10,495 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 17:38:10,516 - WallpaperEngine - INFO - Added custom arguments: ['--no-sandbox', '--single-process']
+2025-07-07 17:38:10,519 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --scaling default --clamping clamp --no-sandbox --single-process --screen-root HDMI-2 1237084446
+2025-07-07 17:38:10,537 - WallpaperEngine - INFO - Added LD_PRELOAD: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/libcef.so
+2025-07-07 17:38:10,653 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 39795)
+2025-07-07 17:38:10,656 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:42:40,136 - GUI - INFO - Shutting down...
+2025-07-07 17:48:22,827 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-07-07 17:48:22,931 - WallpaperEngine - INFO - Found primary display: HDMI-2
+2025-07-07 17:48:22,933 - WallpaperEngine - INFO - Found WPE at: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 17:48:22,937 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 17:48:22,941 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-07-07 17:48:22,941 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-07-07 17:48:22,941 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': False, 'auto_rotation': False, 'rotation_interval': 15, 'no_automute': False, 'no_audio_processing': False, 'no_fullscreen_pause': False, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': True, 'custom_args': '--no-sandbox --single-process', 'enable_ld_preload': True, 'wpe_path': '/home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-07-07 17:48:22,974 - WallpaperEngine - INFO - Found 1 wallpapers
+2025-07-07 17:48:23,093 - root - INFO - Entering GTK main loop
+2025-07-07 17:48:26,134 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 17:48:26,134 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 17:48:26,176 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 17:48:26,176 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 17:48:26,176 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 17:48:26,376 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:48:26,376 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 17:48:26,377 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=True, custom_args='--no-sandbox --single-process', using_single_process=True
+2025-07-07 17:48:26,377 - WallpaperEngine - INFO - Single-process mode detected - excluding problematic scaling/clamping arguments
+2025-07-07 17:48:26,377 - WallpaperEngine - INFO - Added custom arguments: ['--no-sandbox', '--single-process']
+2025-07-07 17:48:26,378 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-sandbox --single-process --screen-root HDMI-2 1237084446
+2025-07-07 17:48:26,378 - WallpaperEngine - INFO - Added LD_PRELOAD: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/libcef.so
+2025-07-07 17:48:26,479 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 41477)
+2025-07-07 17:48:26,479 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:48:32,589 - WallpaperEngine - INFO - Found 1 wallpapers
+2025-07-07 17:48:42,887 - WallpaperEngine - INFO - Found 4 wallpapers
+2025-07-07 17:48:43,991 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 17:48:43,992 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 17:48:44,035 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-07-07 17:48:44,036 - WallpaperEngine - DEBUG - Found wallpaper processes: ['41477']
+2025-07-07 17:48:44,036 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-07-07 17:48:44,203 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-07-07 17:48:44,204 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-07-07 17:48:44,234 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-07-07 17:48:44,363 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-07-07 17:48:44,387 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 17:48:44,388 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 17:48:44,388 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 17:48:44,588 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:48:44,589 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 17:48:44,589 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=True, custom_args='--no-sandbox --single-process', using_single_process=True
+2025-07-07 17:48:44,589 - WallpaperEngine - INFO - Single-process mode detected - excluding problematic scaling/clamping arguments
+2025-07-07 17:48:44,590 - WallpaperEngine - INFO - Added custom arguments: ['--no-sandbox', '--single-process']
+2025-07-07 17:48:44,590 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-sandbox --single-process --screen-root HDMI-2 824625624
+2025-07-07 17:48:44,590 - WallpaperEngine - INFO - Added LD_PRELOAD: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/libcef.so
+2025-07-07 17:48:44,694 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 41637)
+2025-07-07 17:48:44,695 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:48:50,664 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-07-07 17:48:50,666 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-07-07 17:48:50,785 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-07-07 17:48:50,792 - WallpaperEngine - DEBUG - Found wallpaper processes: ['41637']
+2025-07-07 17:48:50,799 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-07-07 17:48:51,314 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-07-07 17:48:51,324 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-07-07 17:48:51,497 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-07-07 17:48:51,632 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-07-07 17:48:51,669 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-07-07 17:48:51,671 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-07-07 17:48:51,671 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-07-07 17:48:51,872 - WallpaperEngine - DEBUG - Original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:48:51,872 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output
+2025-07-07 17:48:51,873 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=True, custom_args='--no-sandbox --single-process', using_single_process=True
+2025-07-07 17:48:51,873 - WallpaperEngine - INFO - Single-process mode detected - excluding problematic scaling/clamping arguments
+2025-07-07 17:48:51,874 - WallpaperEngine - INFO - Added custom arguments: ['--no-sandbox', '--single-process']
+2025-07-07 17:48:51,874 - WallpaperEngine - INFO - Running command: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-sandbox --single-process --screen-root HDMI-2 1597153563
+2025-07-07 17:48:51,875 - WallpaperEngine - INFO - Added LD_PRELOAD: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine/build/output/libcef.so
+2025-07-07 17:48:51,977 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 41732)
+2025-07-07 17:48:51,979 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
+2025-07-07 17:48:57,451 - GUI - INFO - Shutting down...
