@@ -1,0 +1,53 @@
+# IDE and editor files
+.cursorrules
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+debug.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Model files and large downloads
+*.gguf
+*.bin
+*.safetensors
+models/
+databases/
+
+# Backup and temporary directories
+src_backup/
+backup/
+temp/
+tmp/
+
+# Shell scripts and batch files (unless they're part of the core functionality)
+*.sh
+*.bat
+*.cmd
+
+# Documentation and analysis files
+*.md
+!README.md
+!LICENSE
