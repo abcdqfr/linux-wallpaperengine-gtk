@@ -1,12 +1,10 @@
 # Linux Wallpaper Engine GTK
 
-A professional GTK frontend for [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine),
-providing an intuitive interface for managing animated wallpapers on Linux.
+A GTK frontend for [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine),
+providing an intuitive interface for managing Wallpaper Engine wallpapers on Linux.
 
 ## Features
-
-- **Advanced CEF Arguments**: Custom CEF arguments with presets for Intel Graphics Fix, Debug Mode, and Performance Mode
-- **Smart Argument Filtering**: Automatically omits problematic arguments in single-process mode
+- **Dual Monitor Support**: Apply independent wallpapers to each monitor!
 - **Wallpaper Management**: Browse, select, and launch wallpapers with ease
 - **Settings Dialog**: Configure wallpaper engine settings and CEF arguments
 - **Refresh Functionality**: Reload wallpaper list when new wallpapers are added
@@ -20,13 +18,13 @@ Download the standalone file and run:
 
 ```bash
 # Download the standalone file
-wget https://github.com/abcdqfr/linux-wallpaperengine-gtk/releases/latest/download/linux-wallpaperengine-gtk-standalone.py
+wget https://github.com/abcdqfr/linux-wallpaperengine-gtk/linux-wallpaperengine-gtk.py
 
 # Make executable
-chmod +x linux-wallpaperengine-gtk-standalone.py
+chmod +x linux-wallpaperengine-gtk.py
 
 # Run
-./linux-wallpaperengine-gtk-standalone.py
+./linux-wallpaperengine-gtk.py
 ```
 
 ### Development Installation
@@ -70,12 +68,12 @@ sudo pacman -S python-gobject gtk3
 1. **Launch the application**
 
    ```bash
-   ./linux-wallpaperengine-gtk-standalone.py
+   ./linux-wallpaperengine-gtk.py
    ```
 
 2. **Browse wallpapers** using the arrow keys or mouse
 
-3. **Select a wallpaper** to launch it
+3. **Select a wallpaper** Left click to apply to Primary display, Right to apply to Secondary!!
 
 4. **Access settings** via the settings button (⚙️)
 
@@ -100,11 +98,11 @@ The application automatically detects single-process mode and omits problematic 
 
 ```text
 linux-wallpaperengine-gtk/
-├── src/wallpaperengine/     # Source code modules
-├── tests/                   # Test suite
-├── scripts/                 # Build scripts
-├── pyproject.toml          # Modern Python packaging
-└── Makefile                # Development commands
+├── linux-wallpaperengine-gtk.py    # Standalone GTK GUI
+├── pyproject.toml                  # Modern Python packaging
+├── README.md                       # You are here!
+├── LICENSE                         # MIT license
+└── Makefile                        # Development commands
 ```
 
 ### Development Commands
@@ -115,7 +113,6 @@ make test         # Run tests
 make format       # Format code
 make lint         # Lint code
 make check        # Run all checks
-make monolith     # Build standalone file
 make release      # Prepare release
 ```
 
@@ -132,32 +129,13 @@ pytest --cov=src tests/
 pytest tests/pytest_suite_test.py -v
 ```
 
-## Architecture
-
-### Core Components
-
-- **WallpaperEngine**: Core wallpaper management and CEF integration
-- **WallpaperWindow**: Main GTK UI window and event handling
-- **SettingsDialog**: Configuration management and CEF arguments
-- **WallpaperContextMenu**: Right-click context menu functionality
-
-### Professional Workflow
-
-The project uses a **round-trip refactoring system**:
-
-1. **Development**: Clean `src/` structure with modern tooling
-2. **Distribution**: Standalone monolith for end users
-3. **Build System**: Automated conversion between modes
-
-This provides the best of both worlds: professional development experience and simple distribution.
-
 ## Troubleshooting
 
 ### Common Issues
 
 **Wallpaper not launching**: Check that `linux-wallpaperengine` is installed and accessible in your PATH.
 
-**CEF crashes**: Try the Intel Graphics Fix preset in Advanced settings.
+**CEF crashes**: Try the Intel Graphics Fix preset in Advanced settings. *SEE ALSO!:* 'cef_dual_monitor_performance.patch' to enhance the core engine by Almamu, then build again!
 
 **UI not responding**: Ensure GTK 3.36+ is installed on your system.
 
@@ -195,6 +173,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine) - The core wallpaper engine
-- [almamu](https://github.com/almamu) - Original GTK implementation inspiration
-- GTK community for the excellent UI framework
+- [linux-wallpaperengine by Almamu](https://github.com/almamu/linux-wallpaperengine/engine) - The core of lwpe-gtk, go give them a star!

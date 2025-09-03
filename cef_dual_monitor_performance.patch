@@ -1,0 +1,26 @@
+diff --git a/src/WallpaperEngine/WebBrowser/CEF/CBrowserApp.cpp b/src/WallpaperEngine/WebBrowser/CEF/CBrowserApp.cpp
+index b56fe7b..84cd626 100644
+--- a/src/WallpaperEngine/WebBrowser/CEF/CBrowserApp.cpp
++++ b/src/WallpaperEngine/WebBrowser/CEF/CBrowserApp.cpp
+@@ -38,6 +38,21 @@ void CBrowserApp::OnBeforeCommandLineProcessing (const CefString& process_type,
+     command_line->AppendSwitch("--disable-breakpad");
+     command_line->AppendSwitch("--disable-field-trial-config");
+     command_line->AppendSwitch("--no-experiments");
++    
++    // Fix for dual monitor CEF crashes
++    command_line->AppendSwitch("--disable-gpu-sandbox");
++    command_line->AppendSwitch("--disable-software-rasterizer");
++    command_line->AppendSwitch("--enable-gpu-rasterization");
++    command_line->AppendSwitch("--enable-zero-copy");
++    command_line->AppendSwitch("--disable-gpu-process-crash-limit");
++    command_line->AppendSwitch("--disable-gpu-watchdog");
++    command_line->AppendSwitch("--disable-hang-monitor");
++    command_line->AppendSwitch("--disable-prompt-on-repost");
++    command_line->AppendSwitch("--disable-renderer-accessibility");
++    command_line->AppendSwitch("--disable-sync");
++    command_line->AppendSwitch("--disable-threaded-compositing");
++    command_line->AppendSwitch("--disable-threaded-scrolling");
++    command_line->AppendSwitch("--single-process");
+     // TODO: ACTIVATE THIS IF WE EVER SUPPORT MACOS OFFICIALLY
+     /*
+ if (process_type.empty()) {
