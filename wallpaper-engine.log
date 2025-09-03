@@ -857,3 +857,869 @@
 2025-07-07 17:48:51,977 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 41732)
 2025-07-07 17:48:51,979 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/Documents/Cursor/LWPE/linux-wallpaperengine-gtk
 2025-07-07 17:48:57,451 - GUI - INFO - Shutting down...
+2025-09-03 07:32:29,112 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-09-03 07:32:29,145 - WallpaperEngine - INFO - Found primary display: HDMI-A-2
+2025-09-03 07:32:29,145 - WallpaperEngine - INFO - Found WPE at: ../linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:32:29,145 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:32:29,145 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:32:29,145 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:32:29,145 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 07:32:29,150 - WallpaperEngine - INFO - Found 411 wallpapers
+2025-09-03 07:32:29,199 - root - INFO - Entering GTK main loop
+2025-09-03 07:32:54,833 - GUI - INFO - Shutting down...
+2025-09-03 07:36:56,504 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-09-03 07:36:56,538 - WallpaperEngine - INFO - Found primary display: HDMI-A-2
+2025-09-03 07:36:56,538 - WallpaperEngine - INFO - Found WPE at: ../linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:36:56,538 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:36:56,538 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:36:56,538 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:36:56,538 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 07:36:56,543 - WallpaperEngine - INFO - Found 411 wallpapers
+2025-09-03 07:36:56,589 - root - INFO - Entering GTK main loop
+2025-09-03 07:37:05,968 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:37:05,968 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:37:06,014 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:37:06,014 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:37:06,014 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:37:06,214 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:37:06,215 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:37:06,215 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:37:06,215 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamping clamp --screen-root HDMI-A-2 1882027002
+2025-09-03 07:37:06,318 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 869919)
+2025-09-03 07:37:06,318 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:37:28,369 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:37:28,370 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:37:28,418 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:37:28,419 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:37:28,419 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:37:28,619 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:37:28,619 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:37:28,619 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:37:28,619 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamping clamp --screen-root HDMI-A-2 2364037106
+2025-09-03 07:37:28,720 - WallpaperEngine - ERROR - Process failed to start
+2025-09-03 07:37:28,720 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:37:54,972 - GUI - INFO - Shutting down...
+2025-09-03 07:44:04,720 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-09-03 07:44:04,752 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:44:04,752 - WallpaperEngine - INFO - Found primary display: HDMI-A-2
+2025-09-03 07:44:04,752 - WallpaperEngine - INFO - Found WPE at: ../linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:44:04,752 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:44:04,752 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:44:04,752 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:44:04,752 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'selected_monitor': None, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 07:44:04,757 - WallpaperEngine - INFO - Found 411 wallpapers
+2025-09-03 07:44:04,803 - root - INFO - Entering GTK main loop
+2025-09-03 07:44:09,118 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:44:09,118 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:44:09,156 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:44:09,156 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:44:09,156 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:44:09,357 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:44:09,357 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:44:09,357 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:44:09,357 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamping clamp --screen-root HDMI-A-2 2118284965
+2025-09-03 07:44:09,458 - WallpaperEngine - ERROR - Process failed to start
+2025-09-03 07:44:09,458 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:44:14,786 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:44:14,786 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:44:14,832 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:44:14,832 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:44:14,832 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:44:15,032 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:44:15,032 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:44:15,032 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:44:15,032 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamping clamp --screen-root HDMI-A-2 1237084446
+2025-09-03 07:44:15,133 - WallpaperEngine - ERROR - Process failed to start
+2025-09-03 07:44:15,133 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:44:18,307 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:44:18,308 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:44:18,348 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:44:18,348 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:44:18,348 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:44:18,548 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:44:18,549 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:44:18,549 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:44:18,549 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamping clamp --screen-root HDMI-A-2 1600267172
+2025-09-03 07:44:18,651 - WallpaperEngine - ERROR - Process failed to start
+2025-09-03 07:44:18,651 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:44:21,291 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:44:28,460 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:44:28,460 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:44:28,502 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:44:28,502 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:44:28,502 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:44:28,702 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:44:28,702 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:44:28,702 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:44:28,702 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamping clamp --screen-root HDMI-A-2 2118284965
+2025-09-03 07:44:28,803 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 877637)
+2025-09-03 07:44:28,803 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:44:32,472 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:44:36,995 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:44:48,147 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:44:48,148 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:44:48,190 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:44:48,191 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:44:48,191 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:44:48,391 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:44:48,391 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:44:48,391 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:44:48,391 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamping clamp --screen-root HDMI-A-2 2173354252
+2025-09-03 07:44:48,492 - WallpaperEngine - ERROR - Process failed to start
+2025-09-03 07:44:48,492 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:44:51,869 - GUI - INFO - Shutting down...
+2025-09-03 07:47:27,467 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-09-03 07:47:27,499 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:47:27,499 - WallpaperEngine - INFO - Found primary display: HDMI-A-2
+2025-09-03 07:47:27,499 - WallpaperEngine - INFO - Found WPE at: ../linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:47:27,499 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:47:27,499 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:47:27,499 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:47:27,499 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'selected_monitor': None, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 07:47:27,504 - WallpaperEngine - INFO - Found 411 wallpapers
+2025-09-03 07:47:27,548 - root - INFO - Entering GTK main loop
+2025-09-03 07:47:31,150 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:47:31,150 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:47:31,182 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:47:31,182 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:47:31,182 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:47:31,383 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:47:31,383 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:47:31,383 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:47:31,383 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root HDMI-A-2 --bg 1237084446
+2025-09-03 07:47:31,485 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 882440)
+2025-09-03 07:47:31,485 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:47:42,201 - GUI - INFO - Shutting down...
+2025-09-03 07:52:54,891 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-09-03 07:52:54,925 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:52:54,925 - WallpaperEngine - INFO - Found primary display: HDMI-A-2
+2025-09-03 07:52:54,925 - WallpaperEngine - INFO - Found WPE at: ../linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:52:54,925 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:52:54,925 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:52:54,925 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:52:54,925 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'selected_monitor': None, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 07:52:54,929 - WallpaperEngine - INFO - Found 411 wallpapers
+2025-09-03 07:52:54,976 - root - INFO - Entering GTK main loop
+2025-09-03 07:52:57,650 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:52:57,651 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:52:57,707 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:52:57,707 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:52:57,707 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:52:57,908 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:52:57,908 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:52:57,908 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:52:57,909 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root HDMI-A-2 --bg 1237084446
+2025-09-03 07:52:58,011 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 886912)
+2025-09-03 07:52:58,011 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:02,732 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:53:08,108 - GUI - DEBUG - Saved settings with paths: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'selected_monitor': 'DisplayPort-3', 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 07:53:08,109 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:08,109 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:08,160 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:08,160 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:08,160 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:08,360 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:08,360 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:08,360 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:08,361 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root HDMI-A-2 --bg 1237084446
+2025-09-03 07:53:08,461 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 887072)
+2025-09-03 07:53:08,461 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:11,373 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:11,374 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:11,425 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:11,425 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:11,425 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:11,626 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:11,626 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:11,626 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:11,627 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1237084446
+2025-09-03 07:53:11,729 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 887137)
+2025-09-03 07:53:11,729 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:13,891 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:13,891 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:13,945 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:13,945 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:13,945 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:14,146 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:14,146 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:14,146 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:14,146 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1855131550
+2025-09-03 07:53:14,248 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 887177)
+2025-09-03 07:53:14,248 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:17,840 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:17,840 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:17,859 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:53:17,859 - WallpaperEngine - DEBUG - Found wallpaper processes: ['887177']
+2025-09-03 07:53:17,859 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:53:18,037 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 07:53:18,037 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 07:53:18,059 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 07:53:18,218 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:53:18,239 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:18,239 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:18,239 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:18,439 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:18,439 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:18,439 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:18,439 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1237084446
+2025-09-03 07:53:18,540 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 887320)
+2025-09-03 07:53:18,540 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:22,577 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:22,578 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:22,636 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:22,636 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:22,636 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:22,837 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:22,837 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:22,837 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:22,838 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2118284965
+2025-09-03 07:53:22,939 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 887393)
+2025-09-03 07:53:22,939 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:26,808 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:26,809 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:26,853 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:53:26,853 - WallpaperEngine - DEBUG - Found wallpaper processes: ['887393']
+2025-09-03 07:53:26,853 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:53:27,014 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 07:53:27,015 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 07:53:27,035 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 07:53:27,190 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:53:27,212 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:27,212 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:27,212 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:27,412 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:27,413 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:27,413 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:27,413 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1237084446
+2025-09-03 07:53:27,515 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 887572)
+2025-09-03 07:53:27,515 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:32,313 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:32,313 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:32,370 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:32,370 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:32,370 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:32,570 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:32,570 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:32,571 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:32,571 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1374815861
+2025-09-03 07:53:32,673 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 887654)
+2025-09-03 07:53:32,673 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:35,961 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:35,962 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:36,017 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:53:36,017 - WallpaperEngine - DEBUG - Found wallpaper processes: ['887654']
+2025-09-03 07:53:36,017 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:53:36,202 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 07:53:36,202 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 07:53:36,224 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 07:53:36,387 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:53:36,409 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:36,409 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:36,409 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:36,609 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:36,609 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:36,609 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:36,610 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1237084446
+2025-09-03 07:53:36,710 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 887780)
+2025-09-03 07:53:36,711 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:39,520 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:39,520 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:39,543 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:39,543 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:39,543 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:39,743 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:39,744 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:39,744 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:39,744 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --volume 0 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1237084446
+2025-09-03 07:53:39,846 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 887840)
+2025-09-03 07:53:39,846 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:39,846 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:39,846 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:39,866 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:53:39,866 - WallpaperEngine - DEBUG - Found wallpaper processes: ['887840']
+2025-09-03 07:53:39,866 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:53:40,045 - WallpaperEngine - DEBUG - After SIGTERM check return code: 1
+2025-09-03 07:53:40,066 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:53:40,086 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:40,086 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:40,086 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:40,286 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:40,286 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:40,287 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:40,287 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --volume 0 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1237084446
+2025-09-03 07:53:40,389 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 887858)
+2025-09-03 07:53:40,389 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:43,049 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:43,050 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:43,098 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:43,098 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:43,098 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:43,299 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:43,299 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:43,299 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:43,300 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --volume 0 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1374815861
+2025-09-03 07:53:43,401 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 887907)
+2025-09-03 07:53:43,401 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:48,256 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:53:48,257 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:53:48,306 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:53:48,306 - WallpaperEngine - DEBUG - Found wallpaper processes: ['887907']
+2025-09-03 07:53:48,306 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:53:48,488 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 07:53:48,488 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 07:53:48,511 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 07:53:48,646 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:53:48,666 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:53:48,666 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:53:48,667 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:53:48,867 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:53:48,867 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:53:48,867 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:53:48,868 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --volume 0 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2118284965
+2025-09-03 07:53:48,969 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 888048)
+2025-09-03 07:53:48,969 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:56:32,004 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-09-03 07:56:32,037 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:56:32,037 - WallpaperEngine - INFO - Found primary display: HDMI-A-2
+2025-09-03 07:56:32,037 - WallpaperEngine - INFO - Found WPE at: ../linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:56:32,037 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:56:32,037 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:56:32,037 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:56:32,038 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'selected_monitor': 'DisplayPort-3', 'display_aliases': {}, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 07:56:32,042 - WallpaperEngine - INFO - Found 411 wallpapers
+2025-09-03 07:56:32,089 - root - INFO - Entering GTK main loop
+2025-09-03 07:56:33,784 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:56:33,785 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:56:33,785 - WallpaperEngine - DEBUG - Performing aggressive cleanup of all linux-wallpaperengine processes
+2025-09-03 07:57:33,617 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-09-03 07:57:33,649 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:57:33,649 - WallpaperEngine - INFO - Found primary display: HDMI-A-2
+2025-09-03 07:57:33,649 - WallpaperEngine - INFO - Found WPE at: ../linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:57:33,649 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:57:33,649 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 07:57:33,649 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 07:57:33,649 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'selected_monitor': 'DisplayPort-3', 'display_aliases': {}, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 07:57:33,654 - WallpaperEngine - INFO - Found 411 wallpapers
+2025-09-03 07:57:33,699 - root - INFO - Entering GTK main loop
+2025-09-03 07:57:44,132 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:57:44,132 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:57:44,185 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:57:44,185 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:57:44,185 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:57:44,385 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:57:44,386 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:57:44,386 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:57:44,386 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2051468614
+2025-09-03 07:57:44,488 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 892773)
+2025-09-03 07:57:44,488 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:57:50,172 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:57:50,189 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:58:02,558 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:58:02,559 - GUI - DEBUG - Saved settings with paths: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'selected_monitor': 'DisplayPort-3', 'display_aliases': {'DisplayPort-3': 'RIGHT', 'HDMI-A-2': 'LEFT'}, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 07:58:02,559 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:58:02,559 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:58:02,590 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:58:02,590 - WallpaperEngine - DEBUG - Found wallpaper processes: ['892773']
+2025-09-03 07:58:02,590 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:58:02,761 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 07:58:02,761 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 07:58:02,783 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 07:58:02,940 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:58:02,962 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:58:02,962 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:58:02,962 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:58:03,163 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:03,163 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:58:03,163 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:58:03,163 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root HDMI-A-2 --bg 2051468614
+2025-09-03 07:58:03,265 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 893048)
+2025-09-03 07:58:03,265 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:05,325 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:58:05,347 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:58:20,128 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:58:20,128 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:58:20,164 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:58:20,165 - WallpaperEngine - DEBUG - Found wallpaper processes: ['893048']
+2025-09-03 07:58:20,165 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:58:20,337 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 07:58:20,337 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 07:58:20,359 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 07:58:20,501 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:58:20,523 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:58:20,523 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:58:20,524 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:58:20,724 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:20,724 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:58:20,724 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:58:20,725 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2178519816
+2025-09-03 07:58:20,826 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 893298)
+2025-09-03 07:58:20,827 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:24,679 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:58:24,679 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:58:24,699 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:58:24,699 - WallpaperEngine - DEBUG - Found wallpaper processes: ['893298']
+2025-09-03 07:58:24,699 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:58:24,873 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 07:58:24,873 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 07:58:24,892 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 07:58:25,021 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:58:25,040 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:58:25,040 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:58:25,040 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:58:25,241 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:25,241 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:58:25,241 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:58:25,241 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2170890572
+2025-09-03 07:58:25,342 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 893381)
+2025-09-03 07:58:25,342 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:27,662 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:58:29,722 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:58:29,722 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:58:29,741 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:58:29,741 - WallpaperEngine - DEBUG - Found wallpaper processes: ['893381']
+2025-09-03 07:58:29,741 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:58:29,907 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 07:58:29,907 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 07:58:29,927 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 07:58:30,072 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:58:30,092 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:58:30,092 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:58:30,092 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:58:30,292 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:30,292 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:58:30,293 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:58:30,293 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2170890572
+2025-09-03 07:58:30,394 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 893562)
+2025-09-03 07:58:30,394 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:31,499 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:58:32,341 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:58:32,341 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:58:32,375 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:58:32,375 - WallpaperEngine - DEBUG - Found wallpaper processes: ['893562']
+2025-09-03 07:58:32,376 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:58:32,526 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 07:58:32,526 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 07:58:32,546 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 07:58:32,705 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:58:32,726 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:58:32,726 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:58:32,727 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:58:32,927 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:32,927 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:58:32,927 - WallpaperEngine - DEBUG - Single-process detection: enable_custom_args=False, custom_args='', using_single_process=False
+2025-09-03 07:58:32,928 - WallpaperEngine - INFO - Running command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2173353868
+2025-09-03 07:58:33,029 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 893631)
+2025-09-03 07:58:33,030 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:34,944 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:58:36,730 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:58:36,730 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:58:36,730 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:58:36,757 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:58:36,757 - WallpaperEngine - DEBUG - Found wallpaper processes: ['893631']
+2025-09-03 07:58:36,757 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:58:36,928 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 07:58:36,928 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 07:58:36,947 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 07:58:37,069 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:58:37,088 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:58:37,088 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:58:37,088 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:58:37,289 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:37,289 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:58:37,289 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2172341764
+2025-09-03 07:58:37,291 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 893721)
+2025-09-03 07:58:37,291 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:39,108 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:58:40,365 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:58:40,366 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 07:58:40,366 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 07:58:40,397 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 07:58:40,397 - WallpaperEngine - DEBUG - Found wallpaper processes: ['893721']
+2025-09-03 07:58:40,397 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 07:58:40,540 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 07:58:40,540 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 07:58:40,559 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 07:58:40,716 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 07:58:40,739 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 07:58:40,739 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 07:58:40,739 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 07:58:40,939 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:40,939 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 07:58:40,940 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2173354252
+2025-09-03 07:58:40,941 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 893784)
+2025-09-03 07:58:40,942 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 07:58:43,822 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 07:58:48,354 - GUI - INFO - Shutting down...
+2025-09-03 08:02:59,306 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-09-03 08:02:59,343 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:02:59,343 - WallpaperEngine - INFO - Found primary display: HDMI-A-2
+2025-09-03 08:02:59,343 - WallpaperEngine - INFO - Found WPE at: ../linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 08:02:59,343 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 08:02:59,343 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 08:02:59,343 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 08:02:59,343 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'selected_monitor': 'DisplayPort-3', 'display_aliases': {'DisplayPort-3': 'RIGHT', 'HDMI-A-2': 'LEFT'}, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 08:02:59,348 - WallpaperEngine - INFO - Found 411 wallpapers
+2025-09-03 08:02:59,413 - root - INFO - Entering GTK main loop
+2025-09-03 08:03:01,938 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:01,938 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:03:01,938 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:03:01,965 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 08:03:01,966 - WallpaperEngine - DEBUG - Found wallpaper processes: ['893784']
+2025-09-03 08:03:01,966 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 08:03:02,108 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 08:03:02,108 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 08:03:02,128 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 08:03:02,261 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 08:03:02,284 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:03:02,284 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:03:02,285 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:03:02,485 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:02,485 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:03:02,486 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1627501781
+2025-09-03 08:03:02,487 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 897732)
+2025-09-03 08:03:02,488 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:07,185 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:08,945 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:08,959 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:08,959 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:03:08,959 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:03:08,987 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 08:03:08,987 - WallpaperEngine - DEBUG - Found wallpaper processes: ['897732']
+2025-09-03 08:03:08,987 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 08:03:09,140 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 08:03:09,140 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 08:03:09,160 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 08:03:09,318 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 08:03:09,339 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:03:09,340 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:03:09,340 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:03:09,540 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:09,540 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:03:09,540 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1627501781 --screen-root HDMI-A-2 --bg 1738802434
+2025-09-03 08:03:09,540 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 897856)
+2025-09-03 08:03:09,540 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:13,912 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:13,913 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:03:13,913 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:03:13,971 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 08:03:13,971 - WallpaperEngine - DEBUG - Found wallpaper processes: ['897856']
+2025-09-03 08:03:13,972 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 08:03:14,180 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 08:03:14,180 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 08:03:14,203 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 08:03:14,360 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 08:03:14,381 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:03:14,382 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:03:14,382 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:03:14,582 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:14,582 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:03:14,583 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1627501781 --screen-root HDMI-A-2 --bg 1738802434
+2025-09-03 08:03:14,584 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 898001)
+2025-09-03 08:03:14,585 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:14,624 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:14,624 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:03:14,624 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:03:14,653 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 08:03:14,653 - WallpaperEngine - DEBUG - Found wallpaper processes: ['898001']
+2025-09-03 08:03:14,653 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 08:03:14,808 - WallpaperEngine - DEBUG - After SIGTERM check return code: 1
+2025-09-03 08:03:14,834 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 08:03:14,859 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:03:14,859 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:03:14,859 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:03:15,059 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:15,060 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:03:15,060 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1627501781 --screen-root HDMI-A-2 --bg 1738802434
+2025-09-03 08:03:15,062 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 898011)
+2025-09-03 08:03:15,062 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:48,403 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:49,606 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:49,631 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:49,631 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:03:49,632 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:03:49,658 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 08:03:49,658 - WallpaperEngine - DEBUG - Found wallpaper processes: ['898011']
+2025-09-03 08:03:49,658 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 08:03:49,836 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 08:03:49,836 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 08:03:49,858 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 08:03:49,981 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 08:03:50,002 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:03:50,002 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:03:50,002 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:03:50,203 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:50,203 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:03:50,203 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1627501781 --screen-root HDMI-A-2 --bg 1237084446
+2025-09-03 08:03:50,205 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 898665)
+2025-09-03 08:03:50,205 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:50,590 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:53,903 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:53,903 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:03:53,903 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:03:53,922 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:03:53,922 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:03:53,922 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:03:54,122 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:54,122 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:03:54,122 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2118284965 --screen-root HDMI-A-2 --bg 1237084446
+2025-09-03 08:03:54,123 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 898739)
+2025-09-03 08:03:54,123 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:54,907 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:03:54,907 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:03:54,907 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:03:54,927 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:03:54,927 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:03:54,927 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:03:55,127 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:03:55,127 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:03:55,127 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2118284965 --screen-root HDMI-A-2 --bg 1237084446
+2025-09-03 08:03:55,128 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 898770)
+2025-09-03 08:03:55,128 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:03,150 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:03,151 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:04:03,151 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:04:03,189 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:04:03,189 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:04:03,189 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:04:03,390 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:03,390 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:04:03,390 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2169871125 --screen-root HDMI-A-2 --bg 1237084446
+2025-09-03 08:04:03,391 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 898909)
+2025-09-03 08:04:03,392 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:08,250 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:10,219 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:10,219 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:04:10,219 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:04:10,245 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:04:10,245 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:04:10,245 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:04:10,445 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:10,446 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:04:10,446 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2118284965 --screen-root HDMI-A-2 --bg 1237084446
+2025-09-03 08:04:10,447 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 899029)
+2025-09-03 08:04:10,447 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:20,908 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:20,908 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:04:20,908 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:04:20,937 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:04:20,938 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:04:20,938 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:04:21,138 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:21,138 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:04:21,138 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1905170041 --screen-root HDMI-A-2 --bg 1237084446
+2025-09-03 08:04:21,138 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 899176)
+2025-09-03 08:04:21,139 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:23,376 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:25,971 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:25,971 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:04:25,971 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:04:25,996 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:04:25,996 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:04:25,996 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:04:26,196 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:26,197 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:04:26,197 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1905170041 --screen-root HDMI-A-2 --bg 1905170041
+2025-09-03 08:04:26,199 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 899295)
+2025-09-03 08:04:26,200 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:30,675 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:31,840 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:31,840 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:04:31,840 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:04:31,860 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 08:04:31,861 - WallpaperEngine - DEBUG - Found wallpaper processes: ['899295']
+2025-09-03 08:04:31,861 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 08:04:32,008 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 08:04:32,008 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 08:04:32,036 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 08:04:32,187 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 08:04:32,209 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:04:32,210 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:04:32,210 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:04:32,410 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:32,410 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:04:32,410 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1905170041 --screen-root HDMI-A-2 --bg 1905170041
+2025-09-03 08:04:32,412 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 899558)
+2025-09-03 08:04:32,412 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:34,903 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:36,280 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:36,280 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:04:36,281 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:04:36,311 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 08:04:36,311 - WallpaperEngine - DEBUG - Found wallpaper processes: ['899558']
+2025-09-03 08:04:36,311 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 08:04:36,457 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 08:04:36,457 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 08:04:36,476 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 08:04:36,603 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 08:04:36,629 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:04:36,629 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:04:36,629 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:04:36,830 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:36,830 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:04:36,830 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1905170041 --screen-root HDMI-A-2 --bg 1882027002
+2025-09-03 08:04:36,832 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 899729)
+2025-09-03 08:04:36,832 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:41,536 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:43,891 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:43,891 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:04:43,891 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:04:43,914 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 08:04:43,914 - WallpaperEngine - DEBUG - Found wallpaper processes: ['899729']
+2025-09-03 08:04:43,914 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 08:04:44,091 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 08:04:44,091 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 08:04:44,112 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 08:04:44,235 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 08:04:44,258 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:04:44,258 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:04:44,258 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:04:44,458 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:44,458 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:04:44,459 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 1905170041 --screen-root HDMI-A-2 --bg 1855131550
+2025-09-03 08:04:44,460 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 899916)
+2025-09-03 08:04:44,461 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:47,384 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:48,658 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:04:48,659 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:04:48,659 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:04:48,681 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 08:04:48,681 - WallpaperEngine - DEBUG - Found wallpaper processes: ['899916']
+2025-09-03 08:04:48,681 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 08:04:48,836 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 08:04:48,836 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 08:04:48,856 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 08:04:49,013 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 08:04:49,035 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:04:49,035 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:04:49,035 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:04:49,235 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:49,235 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:04:49,236 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --silent --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root DisplayPort-3 --bg 2170890778 --screen-root HDMI-A-2 --bg 1855131550
+2025-09-03 08:04:49,236 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 900101)
+2025-09-03 08:04:49,236 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:04:56,719 - GUI - INFO - Shutting down...
+2025-09-03 08:06:56,941 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-09-03 08:06:56,976 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:06:56,976 - WallpaperEngine - INFO - Found primary display: HDMI-A-2
+2025-09-03 08:06:56,976 - WallpaperEngine - INFO - Found WPE at: ../linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 08:06:56,976 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 08:06:56,977 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 08:06:56,977 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 08:06:56,977 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'selected_monitor': 'DisplayPort-3', 'display_aliases': {'DisplayPort-3': 'RIGHT', 'HDMI-A-2': 'LEFT'}, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 08:06:56,981 - WallpaperEngine - INFO - Found 411 wallpapers
+2025-09-03 08:06:57,028 - root - INFO - Entering GTK main loop
+2025-09-03 08:07:03,956 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:07:07,718 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:07:07,733 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:07:07,733 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:07:07,733 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:07:07,759 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 08:07:07,759 - WallpaperEngine - DEBUG - Found wallpaper processes: ['900101']
+2025-09-03 08:07:07,759 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 08:07:07,919 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 08:07:07,919 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 08:07:07,947 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 08:07:08,103 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 08:07:08,124 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:07:08,124 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:07:08,124 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:07:08,325 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:07:08,325 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:07:08,325 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root HDMI-A-2 --bg 2118284965
+2025-09-03 08:07:08,327 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 902583)
+2025-09-03 08:07:08,327 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:10:07,034 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:10:08,948 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:10:08,948 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:10:08,948 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:10:08,981 - WallpaperEngine - DEBUG - pgrep return code: 0
+2025-09-03 08:10:08,981 - WallpaperEngine - DEBUG - Found wallpaper processes: ['902583']
+2025-09-03 08:10:08,981 - WallpaperEngine - DEBUG - Sending SIGTERM to all processes
+2025-09-03 08:10:09,143 - WallpaperEngine - DEBUG - After SIGTERM check return code: 0
+2025-09-03 08:10:09,143 - WallpaperEngine - DEBUG - SIGTERM failed, using SIGKILL
+2025-09-03 08:10:09,163 - WallpaperEngine - DEBUG - Sent SIGKILL
+2025-09-03 08:10:09,300 - WallpaperEngine - DEBUG - Final check return code: 1
+2025-09-03 08:10:09,320 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:10:09,320 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:10:09,320 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:10:09,521 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:10:09,521 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:10:09,521 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root HDMI-A-2 --bg 2118284965 --screen-root DisplayPort-3 --bg 1237084446
+2025-09-03 08:10:09,522 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 904724)
+2025-09-03 08:10:09,522 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:10:42,949 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:10:44,776 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:10:44,776 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:10:44,776 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:10:44,796 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:10:44,796 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:10:44,797 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:10:44,997 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:10:44,997 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:10:44,998 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root HDMI-A-2 --bg 2118284965 --screen-root DisplayPort-3 --bg 3136351729
+2025-09-03 08:10:44,999 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 905218)
+2025-09-03 08:10:45,000 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:10:51,422 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:10:52,478 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:10:52,492 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:10:52,492 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:10:52,492 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:10:52,513 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:10:52,513 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:10:52,513 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:10:52,713 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:10:52,713 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:10:52,714 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root HDMI-A-2 --bg 3136351729 --screen-root DisplayPort-3 --bg 3136351729
+2025-09-03 08:10:52,715 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 905340)
+2025-09-03 08:10:52,716 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:10:59,552 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:10:59,552 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:10:59,552 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:10:59,572 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:10:59,572 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:10:59,572 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:10:59,773 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:10:59,773 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:10:59,773 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root HDMI-A-2 --bg 3136351729 --screen-root DisplayPort-3 --bg 3153160219
+2025-09-03 08:10:59,775 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 905594)
+2025-09-03 08:10:59,775 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:11:07,048 - WallpaperEngine - INFO - Found 2 connected displays: ['DisplayPort-3', 'HDMI-A-2']
+2025-09-03 08:11:07,049 - WallpaperEngine - INFO - Stopping current wallpaper...
+2025-09-03 08:11:07,049 - WallpaperEngine - INFO - Stopping any running wallpaper processes...
+2025-09-03 08:11:07,124 - WallpaperEngine - DEBUG - pgrep return code: 1
+2025-09-03 08:11:07,124 - WallpaperEngine - DEBUG - No wallpaper processes found
+2025-09-03 08:11:07,124 - WallpaperEngine - INFO - All wallpaper processes stopped
+2025-09-03 08:11:07,324 - WallpaperEngine - DEBUG - Original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:11:07,325 - WallpaperEngine - INFO - Changing to WPE directory: /home/brandon/.cursor/linux-wallpaperengine/build/output
+2025-09-03 08:11:07,325 - WallpaperEngine - INFO - Running dual monitor command: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine --fps 60 --volume 100 --no-audio-processing --no-fullscreen-pause --disable-mouse --scaling default --clamp clamp --screen-root HDMI-A-2 --bg 3136351729 --screen-root DisplayPort-3 --bg 3153169785
+2025-09-03 08:11:07,327 - WallpaperEngine - INFO - Wallpaper process started successfully (PID: 905740)
+2025-09-03 08:11:07,327 - WallpaperEngine - DEBUG - Returning to original directory: /home/brandon/.cursor/linux-wallpaperengine-gtk
+2025-09-03 08:11:10,819 - GUI - INFO - Shutting down...
+2025-09-03 08:15:21,551 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-09-03 08:15:21,583 - WallpaperEngine - INFO - Found 2 connected displays: ['HDMI-A-2', 'DisplayPort-3']
+2025-09-03 08:15:21,583 - WallpaperEngine - INFO - Found primary display: HDMI-A-2
+2025-09-03 08:15:21,583 - WallpaperEngine - INFO - Found WPE at: ../linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 08:15:21,584 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 08:15:21,584 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 08:15:21,584 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 08:15:21,584 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'selected_monitor': 'DisplayPort-3', 'display_aliases': {'DisplayPort-3': 'RIGHT', 'HDMI-A-2': 'LEFT'}, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 08:15:21,588 - WallpaperEngine - INFO - Found 411 wallpapers
+2025-09-03 08:15:21,635 - root - INFO - Entering GTK main loop
+2025-09-03 08:15:25,648 - WallpaperEngine - INFO - Found 2 connected displays: ['HDMI-A-2', 'DisplayPort-3']
+2025-09-03 08:15:25,661 - WallpaperEngine - INFO - Found 2 connected displays: ['HDMI-A-2', 'DisplayPort-3']
+2025-09-03 08:15:25,661 - WallpaperEngine - ERROR - Missing components - path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine, monitors: {}
+2025-09-03 08:15:41,897 - WallpaperEngine - INFO - Found 2 connected displays: ['HDMI-A-2', 'DisplayPort-3']
+2025-09-03 08:15:41,917 - WallpaperEngine - INFO - Found 2 connected displays: ['HDMI-A-2', 'DisplayPort-3']
+2025-09-03 08:15:41,917 - WallpaperEngine - ERROR - Missing components - path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine, monitors: {}
+2025-09-03 08:15:47,451 - GUI - INFO - Shutting down...
+2025-09-03 08:15:47,461 - root - INFO - Starting Linux Wallpaper Engine GTK...
+2025-09-03 08:15:47,488 - WallpaperEngine - INFO - Found 2 connected displays: ['HDMI-A-2', 'DisplayPort-3']
+2025-09-03 08:15:47,489 - WallpaperEngine - INFO - Found primary display: HDMI-A-2
+2025-09-03 08:15:47,489 - WallpaperEngine - INFO - Found WPE at: ../linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 08:15:47,489 - WallpaperEngine - INFO - Found wallpapers at: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 08:15:47,489 - GUI - INFO - Loaded saved wallpaper engine path: /home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine
+2025-09-03 08:15:47,489 - GUI - INFO - Loaded saved wallpaper directory: /home/brandon/.steam/steam/steamapps/workshop/content/431960
+2025-09-03 08:15:47,489 - GUI - DEBUG - Loaded settings: {'fps': 60, 'volume': 100, 'mute': False, 'mouse_enabled': True, 'auto_rotation': True, 'rotation_interval': 11, 'no_automute': False, 'no_audio_processing': True, 'no_fullscreen_pause': True, 'scaling': 'default', 'clamping': 'clamp', 'enable_custom_args': False, 'custom_args': '', 'enable_ld_preload': False, 'selected_monitor': 'DisplayPort-3', 'display_aliases': {'DisplayPort-3': 'RIGHT', 'HDMI-A-2': 'LEFT'}, 'wpe_path': '/home/brandon/.cursor/linux-wallpaperengine/build/output/linux-wallpaperengine', 'wallpaper_dir': '/home/brandon/.steam/steam/steamapps/workshop/content/431960'}
+2025-09-03 08:15:47,493 - WallpaperEngine - INFO - Found 411 wallpapers
+2025-09-03 08:15:47,500 - root - INFO - Entering GTK main loop
+2025-09-03 08:15:52,121 - GUI - INFO - Shutting down...
