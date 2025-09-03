@@ -2051,8 +2051,6 @@ def main():
         'volume': args.volume,
         'mute': args.mute,
         'mouse_enabled': args.disable_mouse,
-        'auto_rotation': False,
-        'rotation_interval': 15,
         'no_automute': args.no_automute,
         'no_audio_processing': args.no_audio_processing,
         'no_fullscreen_pause': args.no_fullscreen_pause,
