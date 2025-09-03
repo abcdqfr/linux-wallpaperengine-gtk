@@ -5,6 +5,7 @@
 *.swp
 *.swo
 *~
+*.code-workspace
 
 # Logs and temporary files
 *.log

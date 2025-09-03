@@ -23,7 +23,21 @@ class WallpaperEngine:
             self.log.error("WAYLAND DETECTED - Linux Wallpaper Engine is NOT compatible with Wayland!")
             self.log.error("Please switch to X11 session or the wallpapers will not work properly.")
         
-        self.display = self._detect_display()
+        # Detect displays and map to Primary/Secondary
+        self.displays = self._detect_all_displays()
+        self.primary_display = None
+        self.secondary_display = None
+        
+        if self.displays:
+            for display in self.displays:
+                if display['name'] == 'Primary':
+                    self.primary_display = display['original_name']
+                elif display['name'] == 'Secondary':
+                    self.secondary_display = display['original_name']
+        
+        # Set default display to primary for backward compatibility
+        self.display = self.primary_display or self._detect_display()
+        
         self.wpe_path = self._find_wpe_path()
         self.wallpaper_dir = self._find_wallpaper_dir()
         self.current_wallpaper = None
@@ -188,14 +202,21 @@ class WallpaperEngine:
 
     def run_wallpaper(self, wallpaper_id, **options):
         """Run wallpaper with specified options"""
-        if not all([self.wpe_path, self.display, wallpaper_id]):
-            self.log.error(f"Missing components - path: {self.wpe_path}, display: {self.display}, id: {wallpaper_id}")
-            return False, None
-        
         try:
+            self.log.info(f"run_wallpaper called with wallpaper_id={wallpaper_id}, options={options}")
+            
+            if not all([self.wpe_path, self.display, wallpaper_id]):
+                self.log.error(f"Missing components - path: {self.wpe_path}, display: {self.display}, id: {wallpaper_id}")
+                return False, None
+            
             # Stop any running wallpaper first
             self.log.info("Stopping current wallpaper...")
-            self.stop_wallpaper()
+            try:
+                self.stop_wallpaper()
+                self.log.info("Stop wallpaper completed successfully")
+            except Exception as e:
+                self.log.error(f"Error in stop_wallpaper: {e}", exc_info=True)
+                # Continue anyway
             
             # Save current directory
             original_dir = os.getcwd()
@@ -320,6 +341,98 @@ class WallpaperEngine:
             self.log.debug(f"Returning to original directory: {original_dir}")
             os.chdir(original_dir)
 
+    def run_dual_monitor_wallpapers(self, primary_wallpaper_id, secondary_wallpaper_id, **options):
+        """Run wallpapers on both Primary and Secondary monitors simultaneously"""
+        try:
+            self.log.info(f"run_dual_monitor_wallpapers called with Primary={primary_wallpaper_id}, Secondary={secondary_wallpaper_id}")
+            
+            if not all([self.wpe_path, self.primary_display, self.secondary_display]):
+                self.log.error(f"Missing components - path: {self.wpe_path}, primary: {self.primary_display}, secondary: {self.secondary_display}")
+                return False, None
+            
+            # Stop any running wallpaper first
+            self.log.info("Stopping current wallpaper...")
+            try:
+                self.stop_wallpaper()
+                self.log.info("Stop wallpaper completed successfully")
+            except Exception as e:
+                self.log.error(f"Error in stop_wallpaper: {e}", exc_info=True)
+                # Continue anyway
+            
+            # Save current directory
+            original_dir = os.getcwd()
+            self.log.debug(f"Original directory: {original_dir}")
+            
+            # Change to WPE directory
+            wpe_dir = os.path.dirname(self.wpe_path)
+            self.log.info(f"Changing to WPE directory: {wpe_dir}")
+            os.chdir(wpe_dir)
+            
+            # Build base command (common options)
+            base_cmd = [self.wpe_path]
+            
+            # Add common options
+            if options.get('fps'):
+                base_cmd.extend(['--fps', str(options['fps'])])
+            if options.get('mute'):
+                base_cmd.append('--silent')
+            if 'volume' in options:
+                base_cmd.extend(['--volume', str(int(options['volume']))])
+            if options.get('no_automute'):
+                base_cmd.append('--noautomute')
+            if options.get('no_audio_processing'):
+                base_cmd.append('--no-audio-processing')
+            if options.get('no_fullscreen_pause'):
+                base_cmd.append('--no-fullscreen-pause')
+            if options.get('disable_mouse'):
+                base_cmd.append('--disable-mouse')
+            if options.get('scaling'):
+                base_cmd.extend(['--scaling', options['scaling']])
+            if options.get('clamping'):
+                base_cmd.extend(['--clamp', options['clamping']])
+            
+            # Add custom arguments if enabled
+            if options.get('enable_custom_args') and options.get('custom_args'):
+                custom_args = options['custom_args'].strip()
+                if custom_args:
+                    import shlex
+                    try:
+                        custom_args_list = shlex.split(custom_args)
+                        base_cmd.extend(custom_args_list)
+                        self.log.info(f"Added custom arguments: {custom_args_list}")
+                    except ValueError as e:
+                        self.log.error(f"Invalid custom arguments syntax: {e}")
+            
+            # Build ONE command that applies BOTH wallpapers
+            cmd = base_cmd.copy()
+            
+            # Add Primary monitor wallpaper
+            if primary_wallpaper_id:
+                cmd.extend(['--screen-root', self.primary_display, '--bg', primary_wallpaper_id])
+                self.log.info(f"Added Primary wallpaper {primary_wallpaper_id} for {self.primary_display}")
+            
+            # Add Secondary monitor wallpaper  
+            if secondary_wallpaper_id:
+                cmd.extend(['--screen-root', self.secondary_display, '--bg', secondary_wallpaper_id])
+                self.log.info(f"Added Secondary wallpaper {secondary_wallpaper_id} for {self.secondary_display}")
+            
+            self.log.info(f"Running SINGLE dual monitor command: {' '.join(map(str, cmd))}")
+            
+            # Run ONE process for both wallpapers
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            self.current_process = process
+            
+            self.log.info(f"Dual monitor wallpapers started successfully (PID: {process.pid})")
+            return True, [cmd]
+            
+        except Exception as e:
+            self.log.error(f"Failed to run dual monitor wallpapers: {str(e)}", exc_info=True)
+            return False, None
+            
+        finally:
+            self.log.debug(f"Returning to original directory: {original_dir}")
+            os.chdir(original_dir)
+
     def run_wallpaper_dual_monitor(self, monitor_wallpapers, **options):
         """Run wallpapers on multiple monitors simultaneously"""
         if not all([self.wpe_path, monitor_wallpapers]):
@@ -329,7 +442,12 @@ class WallpaperEngine:
         try:
             # Stop any running wallpaper first
             self.log.info("Stopping current wallpaper...")
-            self.stop_wallpaper()
+            try:
+                self.stop_wallpaper()
+                self.log.info("Stop wallpaper completed successfully")
+            except Exception as e:
+                self.log.error(f"Error in stop_wallpaper: {e}", exc_info=True)
+                # Continue anyway
             
             # Save current directory
             original_dir = os.getcwd()
@@ -433,6 +551,7 @@ class WallpaperEngine:
             self.log.error(f"Failed to stop wallpaper: {e}", exc_info=True)
             return False
 
+
     def _is_wayland(self):
         """Check if running under Wayland"""
         return os.environ.get('WAYLAND_DISPLAY') is not None or \
@@ -476,7 +595,8 @@ class WallpaperWindow(Gtk.Window):
             'enable_custom_args': False,
             'custom_args': '',
             'enable_ld_preload': False,
-            'selected_monitor': None  # Will be set to primary display if None
+            'selected_monitor': None,  # Will be set to primary display if None
+            'monitor_wallpapers': {}  # Track wallpaper ID per monitor: {'Primary': '123456', 'Secondary': '789012'}
         }
         
         # Merge initial settings with defaults
@@ -488,6 +608,9 @@ class WallpaperWindow(Gtk.Window):
         
         # Initialize UI
         self._setup_ui()
+        
+        # Update display status
+        self.update_display_status()
         
         # Load wallpapers
         self.load_wallpapers()
@@ -528,8 +651,7 @@ class WallpaperWindow(Gtk.Window):
         self.flowbox.set_max_children_per_line(30)
         self.flowbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
         self.flowbox.connect("child-activated", self.on_wallpaper_selected)
-        self.flowbox.connect("button-press-event", self.on_right_click)
-        self.flowbox.connect("button-release-event", self.on_wallpaper_button_release)
+        self.flowbox.connect("button-press-event", self.on_wallpaper_click)
         scrolled.add(self.flowbox)
         self.main_box.pack_start(scrolled, True, True, 0)
         
@@ -617,7 +739,6 @@ class WallpaperWindow(Gtk.Window):
             ("media-skip-backward-symbolic", "Previous", self.on_prev_clicked),
             ("media-skip-forward-symbolic", "Next", self.on_next_clicked),
             ("media-playlist-shuffle-symbolic", "Random", self.on_random_clicked),
-            ("media-playback-stop-symbolic", "Stop All Wallpapers", self.on_stop_clicked),
             ("view-refresh-symbolic", "Refresh Wallpapers", self.on_refresh_clicked),
             ("applications-system-symbolic", "Setup Paths", self.on_setup_clicked),
             ("preferences-system-symbolic", "Settings", self.on_settings_clicked)
@@ -786,50 +907,221 @@ class WallpaperWindow(Gtk.Window):
                     adj.set_value(alloc.y - (adj.get_page_size() / 2))
                 break
 
-    def on_wallpaper_selected(self, flowbox, child):
-        """Handle wallpaper selection"""
-        wallpaper_id = child.get_child().wallpaper_id
-        self.status_label.set_text(f"Loading wallpaper {wallpaper_id}...")
-        
-        displays = self.engine._detect_all_displays()
-        
-        # If only one monitor, use normal mode
-        if len(displays) <= 1:
-            success, cmd = self._load_wallpaper(wallpaper_id)
-        else:
-            # Multiple monitors - use dual monitor mode
-            target_monitor = self.settings.get('selected_monitor')
+    def on_wallpaper_click(self, flowbox, event):
+        """Handle left-click (Primary) and right-click (Secondary) on wallpapers"""
+        try:
+            # Get the child at the click position
+            child = flowbox.get_child_at_pos(event.x, event.y)
+            if not child:
+                return False
+                
+            # Get wallpaper ID
+            child_box = child.get_child()
+            if not child_box or not hasattr(child_box, 'wallpaper_id'):
+                return False
+                
+            wallpaper_id = child_box.wallpaper_id
+            
+            # Determine target display based on button
+            if event.button == 1:  # Left click - Primary display
+                target_display = "Primary"
+                target_monitor = self.engine.primary_display
+                self.log.info(f"Left click detected - applying to Primary display: {target_monitor}")
+            elif event.button == 3:  # Right click - Secondary display
+                target_display = "Secondary"
+                target_monitor = self.engine.secondary_display
+                self.log.info(f"Right click detected - applying to Secondary display: {target_monitor}")
+            else:
+                return False  # Ignore other buttons
+                
+            # Check if target monitor exists
             if not target_monitor:
-                # Default to Primary
-                target_monitor = 'Primary'
+                self.status_label.set_text(f"No {target_display} display available")
+                self.log.warning(f"No {target_display} display available")
+                return True
+                
+            self.status_label.set_text(f"Loading wallpaper {wallpaper_id} to {target_display}...")
             
-            success, cmd = self._load_wallpaper_dual_monitor(wallpaper_id, target_monitor)
+            # Track wallpaper per monitor FIRST
+            self.settings['monitor_wallpapers'][target_display] = wallpaper_id
+            self.log.info(f"Tracked wallpaper {wallpaper_id} for {target_display}")
             
-        if success:
-            self.update_current_wallpaper(wallpaper_id)
-            if cmd:
-                self.update_command_status(cmd)
-        else:
-            self.status_label.set_text("Failed to load wallpaper")
+            # Get both tracked wallpapers
+            primary_wallpaper = self.settings['monitor_wallpapers'].get('Primary')
+            secondary_wallpaper = self.settings['monitor_wallpapers'].get('Secondary')
+            
+            # Apply BOTH wallpapers using dual monitor functionality
+            success, commands = self.engine.run_dual_monitor_wallpapers(
+                primary_wallpaper,
+                secondary_wallpaper,
+                fps=self.settings['fps'],
+                volume=self.settings['volume'],
+                mute=self.settings['mute'],
+                no_automute=self.settings['no_automute'],
+                no_audio_processing=self.settings['no_audio_processing'],
+                disable_mouse=self.settings['mouse_enabled'],
+                no_fullscreen_pause=self.settings['no_fullscreen_pause'],
+                scaling=self.settings['scaling'],
+                clamping=self.settings['clamping'],
+                enable_custom_args=self.settings['enable_custom_args'],
+                custom_args=self.settings['custom_args'],
+                enable_ld_preload=self.settings['enable_ld_preload']
+            )
+            
+            if success:
+                self.update_current_wallpaper(wallpaper_id)
+                if commands:
+                    self.update_command_status(commands[0])  # Show first command
+                self.status_label.set_text(f"Wallpaper {wallpaper_id} applied to {target_display} - Both monitors updated")
+                self.log.info(f"Wallpaper {wallpaper_id} applied to {target_display} - Both monitors updated successfully")
+                
+                # Save settings to persist monitor wallpaper tracking
+                self.save_settings()
+                
+                # Update display status to show current wallpapers
+                self.update_display_status()
+            else:
+                self.status_label.set_text(f"Failed to load wallpaper to {target_display}")
+                self.log.error(f"Failed to load wallpaper to {target_display}")
+                
+            return True  # Event handled
+            
+        except Exception as e:
+            self.log.error(f"CRASH in wallpaper click: {e}", exc_info=True)
+            self.status_label.set_text(f"CRASH: {e}")
+            import traceback
+            traceback.print_exc()
+            return True
+
+    def on_wallpaper_selected(self, flowbox, child):
+        """Handle wallpaper selection - SIMPLE v0.2.1 approach with comprehensive error handling"""
+        try:
+            self.log.info("Wallpaper selection started")
+            
+            # Check if child exists
+            if not child:
+                self.log.error("No child provided to wallpaper selection")
+                self.status_label.set_text("Error: No wallpaper selected")
+                return
+                
+            self.log.info(f"Child type: {type(child)}")
+            
+            # Get child's child (the box)
+            child_box = child.get_child()
+            if not child_box:
+                self.log.error("No child box found in FlowBoxChild")
+                self.status_label.set_text("Error: No wallpaper box found")
+                return
+                
+            self.log.info(f"Child box type: {type(child_box)}")
+            self.log.info(f"Child box attributes: {dir(child_box)}")
+            
+            # Check if wallpaper_id exists
+            if not hasattr(child_box, 'wallpaper_id'):
+                self.log.error("No wallpaper_id attribute found on child box")
+                self.status_label.set_text("Error: No wallpaper ID found")
+                return
+                
+            wallpaper_id = child_box.wallpaper_id
+            self.log.info(f"Wallpaper ID: {wallpaper_id}")
+            
+            self.status_label.set_text(f"Loading wallpaper {wallpaper_id}...")
+            
+            # Load wallpaper
+            self.log.info("Calling _load_wallpaper")
+            success, cmd = self._load_wallpaper(wallpaper_id)
+            self.log.info(f"Load wallpaper result: success={success}, cmd={cmd}")
+            
+            if success:
+                self.log.info("Updating current wallpaper")
+                self.update_current_wallpaper(wallpaper_id)
+                if cmd:
+                    self.update_command_status(cmd)
+                self.log.info("Wallpaper selection completed successfully")
+            else:
+                self.status_label.set_text("Failed to load wallpaper")
+                self.log.error("Failed to load wallpaper")
+                
+        except Exception as e:
+            self.log.error(f"CRASH in wallpaper selection: {e}", exc_info=True)
+            self.status_label.set_text(f"CRASH: {e}")
+            import traceback
+            traceback.print_exc()
 
     def _load_wallpaper(self, wallpaper_id, target_monitor=None):
         """Load wallpaper with current settings"""
-        return self.engine.run_wallpaper(
-            wallpaper_id,
-            fps=self.settings['fps'],
-            volume=self.settings['volume'],
-            mute=self.settings['mute'],
-            no_automute=self.settings['no_automute'],
-            no_audio_processing=self.settings['no_audio_processing'],
-            disable_mouse=self.settings['mouse_enabled'],
-            no_fullscreen_pause=self.settings['no_fullscreen_pause'],
-            scaling=self.settings['scaling'],
-            clamping=self.settings['clamping'],
-            enable_custom_args=self.settings['enable_custom_args'],
-            custom_args=self.settings['custom_args'],
-            enable_ld_preload=self.settings['enable_ld_preload'],
-            selected_monitor=target_monitor or self.settings['selected_monitor']
-        )
+        try:
+            self.log.info(f"Loading wallpaper {wallpaper_id} with settings: {self.settings}")
+            result = self.engine.run_wallpaper(
+                wallpaper_id,
+                fps=self.settings['fps'],
+                volume=self.settings['volume'],
+                mute=self.settings['mute'],
+                no_automute=self.settings['no_automute'],
+                no_audio_processing=self.settings['no_audio_processing'],
+                disable_mouse=self.settings['mouse_enabled'],
+                no_fullscreen_pause=self.settings['no_fullscreen_pause'],
+                scaling=self.settings['scaling'],
+                clamping=self.settings['clamping'],
+                enable_custom_args=self.settings['enable_custom_args'],
+                custom_args=self.settings['custom_args'],
+                enable_ld_preload=self.settings['enable_ld_preload'],
+                selected_monitor=target_monitor or self.settings['selected_monitor']
+            )
+            self.log.info(f"Wallpaper load result: {result}")
+            return result
+        except Exception as e:
+            self.log.error(f"CRASH in _load_wallpaper: {e}", exc_info=True)
+            import traceback
+            traceback.print_exc()
+            return False, None
+
+    def _apply_dual_monitor_wallpapers(self):
+        """Apply both Primary and Secondary wallpapers simultaneously using tracked IDs"""
+        try:
+            primary_wallpaper = self.settings['monitor_wallpapers'].get('Primary')
+            secondary_wallpaper = self.settings['monitor_wallpapers'].get('Secondary')
+            
+            self.log.info(f"Applying dual monitor wallpapers - Primary: {primary_wallpaper}, Secondary: {secondary_wallpaper}")
+            
+            # Check if we have both wallpapers to apply
+            if not primary_wallpaper and not secondary_wallpaper:
+                self.status_label.set_text("No wallpapers tracked for either monitor")
+                self.log.warning("No wallpapers tracked for either monitor")
+                return False
+                
+            # Use the new dual monitor method
+            result = self.engine.run_dual_monitor_wallpapers(
+                primary_wallpaper,
+                secondary_wallpaper,
+                fps=self.settings['fps'],
+                volume=self.settings['volume'],
+                mute=self.settings['mute'],
+                no_automute=self.settings['no_automute'],
+                no_audio_processing=self.settings['no_audio_processing'],
+                disable_mouse=self.settings['mouse_enabled'],
+                no_fullscreen_pause=self.settings['no_fullscreen_pause'],
+                scaling=self.settings['scaling'],
+                clamping=self.settings['clamping'],
+                enable_custom_args=self.settings['enable_custom_args'],
+                custom_args=self.settings['custom_args'],
+                enable_ld_preload=self.settings['enable_ld_preload']
+            )
+            
+            if result[0]:  # Success
+                self.status_label.set_text(f"Dual monitor wallpapers applied - Primary: {primary_wallpaper}, Secondary: {secondary_wallpaper}")
+                self.log.info("Dual monitor wallpapers applied successfully")
+                return True
+            else:
+                self.status_label.set_text("Failed to apply dual monitor wallpapers")
+                self.log.error("Failed to apply dual monitor wallpapers")
+                return False
+                
+        except Exception as e:
+            self.log.error(f"CRASH in _apply_dual_monitor_wallpapers: {e}", exc_info=True)
+            import traceback
+            traceback.print_exc()
+            return False
 
     def _load_wallpaper_dual_monitor(self, wallpaper_id, target_monitor=None):
         """Load wallpaper on specific monitor, maintaining other monitor wallpapers"""
@@ -875,18 +1167,7 @@ class WallpaperWindow(Gtk.Window):
     def on_prev_clicked(self, button):
         """Load previous wallpaper"""
         if wallpaper_id := self.engine.get_previous_wallpaper():
-            displays = self.engine._detect_all_displays()
-            
-            # If only one monitor, use normal mode
-            if len(displays) <= 1:
-                success, cmd = self._load_wallpaper(wallpaper_id)
-            else:
-                # Multiple monitors - use dual monitor mode
-                target_monitor = self.settings.get('selected_monitor')
-                if not target_monitor:
-                    target_monitor = 'Primary'
-                success, cmd = self._load_wallpaper_dual_monitor(wallpaper_id, target_monitor)
-            
+            success, cmd = self._load_wallpaper(wallpaper_id)
             if success:
                 self.update_current_wallpaper(wallpaper_id)
                 if cmd:
@@ -895,18 +1176,7 @@ class WallpaperWindow(Gtk.Window):
     def on_next_clicked(self, button):
         """Load next wallpaper"""
         if wallpaper_id := self.engine.get_next_wallpaper():
-            displays = self.engine._detect_all_displays()
-            
-            # If only one monitor, use normal mode
-            if len(displays) <= 1:
-                success, cmd = self._load_wallpaper(wallpaper_id)
-            else:
-                # Multiple monitors - use dual monitor mode
-                target_monitor = self.settings.get('selected_monitor')
-                if not target_monitor:
-                    target_monitor = 'Primary'
-                success, cmd = self._load_wallpaper_dual_monitor(wallpaper_id, target_monitor)
-            
+            success, cmd = self._load_wallpaper(wallpaper_id)
             if success:
                 self.update_current_wallpaper(wallpaper_id)
                 if cmd:
@@ -915,18 +1185,7 @@ class WallpaperWindow(Gtk.Window):
     def on_random_clicked(self, button):
         """Load random wallpaper"""
         if wallpaper_id := self.engine.get_random_wallpaper():
-            displays = self.engine._detect_all_displays()
-            
-            # If only one monitor, use normal mode
-            if len(displays) <= 1:
-                success, cmd = self._load_wallpaper(wallpaper_id)
-            else:
-                # Multiple monitors - use dual monitor mode
-                target_monitor = self.settings.get('selected_monitor')
-                if not target_monitor:
-                    target_monitor = 'Primary'
-                success, cmd = self._load_wallpaper_dual_monitor(wallpaper_id, target_monitor)
-            
+            success, cmd = self._load_wallpaper(wallpaper_id)
             if success:
                 self.update_current_wallpaper(wallpaper_id)
                 if cmd:
@@ -937,6 +1196,30 @@ class WallpaperWindow(Gtk.Window):
         self.status_label.set_text("Refreshing wallpaper list...")
         self.load_wallpapers()
         self.status_label.set_text("Wallpaper list refreshed")
+
+    def on_stop_clicked(self, button):
+        """Stop all wallpaper processes and clear displays"""
+        try:
+            self.log.info("Stop button clicked - clearing all wallpapers...")
+            
+            # Stop wallpaper engine processes
+            self.engine.stop_wallpaper()
+            
+            # Clear all monitor wallpapers
+            self.monitor_wallpapers.clear()
+            
+            # Update UI status
+            self.status_label.set_text("All wallpapers stopped")
+            self.update_command_status("All wallpaper processes cleared")
+            
+            # Reset current wallpaper display
+            self.current_wallpaper_label.set_text("No wallpaper selected")
+            
+            self.log.info("All wallpapers successfully stopped and cleared")
+            
+        except Exception as e:
+            self.log.error(f"Error stopping wallpapers: {e}")
+            self.status_label.set_text(f"Error stopping wallpapers: {e}")
 
     def on_setup_clicked(self, button):
         """Open setup dialog for path configuration"""
@@ -1124,53 +1407,9 @@ class WallpaperWindow(Gtk.Window):
             self.playlist_timeout = None
         self.playlist_active = False
     
-    def on_right_click(self, widget, event):
-        """Handle click-and-hold on wallpapers for context menu"""
-        if event.button == 1:  # Left click
-            child = widget.get_child_at_pos(event.x, event.y)
-            if child:
-                wallpaper_id = child.get_child().wallpaper_id
-                # Store wallpaper_id for potential context menu
-                self._context_wallpaper_id = wallpaper_id
-                # Start timer for click-and-hold detection
-                self._context_timer = GLib.timeout_add(500, self._show_context_menu, widget, event)
-                return True
-        return False
+
     
-    def on_wallpaper_button_release(self, widget, event):
-        """Handle button release to cancel context menu timer"""
-        if event.button == 1 and hasattr(self, '_context_timer'):
-            GLib.source_remove(self._context_timer)
-            self._context_timer = None
-            # If we have a stored wallpaper_id and no timer, it was a quick click
-            if hasattr(self, '_context_wallpaper_id'):
-                wallpaper_id = self._context_wallpaper_id
-                delattr(self, '_context_wallpaper_id')
-                # Apply wallpaper normally (single or dual monitor based on detection)
-                displays = self.engine._detect_all_displays()
-                if len(displays) <= 1:
-                    success, cmd = self._load_wallpaper(wallpaper_id)
-                else:
-                    target_monitor = self.settings.get('selected_monitor')
-                    if not target_monitor:
-                        target_monitor = 'Primary'
-                    success, cmd = self._load_wallpaper_dual_monitor(wallpaper_id, target_monitor)
-                
-                if success:
-                    self.update_current_wallpaper(wallpaper_id)
-                    if cmd:
-                        self.update_command_status(cmd)
-        return False
-    
-    def _show_context_menu(self, widget, event):
-        """Show context menu after click-and-hold timeout"""
-        if hasattr(self, '_context_wallpaper_id'):
-            wallpaper_id = self._context_wallpaper_id
-            delattr(self, '_context_wallpaper_id')
-            menu = WallpaperContextMenu(self, wallpaper_id)
-            menu.popup_at_pointer(event)
-        self._context_timer = None
-        return False
+
     
     def on_destroy(self, window):
         """Clean up before exit"""
@@ -1256,6 +1495,18 @@ class WallpaperWindow(Gtk.Window):
         """Update status bar with last command"""
         self.statusbar.pop(self.command_context)
         self.statusbar.push(self.command_context, f"Last command: {' '.join(map(str, command))}")
+    
+    def update_display_status(self):
+        """Update status bar with display information and current wallpapers"""
+        primary_wallpaper = self.settings['monitor_wallpapers'].get('Primary', 'None')
+        secondary_wallpaper = self.settings['monitor_wallpapers'].get('Secondary', 'None')
+        
+        if self.engine.primary_display and self.engine.secondary_display:
+            self.status_label.set_text(f"Primary: {self.engine.primary_display} ({primary_wallpaper}) | Secondary: {self.engine.secondary_display} ({secondary_wallpaper}) | Left-click: Primary | Right-click: Secondary")
+        elif self.engine.primary_display:
+            self.status_label.set_text(f"Primary: {self.engine.primary_display} ({primary_wallpaper}) | Left-click: Primary | Right-click: No Secondary")
+        else:
+            self.status_label.set_text("No displays detected")
 
     def load_settings(self):
         """Load settings from config file"""
@@ -1430,59 +1681,9 @@ class SettingsDialog(Gtk.Dialog):
         display_grid.attach(clamp_label, 0, 1, 1, 1)
         display_grid.attach(self.clamping_combo, 1, 1, 1, 1)
         
-        # Monitor selection
-        monitor_label = Gtk.Label(label="Monitor:", halign=Gtk.Align.END)
-        self.monitor_combo = Gtk.ComboBoxText()
+
         
-        # Get available monitors
-        displays = self.parent.engine._detect_all_displays()
-        selected_monitor = self.current_settings.get('selected_monitor')
-        
-        # Add "Auto (Primary)" option
-        self.monitor_combo.append_text("Auto (Primary)")
-        if not selected_monitor:
-            self.monitor_combo.set_active(0)
-        
-        # Add each connected monitor
-        for i, display in enumerate(displays):
-            display_text = f"{display['name']}"
-            if display['primary']:
-                display_text += " (Primary)"
-            self.monitor_combo.append_text(display_text)
-            
-            # Set as active if this is the selected monitor
-            if selected_monitor == display['name']:
-                self.monitor_combo.set_active(i + 1)
-        
-        # If no monitor is selected and no primary found, default to first
-        if not selected_monitor and displays and self.monitor_combo.get_active() == -1:
-            self.monitor_combo.set_active(1 if displays else 0)
-            
-        display_grid.attach(monitor_label, 0, 2, 1, 1)
-        display_grid.attach(self.monitor_combo, 1, 2, 1, 1)
-        
-        # Monitor aliases and management
-        monitor_grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
-        notebook.append_page(monitor_grid, Gtk.Label(label="Monitors"))
-        
-        # Monitor aliases section
-        alias_label = Gtk.Label(label="Display Aliases:", halign=Gtk.Align.START)
-        alias_label.set_markup("<b>Display Aliases:</b>")
-        monitor_grid.attach(alias_label, 0, 0, 2, 1)
-        
-        # Show current displays with aliases
-        displays = self.parent.engine._detect_all_displays()
-        for i, display in enumerate(displays):
-            display_name = display['name']
-            is_primary = display['primary']
-            
-            # Display name label (simplified - no aliases)
-            name_label = Gtk.Label(label=f"{display_name}")
-            if is_primary:
-                name_label.set_markup(f"<b>{display_name} (Primary)</b>")
-            else:
-                name_label.set_markup(f"{display_name} (Secondary)")
-            monitor_grid.attach(name_label, 0, i + 1, 2, 1)
+
         
         # Add interaction settings after audio settings
         interact_grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
@@ -1701,63 +1902,7 @@ class SettingsDialog(Gtk.Dialog):
             self.presets_combo.set_sensitive(False)
             self.ld_preload_switch.set_sensitive(False)
 
-class WallpaperContextMenu(Gtk.Menu):
-    def __init__(self, parent, wallpaper_id):
-        super().__init__()
-        self.parent = parent
-        self.wallpaper_id = wallpaper_id
-        
-        # Get available monitors
-        displays = self.parent.engine._detect_all_displays()
-        
-        # If only one monitor, use normal mode
-        if len(displays) <= 1:
-            # Single monitor - just apply normally
-            apply_item = Gtk.MenuItem(label="Apply Wallpaper")
-            apply_item.connect("activate", self.on_apply_normal_clicked)
-            self.append(apply_item)
-        else:
-            # Multiple monitors - show Primary/Secondary options
-            primary_item = Gtk.MenuItem(label="Apply to Primary")
-            primary_item.connect("activate", self.on_apply_primary_clicked)
-            self.append(primary_item)
-            
-            secondary_item = Gtk.MenuItem(label="Apply to Secondary")
-            secondary_item.connect("activate", self.on_apply_secondary_clicked)
-            self.append(secondary_item)
-        
-        # Add separator
-        separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
-        
-        # Add to playlist
-        playlist_item = Gtk.MenuItem(label="Add to Playlist")
-        playlist_item.connect("activate", self.on_playlist_clicked)
-        self.append(playlist_item)
-        
-        self.show_all()
-    
-    def on_apply_normal_clicked(self, widget):
-        """Apply wallpaper using normal mode (single monitor)"""
-        success, cmd = self.parent._load_wallpaper(self.wallpaper_id)
-        if success:
-            self.parent.update_current_wallpaper(self.wallpaper_id)
-    
-    def on_apply_primary_clicked(self, widget):
-        """Apply wallpaper to primary monitor using dual monitor mode"""
-        success, cmd = self.parent._load_wallpaper_dual_monitor(self.wallpaper_id, 'Primary')
-        if success:
-            self.parent.update_current_wallpaper(self.wallpaper_id)
-    
-    def on_apply_secondary_clicked(self, widget):
-        """Apply wallpaper to secondary monitor using dual monitor mode"""
-        success, cmd = self.parent._load_wallpaper_dual_monitor(self.wallpaper_id, 'Secondary')
-        if success:
-            self.parent.update_current_wallpaper(self.wallpaper_id)
-    
-    def on_playlist_clicked(self, widget):
-        # TODO: Implement playlist management
-        pass
+
 
 def main():
     # Setup logging with more verbose output
