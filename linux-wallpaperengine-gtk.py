@@ -551,6 +551,79 @@ class WallpaperEngine:
             self.log.error(f"Failed to stop wallpaper: {e}", exc_info=True)
             return False
 
+    def restore_desktop_background(self):
+        """Restore the original desktop background after stopping wallpaper engine"""
+        try:
+            self.log.info("Restoring desktop background...")
+            
+            # Try Cinnamon first (Linux Mint)
+            try:
+                result = subprocess.run(['gsettings', 'get', 'org.cinnamon.desktop.background', 'picture-uri'], 
+                                      capture_output=True, text=True, timeout=5)
+                if result.returncode == 0 and result.stdout.strip() and result.stdout.strip() != "''":
+                    # We have a Cinnamon background, restore it
+                    current_bg = result.stdout.strip()
+                    self.log.info(f"Found Cinnamon background: {current_bg}")
+                    
+                    # Set it again to refresh the desktop
+                    subprocess.run(['gsettings', 'set', 'org.cinnamon.desktop.background', 'picture-uri', current_bg], 
+                                 timeout=5)
+                    self.log.info("Cinnamon desktop background restored")
+                    return True
+            except Exception as e:
+                self.log.debug(f"Cinnamon background restore failed: {e}")
+            
+            # Try GNOME
+            try:
+                result = subprocess.run(['gsettings', 'get', 'org.gnome.desktop.background', 'picture-uri'], 
+                                      capture_output=True, text=True, timeout=5)
+                if result.returncode == 0 and result.stdout.strip() and result.stdout.strip() != "''":
+                    current_bg = result.stdout.strip()
+                    self.log.info(f"Found GNOME background: {current_bg}")
+                    
+                    subprocess.run(['gsettings', 'set', 'org.gnome.desktop.background', 'picture-uri', current_bg], 
+                                 timeout=5)
+                    self.log.info("GNOME desktop background restored")
+                    return True
+            except Exception as e:
+                self.log.debug(f"GNOME background restore failed: {e}")
+            
+            # Try XFCE
+            try:
+                result = subprocess.run(['xfconf-query', '-c', 'xfce4-desktop', '-p', '/backdrop/screen0/monitor0/image-path'], 
+                                      capture_output=True, text=True, timeout=5)
+                if result.returncode == 0 and result.stdout.strip():
+                    current_bg = result.stdout.strip()
+                    self.log.info(f"Found XFCE background: {current_bg}")
+                    
+                    subprocess.run(['xfconf-query', '-c', 'xfce4-desktop', '-p', '/backdrop/screen0/monitor0/image-path', '-s', current_bg], 
+                                 timeout=5)
+                    self.log.info("XFCE desktop background restored")
+                    return True
+            except Exception as e:
+                self.log.debug(f"XFCE background restore failed: {e}")
+            
+            # Try Mate
+            try:
+                result = subprocess.run(['gsettings', 'get', 'org.mate.background', 'picture-filename'], 
+                                      capture_output=True, text=True, timeout=5)
+                if result.returncode == 0 and result.stdout.strip() and result.stdout.strip() != "''":
+                    current_bg = result.stdout.strip()
+                    self.log.info(f"Found Mate background: {current_bg}")
+                    
+                    subprocess.run(['gsettings', 'set', 'org.mate.background', 'picture-filename', current_bg], 
+                                 timeout=5)
+                    self.log.info("Mate desktop background restored")
+                    return True
+            except Exception as e:
+                self.log.debug(f"Mate background restore failed: {e}")
+            
+            self.log.warning("Could not restore desktop background - no supported desktop environment found")
+            return False
+            
+        except Exception as e:
+            self.log.error(f"Failed to restore desktop background: {e}", exc_info=True)
+            return False
 
     def _is_wayland(self):
         """Check if running under Wayland"""
@@ -561,6 +634,7 @@ class WallpaperWindow(Gtk.Window):
     def __init__(self, initial_settings=None):
         super().__init__(title="Linux Wallpaper Engine")
         self.set_default_size(800, 600)
+        self.set_size_request(900, 600)  # Minimum width to prevent toolbar collapse
         
         # Initialize engine
         self.engine = WallpaperEngine()
@@ -666,6 +740,7 @@ class WallpaperWindow(Gtk.Window):
         """Create the toolbar with controls"""
         toolbar = Gtk.Toolbar()
         toolbar.get_style_context().add_class(Gtk.STYLE_CLASS_PRIMARY_TOOLBAR)
+        toolbar.set_show_arrow(False)  # Disable overflow menu to prevent collapse
         
         # Status and volume controls container
         status_item = Gtk.ToolItem()
@@ -689,9 +764,10 @@ class WallpaperWindow(Gtk.Window):
         vol_box.pack_start(self.mute_button, False, False, 0)
         
         # Volume slider
-        self.last_volume = 100  # Store last volume before mute
+        saved_volume = self.settings.get('volume', 100)
+        self.last_volume = saved_volume  # Store last volume before mute
         adjustment = Gtk.Adjustment(
-            value=100,
+            value=saved_volume,
             lower=0,
             upper=100,
             step_increment=1,
@@ -704,6 +780,22 @@ class WallpaperWindow(Gtk.Window):
         self.volume_scale.set_digits(0)
         self.volume_scale.connect("value-changed", self.on_volume_changed)
         vol_box.pack_start(self.volume_scale, False, False, 0)
+        
+        # Initialize mute button and volume icon based on saved settings
+        saved_mute = self.settings.get('mute', False)
+        self.mute_button.set_active(saved_mute)
+        if saved_mute:
+            self.volume_icon.set_from_icon_name("audio-volume-muted-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+        else:
+            # Set appropriate icon based on volume level
+            if saved_volume == 0:
+                self.volume_icon.set_from_icon_name("audio-volume-muted-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+            elif saved_volume < 33:
+                self.volume_icon.set_from_icon_name("audio-volume-low-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+            elif saved_volume < 66:
+                self.volume_icon.set_from_icon_name("audio-volume-medium-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+            else:
+                self.volume_icon.set_from_icon_name("audio-volume-high-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
         
         status_box.pack_start(vol_box, False, False, 6)
         status_item.add(status_box)
@@ -739,6 +831,7 @@ class WallpaperWindow(Gtk.Window):
             ("media-skip-backward-symbolic", "Previous", self.on_prev_clicked),
             ("media-skip-forward-symbolic", "Next", self.on_next_clicked),
             ("media-playlist-shuffle-symbolic", "Random", self.on_random_clicked),
+            ("media-playback-stop-symbolic", "Stop Wallpaper", self.on_stop_clicked),
             ("view-refresh-symbolic", "Refresh Wallpapers", self.on_refresh_clicked),
             ("applications-system-symbolic", "Setup Paths", self.on_setup_clicked),
             ("preferences-system-symbolic", "Settings", self.on_settings_clicked)
@@ -1198,27 +1291,35 @@ class WallpaperWindow(Gtk.Window):
         self.status_label.set_text("Wallpaper list refreshed")
 
     def on_stop_clicked(self, button):
-        """Stop all wallpaper processes and clear displays"""
+        """Stop all wallpaper processes, clear displays, and restore desktop background"""
         try:
-            self.log.info("Stop button clicked - clearing all wallpapers...")
+            self.log.info("Stop button clicked - clearing all wallpapers and restoring desktop...")
             
             # Stop wallpaper engine processes
-            self.engine.stop_wallpaper()
+            success = self.engine.stop_wallpaper()
             
-            # Clear all monitor wallpapers
-            self.monitor_wallpapers.clear()
-            
-            # Update UI status
-            self.status_label.set_text("All wallpapers stopped")
-            self.update_command_status("All wallpaper processes cleared")
-            
-            # Reset current wallpaper display
-            self.current_wallpaper_label.set_text("No wallpaper selected")
-            
-            self.log.info("All wallpapers successfully stopped and cleared")
+            if success:
+                # Restore desktop background
+                self.engine.restore_desktop_background()
+                
+                # Clear all monitor wallpapers from settings
+                self.settings['monitor_wallpapers'] = {}
+                
+                # Update UI status
+                self.status_label.set_text("All wallpapers stopped and desktop restored")
+                self.update_command_status("All wallpaper processes cleared and desktop background restored")
+                
+                # Save cleared settings
+                self.save_settings()
+                self.update_display_status()
+                
+                self.log.info("All wallpapers successfully stopped, cleared, and desktop restored")
+            else:
+                self.status_label.set_text("Failed to stop wallpaper processes")
+                self.log.error("Failed to stop wallpaper processes")
             
         except Exception as e:
-            self.log.error(f"Error stopping wallpapers: {e}")
+            self.log.error(f"Error stopping wallpapers: {e}", exc_info=True)
             self.status_label.set_text(f"Error stopping wallpapers: {e}")
 
     def on_setup_clicked(self, button):
@@ -1436,6 +1537,9 @@ class WallpaperWindow(Gtk.Window):
         
         self.volume_icon.set_from_icon_name(icon_name, Gtk.IconSize.SMALL_TOOLBAR)
         
+        # Save settings immediately
+        self.save_settings()
+        
         if self.engine.current_wallpaper:
             displays = self.engine._detect_all_displays()
             
@@ -1476,6 +1580,9 @@ class WallpaperWindow(Gtk.Window):
         
         self.volume_icon.set_from_icon_name(icon_name, Gtk.IconSize.SMALL_TOOLBAR)
         
+        # Save settings immediately
+        self.save_settings()
+        
         if self.engine.current_wallpaper:
             displays = self.engine._detect_all_displays()
             
@@ -1498,15 +1605,23 @@ class WallpaperWindow(Gtk.Window):
     
     def update_display_status(self):
         """Update status bar with display information and current wallpapers"""
+        # Keep status label simple - just show ready state
+        self.status_label.set_text("Ready")
+        
+        # Put monitor info in the bottom status bar instead
         primary_wallpaper = self.settings['monitor_wallpapers'].get('Primary', 'None')
         secondary_wallpaper = self.settings['monitor_wallpapers'].get('Secondary', 'None')
         
         if self.engine.primary_display and self.engine.secondary_display:
-            self.status_label.set_text(f"Primary: {self.engine.primary_display} ({primary_wallpaper}) | Secondary: {self.engine.secondary_display} ({secondary_wallpaper}) | Left-click: Primary | Right-click: Secondary")
+            monitor_info = f"Primary: {primary_wallpaper} | Secondary: {secondary_wallpaper} | L:Primary R:Secondary"
         elif self.engine.primary_display:
-            self.status_label.set_text(f"Primary: {self.engine.primary_display} ({primary_wallpaper}) | Left-click: Primary | Right-click: No Secondary")
+            monitor_info = f"Primary: {primary_wallpaper} | L:Primary R:None"
         else:
-            self.status_label.set_text("No displays detected")
+            monitor_info = "No displays detected"
+        
+        # Update the bottom status bar with monitor info
+        self.statusbar.pop(self.command_context)
+        self.statusbar.push(self.command_context, monitor_info)
 
     def load_settings(self):
         """Load settings from config file"""
@@ -1952,5 +2067,4 @@ def main():
     Gtk.main()
 
 if __name__ == "__main__":
-    main()
     main()
