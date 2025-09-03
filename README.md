@@ -1,6 +1,6 @@
 # Linux Wallpaper Engine GTK
 
-A GTK frontend for [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine),
+A GTK frontend for [linux-wallpaperengine](https://github.com/almamu/linux-wallpaperengine),
 providing an intuitive interface for managing Wallpaper Engine wallpapers on Linux.
 
 ## Features
