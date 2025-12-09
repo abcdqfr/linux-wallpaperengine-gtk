@@ -208,8 +208,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine) - The core wallpaper engine
-- [almamu](https://github.com/almamu) - Original GTK implementation inspiration
+- [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine) - The core wallpaper engine (maintained by [almamu](https://github.com/almamu))
 - GTK community for the excellent UI framework
 
 ---
