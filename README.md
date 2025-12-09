@@ -75,7 +75,8 @@ nix-env -iA nixos.python3Packages.pygobject3 nixos.gtk3
 
 4. **Access settings** - Click the ⚙️ button in the toolbar
 
-### Advanced Features
+<details>
+<summary><strong>⚙️ Advanced Features</strong></summary>
 
 #### Containerization
 
@@ -103,7 +104,10 @@ Configure CEF arguments for advanced users:
 - **Performance Mode**: Optimize for performance
 - **Custom Arguments**: Add your own CEF arguments
 
-## Architecture
+</details>
+
+<details>
+<summary><strong>🏗️ Architecture</strong></summary>
 
 ### Monolithic Design
 
@@ -133,7 +137,10 @@ The application is designed to work everywhere by:
 - No hardcoded paths or assumptions
 - Standalone container execution (no external scripts)
 
-## Troubleshooting
+</details>
+
+<details>
+<summary><strong>🔧 Troubleshooting</strong></summary>
 
 ### Common Issues
 
@@ -169,7 +176,10 @@ Enable verbose logging:
 DEBUG=1 ./linux-wallpaperengine-gtk.py
 ```
 
-## Roadmap
+</details>
+
+<details>
+<summary><strong>🗺️ Roadmap</strong></summary>
 
 ### Current Status: v1.2.0 (Deterministic Monolith)
 
@@ -180,11 +190,12 @@ DEBUG=1 ./linux-wallpaperengine-gtk.py
 - ✅ Radeonsi workarounds
 - ✅ Smart argument filtering
 - ✅ System tray integration
-- ✅ Environment detection (distro, compositor, GPU, display)
-- ✅ XDG-based path resolution
 - ✅ Standalone Docker execution
 
-## Contributing
+</details>
+
+<details>
+<summary><strong>🤝 Contributing</strong></summary>
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
@@ -201,6 +212,8 @@ DEBUG=1 ./linux-wallpaperengine-gtk.py
 - **Test everywhere**: Try on different distros/compositors
 - **Document assumptions**: If you assume something, detect it instead
 - **Use XDG standards**: For paths and configuration
+
+</details>
 
 ## License
 
