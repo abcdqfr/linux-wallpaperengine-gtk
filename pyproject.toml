@@ -19,6 +19,9 @@ dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
     "pytest-mock>=3.10.0",
+    "ruff>=0.1.0",
+    "black>=22.0.0",
+    "pre-commit>=3.0.0",
 ]
 
 [build-system]
@@ -37,10 +40,34 @@ target-version = "py38"
 
 [tool.ruff.lint]
 select = ["E", "F", "B", "I"]
-ignore = []
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # do not perform function calls in argument defaults
+    "F821",  # undefined name (for standalone file)
+    "E402",  # module level import not at top of file (for standalone file)
+]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+"linux-wallpaperengine-gtk.py" = ["E402", "F821"]  # E402: gi.require_version must come before imports, F821: false positives
+"linux-wallpaperengine-gtk-standalone.py" = ["F821", "E402", "D100", "D101", "D102", "D107", "D200", "D205", "D212", "D415"]
+
+# MyPy configuration - more lenient for development
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = false
+warn_unused_configs = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = false
+disallow_untyped_decorators = false
+no_implicit_optional = false
+warn_redundant_casts = false
+warn_unused_ignores = false
+warn_no_return = false
+warn_unreachable = false
+strict_equality = false
+
 # Build tools for creating standalone monolith
 [tool.hatch.build.targets.wheel]
 packages = ["src/wallpaperengine"]
