@@ -11,6 +11,10 @@
 !LICENSE
 !pyproject.toml
 !.pre-commit-config.yaml
+!.github/
+!.github/**
+!.github/workflows/
+!.github/workflows/**
 
 # Python artifacts (if any)
 __pycache__/

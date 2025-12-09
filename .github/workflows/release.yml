@@ -1,0 +1,50 @@
+---
+name: Automated Release
+
+on:
+  push:
+    tags:
+      # Trigger on semantic version tags
+      - 'v*.*.*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: tag_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            NOTES="## Release ${{ steps.tag_version.outputs.VERSION }}
+
+            Initial release or first automated release."
+          else
+            LOG_CMD="git log ${PREV_TAG}..HEAD --pretty=format:'- %s' --no-merges"
+            NOTES="## Release ${{ steps.tag_version.outputs.VERSION }}
+
+            ### Changes since $PREV_TAG
+
+            $(${LOG_CMD})"
+          fi
+          echo "NOTES<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag_version.outputs.VERSION }}
+          name: Release ${{ steps.tag_version.outputs.VERSION }}
+          body: ${{ steps.release_notes.outputs.NOTES }}
+          draft: false
+          prerelease: false
