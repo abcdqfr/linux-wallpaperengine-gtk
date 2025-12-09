@@ -35,6 +35,82 @@ except (ImportError, ValueError):
     HAS_APP_INDICATOR = False
 
 
+# Feature Tracker - Auto-synced to README via Jinja2 template
+# Format: {"id": "feature-id", "name": "Feature Name", "status": "implemented|partial|planned", "description": "...", "icon": "emoji"}
+FEATURES = [
+    {
+        "id": "gtk3-interface",
+        "name": "Beautiful GTK3 Interface",
+        "status": "implemented",
+        "description": "Intuitive FlowBox-based wallpaper browser",
+        "icon": "🎨",
+    },
+    {
+        "id": "containerization",
+        "name": "Containerization Support",
+        "status": "implemented",
+        "description": "Optional Docker isolation for crash protection (standalone, no external scripts)",
+        "icon": "🐳",
+    },
+    {
+        "id": "amd-workarounds",
+        "name": "AMD GPU Workarounds",
+        "status": "implemented",
+        "description": "Built-in radeonsi driver crash prevention",
+        "icon": "🛡️",
+    },
+    {
+        "id": "smart-filtering",
+        "name": "Smart Argument Filtering",
+        "status": "implemented",
+        "description": "Automatically prevents crashes in single-process mode",
+        "icon": "🎯",
+    },
+    {
+        "id": "advanced-settings",
+        "name": "Advanced Settings",
+        "status": "implemented",
+        "description": "CEF arguments, environment variables, and workarounds",
+        "icon": "⚙️",
+    },
+    {
+        "id": "system-tray",
+        "name": "System Tray Integration",
+        "status": "implemented",
+        "description": "Minimize to tray with AppIndicator3, context menu with controls",
+        "icon": "📱",
+    },
+    {
+        "id": "audio-controls",
+        "name": "Audio Controls",
+        "status": "implemented",
+        "description": "Volume slider and mute toggle",
+        "icon": "🎵",
+    },
+    {
+        "id": "auto-detection",
+        "name": "Auto-Detection",
+        "status": "implemented",
+        "description": "Automatically finds wallpapers and backend executable using XDG standards",
+        "icon": "🔄",
+    },
+    {
+        "id": "desktop-icon",
+        "name": "Desktop Icon & Menu Entry",
+        "status": "partial",
+        "description": ".desktop file for application menu integration (needs portable path fix)",
+        "icon": "🖥️",
+    },
+    {
+        "id": "playlist-management",
+        "name": "Playlist Management",
+        "status": "planned",
+        "description": "Create and manage wallpaper playlists",
+        "icon": "📋",
+    },
+]
+
+
 def check_dependencies():
     """
     Check for required dependencies and provide helpful error messages.

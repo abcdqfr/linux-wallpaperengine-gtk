@@ -21,9 +21,11 @@ A beautiful, deterministic GTK frontend for [linux-wallpaperengine](https://gith
 - 🛡️ **AMD GPU Workarounds**: Built-in radeonsi driver crash prevention
 - 🎯 **Smart Argument Filtering**: Automatically prevents crashes in single-process mode
 - ⚙️ **Advanced Settings**: CEF arguments, environment variables, and workarounds
-- 📱 **System Tray Integration**: Minimize to tray with AppIndicator3
+- 📱 **System Tray Integration**: Minimize to tray with AppIndicator3, context menu with controls
 - 🎵 **Audio Controls**: Volume slider and mute toggle
 - 🔄 **Auto-Detection**: Automatically finds wallpapers and backend executable using XDG standards
+- 🖥️ **Desktop Icon & Menu Entry**: .desktop file for application menu integration (needs portable path fix) _(partial)_
+- 📋 **Playlist Management**: Create and manage wallpaper playlists _(planned)_
 
 ## Installation
 
