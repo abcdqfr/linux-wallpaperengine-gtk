@@ -1,4 +1,14 @@
-# Linux Wallpaper Engine GTK
+<p align="center">
+  <a href="https://github.com/abcdqfr/linux-wallpaperengine-gtk/blob/main/LICENSE"><img src="https://img.shields.io/github/license/abcdqfr/linux-wallpaperengine-gtk" alt="License" /></a>
+  <a href="https://github.com/abcdqfr/linux-wallpaperengine-gtk/releases"><img src="https://img.shields.io/github/v/release/abcdqfr/linux-wallpaperengine-gtk" alt="Release" /></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python" /></a>
+  <a href="https://github.com/abcdqfr/linux-wallpaperengine-gtk"><img src="https://img.shields.io/badge/platform-Linux-lightgrey" alt="Platform" /></a>
+  <a href="https://github.com/abcdqfr/linux-wallpaperengine-gtk/stargazers"><img src="https://img.shields.io/github/stars/abcdqfr/linux-wallpaperengine-gtk" alt="Stars" /></a>
+  <a href="https://github.com/abcdqfr/linux-wallpaperengine-gtk/network/members"><img src="https://img.shields.io/github/forks/abcdqfr/linux-wallpaperengine-gtk" alt="Forks" /></a>
+  <a href="https://github.com/abcdqfr/linux-wallpaperengine-gtk/issues"><img src="https://img.shields.io/github/issues/abcdqfr/linux-wallpaperengine-gtk" alt="Issues" /></a>
+</p>
+
+# 🎨 Linux Wallpaper Engine GTK
 
 A beautiful, deterministic GTK frontend for [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine), designed to work everywhere on Linux.
 
