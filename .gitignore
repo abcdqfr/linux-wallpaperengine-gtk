@@ -1,0 +1,40 @@
+# Standalone Monolith - Only track essential files
+# Everything except linux-wallpaperengine-gtk.py and README.md
+
+# Ignore everything by default
+*
+
+# But track these essential files
+!linux-wallpaperengine-gtk.py
+!README.md
+!.gitignore
+!LICENSE
+!pyproject.toml
+!.pre-commit-config.yaml
+
+# Python artifacts (if any)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.code-workspace
+
+# Logs
+*.log
+wallpaper-engine.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.history/
