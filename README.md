@@ -344,7 +344,6 @@ The application uses direct `docker run` commands - no external scripts needed.
 
 1. Detects Docker/Podman availability
 2. Builds `docker run` command with:
-
    - GPU device access (`--device=/dev/dri`)
    - X11/Wayland display forwarding
    - Environment variables (workarounds, etc.)

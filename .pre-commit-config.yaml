@@ -167,4 +167,3 @@ repos:
         language: system
         files: \.(py|js|ts|json|yaml|yml)$
         exclude: ^(.*\.min\.js|.*\.bundle\.js|node_modules|__pycache__|\.git|.*test.*|.*spec.*)
-
