@@ -41,11 +41,55 @@ wget https://raw.githubusercontent.com/abcdqfr/linux-wallpaperengine-gtk/main/li
 # Make executable
 chmod +x linux-wallpaperengine-gtk.py
 
-# Run
+# Run (will check dependencies and provide installation instructions if needed)
 ./linux-wallpaperengine-gtk.py
 ```
 
-**That's it!** The standalone file is all you need. It uses system packages (python3-gi, gtk3) which you install via your distro's package manager - no pip/pyproject.toml needed. All other files in this repository are for developers only.
+**That's it!** The standalone file is all you need. If any dependencies are missing, the application will detect your distribution and provide specific installation commands. All other files in this repository are for developers only.
+
+<details>
+<summary><strong>📦 System Dependencies (Auto-Detected)</strong></summary>
+
+The application automatically checks for required dependencies and provides distro-specific installation instructions if anything is missing. Required system packages:
+
+- **Python 3.8+** - Usually pre-installed on modern Linux distributions
+- **GTK3/PyGObject** - Python bindings for GTK3 (auto-detected with installation commands)
+
+#### Manual Installation (if needed)
+
+If you prefer to install dependencies manually:
+
+**Ubuntu/Debian/Mint:**
+
+```bash
+sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0
+```
+
+**Fedora:**
+
+```bash
+sudo dnf install python3-gobject gtk3
+```
+
+**Arch Linux:**
+
+```bash
+sudo pacman -S python-gobject gtk3
+```
+
+**NixOS:**
+
+```bash
+nix-env -iA nixos.python3Packages.pygobject3 nixos.gtk3
+```
+
+**openSUSE:**
+
+```bash
+sudo zypper install python3-gobject gtk3
+```
+
+</details>
 
 <details>
 <summary><strong>🔧 Developer Setup</strong></summary>
@@ -67,34 +111,6 @@ chmod +x linux-wallpaperengine-gtk.py
 **Note:** Other files (`.gitignore`, `.github/`, `.pre-commit-config.yaml`, `.releaserc.json`) are developer tooling and not needed for end users.
 
 </details>
-
-### System Dependencies
-
-The application requires Python 3 and GTK3, which are available on all major Linux distributions:
-
-#### Ubuntu/Debian/Mint
-
-```bash
-sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0
-```
-
-#### Fedora
-
-```bash
-sudo dnf install python3-gobject gtk3
-```
-
-#### Arch Linux
-
-```bash
-sudo pacman -S python-gobject gtk3
-```
-
-#### NixOS
-
-```bash
-nix-env -iA nixos.python3Packages.pygobject3 nixos.gtk3
-```
 
 ## Usage
 

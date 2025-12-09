@@ -19,6 +19,7 @@ import logging
 import os
 import random
 import subprocess
+import sys
 import threading
 import time
 
@@ -32,6 +33,91 @@ try:
     HAS_APP_INDICATOR = True
 except (ImportError, ValueError):
     HAS_APP_INDICATOR = False
+
+
+def check_dependencies():
+    """
+    Check for required dependencies and provide helpful error messages.
+
+    Returns:
+        tuple: (success: bool, error_message: str or None)
+
+    References:
+        - Python argparse: https://docs.python.org/3/library/argparse.html
+        - GTK3 Python bindings: https://pygobject.readthedocs.io/
+    """
+    missing = []
+    distro_info = {}
+
+    # Try to detect distro for helpful error messages
+    try:
+        if os.path.exists("/etc/os-release"):
+            with open("/etc/os-release", "r") as f:
+                for line in f:
+                    if line.startswith("ID="):
+                        distro_info["id"] = line.split("=", 1)[1].strip().strip('"')
+                    elif line.startswith("ID_LIKE="):
+                        distro_info["id_like"] = line.split("=", 1)[1].strip().strip('"')
+    except Exception:
+        pass
+
+    # Check Python version
+    if sys.version_info < (3, 8):
+        missing.append(
+            "Python 3.8+ (current: {}.{})".format(sys.version_info.major, sys.version_info.minor)
+        )
+
+    # Check GTK3/PyGObject
+    try:
+        import gi  # noqa: F401
+
+        gi.require_version("Gtk", "3.0")
+        gi.require_version("Gdk", "3.0")
+        gi.require_version("GdkPixbuf", "2.0")
+        gi.require_version("GLib", "2.0")
+        # Test import to verify bindings are available
+        from gi.repository import Gdk, GdkPixbuf, GLib, Gtk  # noqa: F401
+    except (ImportError, ValueError):
+        missing.append("GTK3/PyGObject bindings")
+
+        # Provide distro-specific installation instructions
+        install_cmd = None
+        distro_id = distro_info.get("id", "").lower()
+        id_like = distro_info.get("id_like", "").lower()
+
+        if distro_id in ["ubuntu", "debian", "linuxmint"] or "debian" in id_like:
+            install_cmd = "sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0"
+        elif distro_id in ["fedora", "rhel", "centos"] or "fedora" in id_like:
+            install_cmd = "sudo dnf install python3-gobject gtk3"
+        elif distro_id in ["arch", "manjaro", "endeavouros"] or "arch" in id_like:
+            install_cmd = "sudo pacman -S python-gobject gtk3"
+        elif distro_id == "nixos":
+            install_cmd = "nix-env -iA nixos.python3Packages.pygobject3 nixos.gtk3"
+        elif distro_id in ["opensuse", "sles"] or "suse" in id_like:
+            install_cmd = "sudo zypper install python3-gobject gtk3"
+        else:
+            install_cmd = "Install python3-gi and gtk3 via your package manager"
+
+        error_msg = f"""
+❌ Missing Required Dependencies
+
+The following dependencies are missing:
+  • {missing[0]}
+
+Installation Instructions:
+  {install_cmd}
+
+For other distributions, install:
+  • python3-gi (or python3-gobject)
+  • python3-gi-cairo (optional, for better rendering)
+  • gir1.2-gtk-3.0 (GTK3 introspection data)
+
+See README.md for complete installation instructions:
+  https://github.com/abcdqfr/linux-wallpaperengine-gtk#installation
+"""
+        return False, error_msg
+
+    return True, None
 
 
 class EnvironmentDetector:
@@ -2574,6 +2660,12 @@ class WallpaperContextMenu(Gtk.Menu):
 
 
 def main():
+    # Check dependencies first, before any GTK imports
+    success, error_msg = check_dependencies()
+    if not success:
+        print(error_msg, file=sys.stderr)
+        sys.exit(1)
+
     # Setup logging with more verbose output
     logging.basicConfig(
         level=logging.DEBUG,  # Changed from INFO to DEBUG
@@ -2586,19 +2678,92 @@ def main():
 
     logging.info("Starting Linux Wallpaper Engine GTK...")
 
-    # Parse command line arguments
-    parser = argparse.ArgumentParser(description="Linux Wallpaper Engine GTK")
-    parser.add_argument("--fps", type=int, default=60)
-    parser.add_argument("--volume", type=int, default=100)
-    parser.add_argument("--mute", action="store_true")
-    parser.add_argument("--disable-mouse", action="store_true")
-    parser.add_argument("--no-automute", action="store_true")
-    parser.add_argument("--no-audio-processing", action="store_true")
-    parser.add_argument("--no-fullscreen-pause", action="store_true")
-    parser.add_argument(
-        "--scaling", choices=["default", "stretch", "fit", "fill"], default="default"
+    # Parse command line arguments with modern help formatting
+    # References:
+    # - argparse formatters: https://docs.python.org/3/library/argparse.html#formatter-class
+    # - ArgumentDefaultsHelpFormatter: https://docs.python.org/3/library/argparse.html#argparse.ArgumentDefaultsHelpFormatter
+    # - RawDescriptionHelpFormatter: https://docs.python.org/3/library/argparse.html#argparse.RawDescriptionHelpFormatter
+    parser = argparse.ArgumentParser(
+        description="""
+Linux Wallpaper Engine GTK - A beautiful, deterministic GTK frontend for linux-wallpaperengine.
+
+This application provides a standalone interface to browse, preview, and manage Wallpaper Engine
+wallpapers on Linux. It features comprehensive environment detection, graceful degradation, and
+works across all major Linux distributions, compositors, and GPU drivers.
+        """.strip(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s                                    # Launch with default settings
+  %(prog)s --fps 30 --volume 50               # Set FPS to 30 and volume to 50%%
+  %(prog)s --mute --disable-mouse             # Mute audio and disable mouse interaction
+  %(prog)s --scaling fit --clamp border       # Use fit scaling with border clamping
+
+For more information, visit:
+  https://github.com/abcdqfr/linux-wallpaperengine-gtk
+        """.strip(),
     )
-    parser.add_argument("--clamp", choices=["clamp", "border", "repeat"], default="clamp")
+
+    # Performance Options
+    perf_group = parser.add_argument_group(
+        "Performance Options", "Control rendering performance and resource usage"
+    )
+    perf_group.add_argument(
+        "--fps",
+        type=int,
+        default=60,
+        metavar="FPS",
+        help="Target frames per second (default: %(default)s)",
+    )
+    perf_group.add_argument(
+        "--scaling",
+        choices=["default", "stretch", "fit", "fill"],
+        default="default",
+        metavar="MODE",
+        help="Wallpaper scaling mode: default, stretch, fit, or fill (default: %(default)s)",
+    )
+    perf_group.add_argument(
+        "--clamp",
+        choices=["clamp", "border", "repeat"],
+        default="clamp",
+        metavar="MODE",
+        help="Texture clamping mode: clamp, border, or repeat (default: %(default)s)",
+    )
+
+    # Audio Options
+    audio_group = parser.add_argument_group(
+        "Audio Options", "Control audio playback and processing"
+    )
+    audio_group.add_argument(
+        "--volume",
+        type=int,
+        default=100,
+        metavar="PERCENT",
+        help="Audio volume (0-100) (default: %(default)s)",
+    )
+    audio_group.add_argument("--mute", action="store_true", help="Start with audio muted")
+    audio_group.add_argument(
+        "--no-automute",
+        action="store_true",
+        help="Disable automatic muting when other applications play audio",
+    )
+    audio_group.add_argument(
+        "--no-audio-processing", action="store_true", help="Disable audio processing effects"
+    )
+
+    # Interaction Options
+    interaction_group = parser.add_argument_group(
+        "Interaction Options", "Control user interaction with wallpapers"
+    )
+    interaction_group.add_argument(
+        "--disable-mouse", action="store_true", help="Disable mouse interaction with wallpapers"
+    )
+    interaction_group.add_argument(
+        "--no-fullscreen-pause",
+        action="store_true",
+        help="Don't pause wallpapers when applications are fullscreen",
+    )
+
     args = parser.parse_args()
 
     # Create and show window

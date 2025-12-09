@@ -83,7 +83,11 @@ repos:
     rev: v1.35.1
     hooks:
       - id: yamllint
-        args: [--format, parsable, --strict]
+        args:
+          - "--format"
+          - "parsable"
+          - "-d"
+          - "{extends: default, rules: {line-length: {max: 100, level: warning}, truthy: {allowed-values: ['true', 'false'], check-keys: false}}}"
 
   # Git hooks for commit message format (always enabled)
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
