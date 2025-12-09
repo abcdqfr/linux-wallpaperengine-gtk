@@ -27,10 +27,33 @@ A beautiful, deterministic GTK frontend for [linux-wallpaperengine](https://gith
 
 ## Installation
 
-### Quick Start
+### Quick Start (Users)
+
+**You only need the standalone Python file:**
 
 ```bash
-# Clone the repository
+# Download just the application
+curl -O https://raw.githubusercontent.com/abcdqfr/linux-wallpaperengine-gtk/main/linux-wallpaperengine-gtk.py
+
+# Or using wget
+wget https://raw.githubusercontent.com/abcdqfr/linux-wallpaperengine-gtk/main/linux-wallpaperengine-gtk.py
+
+# Make executable
+chmod +x linux-wallpaperengine-gtk.py
+
+# Run
+./linux-wallpaperengine-gtk.py
+```
+
+**That's it!** The standalone file is all you need. All other files in this repository are for developers only.
+
+<details>
+<summary><strong>🔧 Developer Setup</strong></summary>
+
+If you're contributing or developing:
+
+```bash
+# Clone the full repository
 git clone https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
 cd linux-wallpaperengine-gtk
 
@@ -40,6 +63,10 @@ chmod +x linux-wallpaperengine-gtk.py
 # Run
 ./linux-wallpaperengine-gtk.py
 ```
+
+**Note:** Other files (`.gitignore`, `.github/`, `.pre-commit-config.yaml`, `.releaserc.json`) are developer tooling and not needed for end users.
+
+</details>
 
 ### System Dependencies
 
