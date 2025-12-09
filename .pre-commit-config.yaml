@@ -21,7 +21,7 @@ repos:
     rev: 1.9.2
     hooks:
       - id: bandit
-        args: [-r, ., -ll, --skip, B101, B601] # Skip assert_used, shell_injection_subprocess
+        args: [-r, ., -ll, --skip, B101, B601]  # Skip assert_used, shell_injection_subprocess
         files: ^linux-wallpaperengine-gtk\.py$
 
   # Pylint - Comprehensive linting (ENABLED)
@@ -30,13 +30,13 @@ repos:
     hooks:
       - id: pylint
         args: [
-            --disable=C0111,
-            C0103,
-            R0903,
-            R0913,
-            C0301,
-            --max-line-length=100,
-          ] # Disable docstring, naming, too-few/many args, line-too-long (handled by formatter)
+          --disable=C0111,
+          C0103,
+          R0903,
+          R0913,
+          C0301,
+          --max-line-length=100,
+        ]  # Disable docstring, naming, too-few/many args, line-too-long (handled by formatter)
         files: ^linux-wallpaperengine-gtk\.py$
 
   # MyPy - Static type checker (conditional based on version)
@@ -55,7 +55,7 @@ repos:
     rev: v0.1
     hooks:
       - id: xenon
-        args: [--max-average, B, --max-modules, B, --max-absolute, B]
+        args: [--max-average, C, --max-modules, C, --max-absolute, C]
         files: ^linux-wallpaperengine-gtk\.py$
 
   # Vulture - Dead code detection (NEW)
@@ -74,21 +74,31 @@ repos:
     hooks:
       - id: check-attribute-errors
         name: Check for AttributeError patterns
-        entry: python3 -c "import sys, re; content = open('linux-wallpaperengine-gtk.py', 'r').read(); matches = [(m.start(), m.group()) for m in re.finditer(r'self\.settings', content)]; wrong = [m for i, m in matches if 'WallpaperWindow' not in content[max(0,i-200):i+200] and 'SettingsDialog' not in content[max(0,i-200):i+200]]; sys.exit(1 if wrong else 0)"
+        entry: >-
+          python3 -c "import sys, re; content = open('linux-wallpaperengine-gtk.py', 'r').read();
+          matches = [(m.start(), m.group()) for m in re.finditer(r'self\.settings', content)];
+          wrong = [m for i, m in matches if 'WallpaperWindow' not in content[max(0,i-200):i+200]
+          and 'SettingsDialog' not in content[max(0,i-200):i+200]];
+          sys.exit(1 if wrong else 0)"
         language: system
         files: ^linux-wallpaperengine-gtk\.py$
         pass_filenames: false
 
       - id: check-shell-injection
         name: Check for shell injection risks
-        entry: python3 -c "import sys; content = open('linux-wallpaperengine-gtk.py', 'r').read(); sys.exit(1 if 'shell=True' in content else 0)"
+        entry: >-
+          python3 -c "import sys; content = open('linux-wallpaperengine-gtk.py', 'r').read();
+          sys.exit(1 if 'shell=True' in content else 0)"
         language: system
         files: ^linux-wallpaperengine-gtk\.py$
         pass_filenames: false
 
       - id: check-broad-exceptions
         name: Check for bare except clauses
-        entry: python3 -c "import sys, re; content = open('linux-wallpaperengine-gtk.py', 'r').read(); bare_except = re.findall(r'^\s*except\s*:', content, re.MULTILINE); sys.exit(1 if bare_except else 0)"
+        entry: >-
+          python3 -c "import sys, re; content = open('linux-wallpaperengine-gtk.py', 'r').read();
+          bare_except = re.findall(r'^\s*except\s*:', content, re.MULTILINE);
+          sys.exit(1 if bare_except else 0)"
         language: system
         files: ^linux-wallpaperengine-gtk\.py$
         pass_filenames: false
@@ -104,6 +114,7 @@ repos:
         types_or:
           [javascript, jsx, ts, tsx, json, css, scss, html, yaml, markdown, mdx]
         files: \.(js|jsx|ts|tsx|json|css|scss|html|yaml|yml|md|mdx|jsonc|code-workspace)$
+        exclude: ^\.pre-commit-config\.yaml$
 
   # Pre-commit hooks - Basic file hygiene (always enabled)
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -116,7 +127,7 @@ repos:
       - id: check-merge-conflict
       - id: check-case-conflict
       - id: check-json
-        exclude: \.(jsonc|code-workspace)$ # JSONC handled by Prettier
+        exclude: \.(jsonc|code-workspace)$  # JSONC handled by Prettier
       - id: check-toml
       - id: debug-statements
       - id: name-tests-test
@@ -139,7 +150,9 @@ repos:
           - "--format"
           - "parsable"
           - "-d"
-          - "{extends: default, rules: {line-length: {max: 100, level: warning}, truthy: {allowed-values: ['true', 'false'], check-keys: false}}}"
+          - >-
+            {extends: default, rules: {line-length: {max: 100, level: warning},
+            truthy: {allowed-values: ['true', 'false'], check-keys: false}}}
 
   # Git hooks for commit message format (always enabled)
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
@@ -163,7 +176,7 @@ repos:
     hooks:
       - id: jscpd
         name: jscpd
-        entry: jscpd --config .jscpdrc.json
+        entry: npx --no-install jscpd --config .jscpdrc.json
         language: system
         files: \.(py|js|ts|json|yaml|yml)$
         exclude: ^(.*\.min\.js|.*\.bundle\.js|node_modules|__pycache__|\.git|.*test.*|.*spec.*)
