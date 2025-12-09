@@ -1,49 +1,39 @@
 # Linux Wallpaper Engine GTK
 
-A professional GTK frontend for [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine),
-providing an intuitive interface for managing animated wallpapers on Linux.
+A beautiful, deterministic GTK frontend for [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine), designed to work everywhere on Linux.
+
+**Standalone Operation**: Single Python file, no external dependencies. NixOS-style determinism.
 
 ## Features
 
-- **Advanced CEF Arguments**: Custom CEF arguments with presets for Intel Graphics Fix, Debug Mode, and Performance Mode
-- **Smart Argument Filtering**: Automatically omits problematic arguments in single-process mode
-- **Wallpaper Management**: Browse, select, and launch wallpapers with ease
-- **Settings Dialog**: Configure wallpaper engine settings and CEF arguments
-- **Refresh Functionality**: Reload wallpaper list when new wallpapers are added
-- **Professional Development**: Modern Python packaging with `src/` structure and comprehensive testing
+- 🎨 **Beautiful GTK3 Interface**: Intuitive FlowBox-based wallpaper browser
+- 🐳 **Containerization Support**: Optional Docker isolation for crash protection (standalone, no external scripts)
+- 🛡️ **AMD GPU Workarounds**: Built-in radeonsi driver crash prevention
+- 🎯 **Smart Argument Filtering**: Automatically prevents crashes in single-process mode
+- ⚙️ **Advanced Settings**: CEF arguments, environment variables, and workarounds
+- 📱 **System Tray Integration**: Minimize to tray with AppIndicator3
+- 🎵 **Audio Controls**: Volume slider and mute toggle
+- 🔄 **Auto-Detection**: Automatically finds wallpapers and backend executable using XDG standards
 
 ## Installation
 
-### Quick Start (Standalone)
-
-Download the standalone file and run:
-
-```bash
-# Download the standalone file
-wget https://github.com/abcdqfr/linux-wallpaperengine-gtk/releases/latest/download/linux-wallpaperengine-gtk-standalone.py
-
-# Make executable
-chmod +x linux-wallpaperengine-gtk-standalone.py
-
-# Run
-./linux-wallpaperengine-gtk-standalone.py
-```
-
-### Development Installation
+### Quick Start
 
 ```bash
 # Clone the repository
 git clone https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
 cd linux-wallpaperengine-gtk
 
-# Install in development mode
-make install
+# Make executable
+chmod +x linux-wallpaperengine-gtk.py
 
 # Run
-make run
+./linux-wallpaperengine-gtk.py
 ```
 
 ### System Dependencies
+
+The application requires Python 3 and GTK3, which are available on all major Linux distributions:
 
 #### Ubuntu/Debian/Mint
 
@@ -63,6 +53,12 @@ sudo dnf install python3-gobject gtk3
 sudo pacman -S python-gobject gtk3
 ```
 
+#### NixOS
+
+```bash
+nix-env -iA nixos.python3Packages.pygobject3 nixos.gtk3
+```
+
 ## Usage
 
 ### Basic Usage
@@ -70,124 +66,141 @@ sudo pacman -S python-gobject gtk3
 1. **Launch the application**
 
    ```bash
-   ./linux-wallpaperengine-gtk-standalone.py
+   ./linux-wallpaperengine-gtk.py
    ```
 
-2. **Browse wallpapers** using the arrow keys or mouse
+2. **Browse wallpapers** - Use arrow keys or mouse to navigate the FlowBox grid
 
-3. **Select a wallpaper** to launch it
+3. **Select a wallpaper** - Click to launch, or use Enter key
 
-4. **Access settings** via the settings button (⚙️)
+4. **Access settings** - Click the ⚙️ button in the toolbar
 
 ### Advanced Features
 
+#### Containerization
+
+Run wallpapers in Docker for complete isolation (standalone, no external scripts):
+
+1. Enable in Settings > Advanced > Containerization
+2. Requires Docker installed and user in `docker` group
+3. Automatically detected if available
+4. Uses direct `docker run` commands (no external scripts needed)
+
+#### Radeonsi Workarounds
+
+Built-in fixes for AMD GPU crashes:
+
+1. Enable in Settings > Advanced > Radeonsi Workarounds
+2. Automatically applied based on detected GPU
+3. Individual workarounds can be toggled
+
 #### CEF Arguments
 
-The Advanced tab in settings allows you to configure custom CEF arguments:
+Configure CEF arguments for advanced users:
 
-- **Intel Graphics Fix**: Optimized settings for Intel graphics cards
+- **Intel Graphics Fix**: Optimized settings for Intel graphics
 - **Debug Mode**: Enable CEF debugging and logging
-- **Performance Mode**: Optimize for performance over visual quality
+- **Performance Mode**: Optimize for performance
 - **Custom Arguments**: Add your own CEF arguments
-
-#### Smart Argument Filtering
-
-The application automatically detects single-process mode and omits problematic arguments like `--scaling` and `--clamping` to prevent crashes.
-
-## Development
-
-### Project Structure
-
-```text
-linux-wallpaperengine-gtk/
-├── src/wallpaperengine/     # Source code modules
-├── tests/                   # Test suite
-├── scripts/                 # Build scripts
-├── pyproject.toml          # Modern Python packaging
-└── Makefile                # Development commands
-```
-
-### Development Commands
-
-```bash
-make install      # Install in development mode
-make test         # Run tests
-make format       # Format code
-make lint         # Lint code
-make check        # Run all checks
-make monolith     # Build standalone file
-make release      # Prepare release
-```
-
-### Testing
-
-```bash
-# Run all tests
-make test
-
-# Run with coverage
-pytest --cov=src tests/
-
-# Run specific test
-pytest tests/pytest_suite_test.py -v
-```
 
 ## Architecture
 
+### Monolithic Design
+
+This project uses a **single-file monolithic structure** optimized for:
+
+- ✅ Agentic coding workflows
+- ✅ Simple distribution (one file)
+- ✅ Easy maintenance
+- ✅ Deterministic behavior
+- ✅ Standalone operation (no external files)
+
 ### Core Components
 
-- **WallpaperEngine**: Core wallpaper management and CEF integration
-- **WallpaperWindow**: Main GTK UI window and event handling
-- **SettingsDialog**: Configuration management and CEF arguments
+- **EnvironmentDetector**: Comprehensive environment detection (distro, compositor, GPU, display)
+- **WallpaperEngine**: Core wallpaper management, process lifecycle, containerization
+- **WallpaperWindow**: Main GTK UI window with FlowBox, toolbar, status bar
+- **SettingsDialog**: Configuration management with Advanced tab
 - **WallpaperContextMenu**: Right-click context menu functionality
 
-### Professional Workflow
+### Deterministic Approach
 
-The project uses a **round-trip refactoring system**:
+The application is designed to work everywhere by:
 
-1. **Development**: Clean `src/` structure with modern tooling
-2. **Distribution**: Standalone monolith for end users
-3. **Build System**: Automated conversion between modes
-
-This provides the best of both worlds: professional development experience and simple distribution.
+- Detecting environment (distro, compositor, GPU, display server)
+- Using XDG Base Directory Standard for paths
+- Graceful degradation when features unavailable
+- No hardcoded paths or assumptions
+- Standalone container execution (no external scripts)
 
 ## Troubleshooting
 
 ### Common Issues
 
-**Wallpaper not launching**: Check that `linux-wallpaperengine` is installed and accessible in your PATH.
+**Wallpaper not launching**
 
-**CEF crashes**: Try the Intel Graphics Fix preset in Advanced settings.
+- Check that `linux-wallpaperengine` is installed and in PATH
+- Verify display detection: `xrandr` (X11) or `swaymsg -t get_outputs` (Wayland)
+- Check logs: `DEBUG=1 ./linux-wallpaperengine-gtk.py`
 
-**UI not responding**: Ensure GTK 3.36+ is installed on your system.
+**CEF crashes**
+
+- Enable Intel Graphics Fix preset in Advanced settings
+- Try containerization mode for isolation
+- Check GPU driver: `lspci | grep VGA`
+
+**UI not responding**
+
+- Ensure GTK 3.36+ is installed: `pkg-config --modversion gtk+-3.0`
+- Check for Wayland compatibility issues
+- Try X11 session if on Wayland
+
+**Containerization not working**
+
+- Verify Docker is installed: `docker --version`
+- Check user is in docker group: `groups | grep docker`
+- Test Docker access: `docker ps`
 
 ### Debug Mode
 
-Enable debug logging by setting the `DEBUG` environment variable:
+Enable verbose logging:
 
 ```bash
-DEBUG=1 ./linux-wallpaperengine-gtk-standalone.py
+DEBUG=1 ./linux-wallpaperengine-gtk.py
 ```
+
+## Roadmap
+
+### Current Status: v1.2.0 (Deterministic Monolith)
+
+- ✅ Single-file monolithic structure
+- ✅ Standalone containerization (no external scripts)
+- ✅ Comprehensive environment detection
+- ✅ XDG-based path resolution
+- ✅ Radeonsi workarounds
+- ✅ Smart argument filtering
+- ✅ System tray integration
+- ✅ Environment detection (distro, compositor, GPU, display)
+- ✅ XDG-based path resolution
+- ✅ Standalone Docker execution
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Run tests: `make check`
-5. Commit your changes: `git commit -m 'Add amazing feature'`
-6. Push to the branch: `git push origin feature/amazing-feature`
+3. Make your changes (keep it monolithic and standalone!)
+4. Test on multiple distros/compositors
+5. Commit: `git commit -m 'Add amazing feature'`
+6. Push: `git push origin feature/amazing-feature`
 7. Open a Pull Request
 
-### Development Setup
+### Guidelines
 
-```bash
-# Install development dependencies
-make dev-setup
-
-# Install pre-commit hooks
-pre-commit install
-```
+- **Keep it monolithic**: Single file structure
+- **Keep it standalone**: No external file dependencies
+- **Test everywhere**: Try on different distros/compositors
+- **Document assumptions**: If you assume something, detect it instead
+- **Use XDG standards**: For paths and configuration
 
 ## License
 
@@ -198,3 +211,201 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine) - The core wallpaper engine
 - [almamu](https://github.com/almamu) - Original GTK implementation inspiration
 - GTK community for the excellent UI framework
+
+---
+
+<details>
+<summary><strong>📚 Additional Documentation</strong></summary>
+
+### Deterministic Monolith Plan
+
+**Philosophy**: NixOS-Style Determinism in a Single File
+
+**Goal**: One Python file that works on ALL Linux distros, compositors, drivers, setups
+
+**Approach**: Declarative detection, graceful fallbacks, zero assumptions
+
+#### Implementation
+
+The application uses comprehensive environment detection:
+
+- **Distro Detection**: NixOS, Arch, Ubuntu, Fedora, Debian, etc. (via `/etc/os-release`, distro-specific files)
+- **Compositor Detection**: Mutter (GNOME), KWin (KDE), Sway, Hyprland, River (via process detection)
+- **Display Server Detection**: X11, Wayland, XWayland (via environment variables)
+- **GPU Detection**: AMD/RadeonSI, Intel, NVIDIA (via `lspci` and `lsmod`)
+- **Path Resolution**: XDG Base Directory Standard, distro-specific conventions, Flatpak/Snap paths
+- **Capability Detection**: Docker/Podman availability, GTK version, permissions
+
+#### Key Principles
+
+1. **Detect Everything, Assume Nothing**: All environment aspects are detected upfront
+2. **XDG Standards**: Use XDG Base Directory Standard for all paths
+3. **Graceful Degradation**: Work even if some features unavailable
+4. **Standalone Operation**: No external scripts or files required
+
+</details>
+
+<details>
+<summary><strong>🐳 Containerization Details</strong></summary>
+
+### Standalone Container Execution
+
+The application uses direct `docker run` commands - no external scripts needed.
+
+#### Requirements
+
+- Docker or Podman installed
+- User in `docker` group (or use `sudo`)
+- Base container image (e.g., `ubuntu:22.04`)
+
+#### How It Works
+
+1. Detects Docker/Podman availability
+2. Builds `docker run` command with:
+
+   - GPU device access (`--device=/dev/dri`)
+   - X11/Wayland display forwarding
+   - Environment variables (workarounds, etc.)
+   - Resource limits (memory, CPU)
+   - Security settings (required for GPU)
+
+3. Executes directly - no wrapper scripts
+
+#### Manual Container Execution
+
+If you need to run manually:
+
+```bash
+docker run --rm \
+  --device=/dev/dri \
+  -e DISPLAY=$DISPLAY \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+  -v /path/to/wpe:/path/to/wpe:ro \
+  --network=host \
+  ubuntu:22.04 \
+  /path/to/linux-wallpaperengine [args]
+```
+
+</details>
+
+<details>
+<summary><strong>🛡️ AMD GPU Workarounds</strong></summary>
+
+### Radeonsi Driver Crash Prevention
+
+The application automatically detects AMD GPUs and applies workarounds to prevent crashes.
+
+#### Automatic Workarounds (AMD RadeonSI)
+
+When AMD GPU is detected, these workarounds are applied by default:
+
+- `MESA_GL_SYNC_TO_VBLANK=1` - Prevents race conditions
+- `MESA_GL_VERSION_OVERRIDE=4.5` - Uses stable OpenGL API
+- `MESA_GLSL_VERSION_OVERRIDE=450` - Uses stable GLSL version
+- `MESA_GLSL_CACHE_DISABLE=1` - Prevents shader cache corruption
+- `R600_DEBUG=nosb,notgsi` - Disables aggressive optimizations
+
+#### Manual Application
+
+If you need to apply manually:
+
+```bash
+export MESA_GL_SYNC_TO_VBLANK=1
+export MESA_GL_VERSION_OVERRIDE=4.5
+export MESA_GLSL_VERSION_OVERRIDE=450
+export MESA_GLSL_CACHE_DISABLE=1
+export R600_DEBUG=nosb,notgsi
+./linux-wallpaperengine-gtk.py
+```
+
+#### Intel GPU
+
+Minimal workarounds applied:
+
+- `MESA_GL_VERSION_OVERRIDE=4.5`
+
+#### NVIDIA GPU
+
+Usually works fine without workarounds.
+
+</details>
+
+<details>
+<summary><strong>🔧 Environment Detection Details</strong></summary>
+
+### Comprehensive Detection
+
+The `EnvironmentDetector` class detects:
+
+#### Distro Detection Methods
+
+1. `/etc/os-release` (systemd standard)
+2. `/etc/lsb-release` (Debian/Ubuntu)
+3. Distro-specific files:
+   - `/etc/arch-release` → Arch
+   - `/etc/fedora-release` → Fedora
+   - `/etc/nixos/configuration.nix` → NixOS
+   - `/etc/debian_version` → Debian
+   - etc.
+
+#### Compositor Detection
+
+- **Wayland**: Checks running processes for `mutter`, `kwin`, `sway`, `hyprland`, `river`
+- **X11**: Uses `xprop` to detect window manager
+
+#### GPU Detection
+
+- **Method 1**: `lspci -nnk` to detect GPU vendor
+- **Method 2**: `lsmod` to detect driver modules (`amdgpu`, `radeon`, `nvidia`, `i915`)
+
+#### Path Resolution
+
+- **Steam**: XDG paths, standard locations, distro-specific, Flatpak, Snap
+- **WPE Binary**: PATH, system paths, XDG paths, relative paths, distro-specific
+
+</details>
+
+<details>
+<summary><strong>🐛 Known Issues & Solutions</strong></summary>
+
+### Backend Crashes (SIGSEGV)
+
+**Symptom**: Backend crashes with segmentation fault
+
+**Cause**: GPU driver memory corruption (often AMD RadeonSI)
+
+**Solutions**:
+
+1. Enable Radeonsi workarounds (automatic if AMD GPU detected)
+2. Use containerization for isolation
+3. Update GPU drivers
+4. Check `dmesg` for driver errors
+
+### Wayland Compatibility
+
+**Symptom**: Wallpapers don't display on Wayland
+
+**Cause**: Backend requires X11 for display access
+
+**Solutions**:
+
+1. Switch to X11 session (recommended)
+2. Use XWayland compatibility mode
+3. Check compositor-specific display detection
+
+### Containerization Issues
+
+**Symptom**: Container fails to start or can't access GPU
+
+**Solutions**:
+
+1. Verify Docker is running: `docker ps`
+2. Check user in docker group: `groups | grep docker`
+3. Test GPU access: `docker run --device=/dev/dri ubuntu:22.04 lspci`
+4. Check permissions: May need `sudo` or group membership
+
+</details>
+
+---
+
+**Status**: v1.2.0 - Deterministic Monolith (Standalone Operation)
