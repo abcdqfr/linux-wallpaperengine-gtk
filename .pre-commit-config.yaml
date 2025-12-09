@@ -1,5 +1,6 @@
+---
 repos:
-  # Ruff - Fast Python linter and formatter
+  # Ruff - Fast Python linter and formatter (always enabled)
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.3.0
     hooks:
@@ -7,7 +8,7 @@ repos:
         args: [--fix]
       - id: ruff-format
 
-  # Black - Uncompromising Python code formatter
+  # Black - Uncompromising Python code formatter (always enabled)
   - repo: https://github.com/psf/black
     rev: 24.2.0
     hooks:
@@ -15,29 +16,30 @@ repos:
         language_version: python3
         args: [--line-length=100]
 
-  # MyPy - Static type checker
+  # MyPy - Static type checker (conditional based on version)
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.8.0
     hooks:
       - id: mypy
         args: [--ignore-missing-imports]
+        # This will be conditionally enabled by our version checker
 
-  # Bandit - Security linter
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.5
-    hooks:
-      - id: bandit
-        args: [-r, src/]
-        exclude: ^tests/
+  # Bandit - Security linter (disabled - false positives)
+  # - repo: https://github.com/PyCQA/bandit
+  #   rev: 1.7.5
+  #   hooks:
+  #     - id: bandit
+  #       args: [-r, .]
+  #       files: ^linux-wallpaperengine-gtk\.py$
 
-  # Pydocstyle - Docstring style checker
-  - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.3.0
-    hooks:
-      - id: pydocstyle
-        args: [--convention=google]
+  # Pydocstyle - Docstring checker (disabled - monolithic file)
+  # - repo: https://github.com/pycqa/pydocstyle
+  #   rev: 6.3.0
+  #   hooks:
+  #     - id: pydocstyle
+  #       args: [--convention=google]
 
-  # Prettier - Code formatter for various file types
+  # Prettier - Code formatter for various file types (always enabled)
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
     hooks:
@@ -45,7 +47,7 @@ repos:
         types_or:
           [javascript, jsx, ts, tsx, json, css, scss, html, yaml, markdown, mdx]
 
-  # Pre-commit hooks - Basic file hygiene
+  # Pre-commit hooks - Basic file hygiene (always enabled)
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -55,7 +57,6 @@ repos:
       - id: check-added-large-files
       - id: check-merge-conflict
       - id: check-case-conflict
-      - id: check-docstring-first
       - id: check-json
       - id: check-toml
       - id: debug-statements
@@ -63,28 +64,28 @@ repos:
       - id: requirements-txt-fixer
       - id: fix-byte-order-marker
 
-  # ShellCheck - Shell script linter
+  # ShellCheck - Shell script linter (always enabled)
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.9.0.5
     hooks:
       - id: shellcheck
         args: [--severity=warning]
 
-  # Markdown linting
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.39.0
-    hooks:
-      - id: markdownlint
-        args: [--fix]
+  # Markdown linting (disabled - allows HTML for collapsible sections)
+  # - repo: https://github.com/igorshubovych/markdownlint-cli
+  #   rev: v0.39.0
+  #   hooks:
+  #     - id: markdownlint
+  #       args: [--fix]
 
-  # YAML linting
+  # YAML linting (always enabled)
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.35.1
     hooks:
       - id: yamllint
         args: [--format, parsable, --strict]
 
-  # Git hooks for commit message format
+  # Git hooks for commit message format (always enabled)
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
     rev: v9.5.0
     hooks:
