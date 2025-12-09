@@ -7,7 +7,12 @@ A standalone GTK interface for linux-wallpaperengine.
 
 import gi
 
+# Require all GTK3 components before importing
 gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+gi.require_version("GdkPixbuf", "2.0")
+gi.require_version("GLib", "2.0")
+
 import argparse
 import json
 import logging
