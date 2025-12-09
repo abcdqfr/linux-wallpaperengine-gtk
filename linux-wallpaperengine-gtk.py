@@ -18,6 +18,7 @@ import json
 import logging
 import os
 import random
+import signal
 import subprocess
 import sys
 import threading
@@ -602,30 +603,33 @@ class WallpaperEngine:
         self.default_workarounds = self._get_gpu_workarounds(self.env["gpu"])
 
     def _detect_display_x11(self):
-        """Detect primary display using xrandr (X11)"""
+        """Detect primary display using xrandr (X11)
+
+        Uses POSIX-compliant subprocess calls without shell injection risks.
+        Reference: https://docs.python.org/3/library/subprocess.html#security-considerations
+        """
         try:
             # Try primary display first
-            result = subprocess.run(
-                "xrandr | grep -w 'primary'", shell=True, capture_output=True, text=True, timeout=2
-            )
-            if result.stdout:
-                display = result.stdout.split()[0]
-                self.log.info(f"Found primary display (X11): {display}")
-                return display
+            # Use subprocess without shell=True for security
+            result = subprocess.run(["xrandr"], capture_output=True, text=True, timeout=2)
+            if result.returncode == 0:
+                # Parse output for primary display
+                for line in result.stdout.splitlines():
+                    if "primary" in line and "connected" in line:
+                        display = line.split()[0]
+                        self.log.info(f"Found primary display (X11): {display}")
+                        return display
 
             # Fall back to first connected display
-            result = subprocess.run(
-                "xrandr | grep -w 'connected'",
-                shell=True,
-                capture_output=True,
-                text=True,
-                timeout=2,
-            )
-            if result.stdout:
-                display = result.stdout.split()[0]
-                self.log.info(f"Using display (X11): {display}")
-                return display
+            if result.returncode == 0:
+                for line in result.stdout.splitlines():
+                    if "connected" in line and "disconnected" not in line:
+                        display = line.split()[0]
+                        self.log.info(f"Using display (X11): {display}")
+                        return display
 
+        except (subprocess.TimeoutExpired, FileNotFoundError) as e:
+            self.log.error(f"X11 display detection failed: {e}")
         except Exception as e:
             self.log.error(f"X11 display detection failed: {e}")
         return None
@@ -948,51 +952,34 @@ class WallpaperEngine:
 
             # CRITICAL WORKAROUND: Apply radeonsi driver crash workarounds
             # These prevent SIGSEGV in radeonsi_dri.so without disabling GPU
-            # Workarounds are controlled by settings (default: enabled)
-            if options.get(
-                "enable_radeonsi_workarounds",
-                self.settings.get("enable_radeonsi_workarounds", True),
-            ):
+            # Workarounds are controlled by options (default: enabled)
+            if options.get("enable_radeonsi_workarounds", True):
                 workarounds_applied = []
 
                 # Sync to VBlank (prevents race conditions)
-                if options.get(
-                    "radeonsi_sync_to_vblank", self.settings.get("radeonsi_sync_to_vblank", True)
-                ):
+                if options.get("radeonsi_sync_to_vblank", True):
                     env["MESA_GL_SYNC_TO_VBLANK"] = "1"
                     workarounds_applied.append("sync_to_vblank")
 
                 # OpenGL version override (stable API)
-                if options.get(
-                    "radeonsi_gl_version_override",
-                    self.settings.get("radeonsi_gl_version_override", True),
-                ):
+                if options.get("radeonsi_gl_version_override", True):
                     env["MESA_GL_VERSION_OVERRIDE"] = "4.5"
                     env["MESA_GLSL_VERSION_OVERRIDE"] = "450"
                     workarounds_applied.append("gl_version_override")
 
                 # Disable shader cache (prevents corruption)
-                if options.get(
-                    "radeonsi_disable_shader_cache",
-                    self.settings.get("radeonsi_disable_shader_cache", True),
-                ):
+                if options.get("radeonsi_disable_shader_cache", True):
                     env["MESA_GLSL_CACHE_DISABLE"] = "1"
                     env["MESA_GLSL_CACHE_MAX_SIZE"] = "0"
                     workarounds_applied.append("disable_shader_cache")
 
                 # Enable error checking (catches issues early)
-                if options.get(
-                    "radeonsi_enable_error_checking",
-                    self.settings.get("radeonsi_enable_error_checking", True),
-                ):
+                if options.get("radeonsi_enable_error_checking", True):
                     env["MESA_NO_ERROR"] = "0"
                     workarounds_applied.append("error_checking")
 
                 # Disable aggressive optimizations
-                if options.get(
-                    "radeonsi_disable_aggressive_opts",
-                    self.settings.get("radeonsi_disable_aggressive_opts", True),
-                ):
+                if options.get("radeonsi_disable_aggressive_opts", True):
                     env["R600_DEBUG"] = "nosb,notgsi"
                     workarounds_applied.append("disable_aggressive_opts")
 
@@ -1032,10 +1019,11 @@ class WallpaperEngine:
                     self.log.info("Mouse Y-axis inversion enabled (workaround for coordinate bug)")
 
             # Create new process with stable configuration
+            # Capture stderr to log errors if process fails
             process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,  # Capture stderr to diagnose failures
                 stdin=subprocess.DEVNULL,
                 start_new_session=True,
                 close_fds=True,
@@ -1052,7 +1040,18 @@ class WallpaperEngine:
                 self.log.info(f"Wallpaper process started successfully (PID: {process.pid})")
                 return True, cmd
             else:
-                self.log.error("Process failed to start")
+                # Process exited immediately - read stderr to see why
+                stderr_output = ""
+                try:
+                    if process.stderr:
+                        stderr_output = process.stderr.read().decode("utf-8", errors="replace")
+                except Exception:
+                    pass
+
+                if stderr_output:
+                    self.log.error(f"Process failed to start. Error output:\n{stderr_output}")
+                else:
+                    self.log.error("Process failed to start (no error output available)")
                 return False, None
 
         except Exception as e:
@@ -1064,229 +1063,220 @@ class WallpaperEngine:
             os.chdir(original_dir)
 
     def stop_wallpaper(self, timeout=10):
-        """Stop currently running wallpaper
+        """Stop currently running wallpaper using POSIX-compliant process management.
+
+        Uses proper signal handling (SIGTERM then SIGKILL) and direct process
+        object methods when available, falling back to process discovery for
+        orphaned or containerized processes.
 
         Args:
             timeout: Maximum time to spend stopping (seconds). Default 10s.
 
         Returns:
             bool: True if stopped successfully, False otherwise
+
+        References:
+            - Python signal module: https://docs.python.org/3/library/signal.html
+            - Python subprocess: https://docs.python.org/3/library/subprocess.html
+            - POSIX signals: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/signal.h.html
+            - os.kill: https://docs.python.org/3/library/os.html#os.kill
         """
+        start_time = time.time()
+        sigterm_timeout = max(2.0, timeout * 0.6)  # 60% of timeout for graceful termination
+        sigkill_timeout = max(1.0, timeout * 0.3)  # 30% for force kill
+
         try:
-            self.log.info("Stopping any running wallpaper processes...")
-            start_time = time.time()
-            max_iterations = int(timeout / 0.2)  # Max iterations based on timeout
-            iteration = 0
+            self.log.info("Stopping wallpaper processes...")
 
-            # Check for containerized processes first
-            try:
-                # Stop Docker containers
-                result = subprocess.run(
-                    ["docker", "ps", "--filter", "name=lwpe-backend", "--format", "{{.ID}}"],
-                    capture_output=True,
-                    text=True,
-                    timeout=2,
-                )
-                if result.returncode == 0 and result.stdout.strip():
-                    container_ids = result.stdout.strip().split("\n")
-                    for cid in container_ids:
-                        if cid:
-                            self.log.info(f"Stopping container: {cid}")
-                            subprocess.run(["docker", "stop", cid], timeout=5, check=False)
-                            subprocess.run(["docker", "rm", cid], timeout=5, check=False)
-            except (subprocess.TimeoutExpired, FileNotFoundError):
-                pass  # Docker not available or timed out
-
-            # Keep trying until no processes remain, but with timeout protection
-            while iteration < max_iterations:
-                iteration += 1
-                elapsed = time.time() - start_time
-
-                # Check overall timeout
-                if elapsed >= timeout:
-                    self.log.warning(f"Stop operation timed out after {timeout}s")
-                    # Force kill as last resort
-                    try:
-                        subprocess.run(
-                            ["pkill", "-9", "-f", f"{self.wpe_path}\\b"], timeout=2, check=False
-                        )
-                        # Also try stopping containers
-                        subprocess.run(
-                            ["docker", "stop", "$(docker ps -q --filter name=lwpe-backend)"],
-                            shell=True,
-                            timeout=2,
-                            check=False,
-                        )
-                    except subprocess.TimeoutExpired:
-                        self.log.error("Even SIGKILL timed out - processes may be stuck")
-                    return False
-
-                # Check for processes with timeout
+            # Step 1: Stop tracked process object directly (most efficient)
+            if self.current_process is not None:
                 try:
-                    # Check both direct processes and containerized processes
-                    # Exclude GTK app: use negative lookahead to prevent matching processes with "gtk" in command
-                    search_pattern = f"{self.wpe_path}\\b|docker.*linux-wallpaperengine|linux-wallpaperengine(?!.*gtk)"
-                    result = subprocess.run(
-                        ["pgrep", "-f", search_pattern],
-                        capture_output=True,
-                        text=True,
-                        timeout=2,  # Timeout for pgrep itself
-                    )
-                    self.log.debug(f"pgrep return code: {result.returncode}")
+                    pid = self.current_process.pid
+                    self.log.debug(f"Terminating tracked process (PID: {pid})")
 
-                    if result.returncode != 0:  # No processes found
-                        self.log.debug("No wallpaper processes found")
-                        break
+                    # Send SIGTERM for graceful shutdown
+                    # Reference: https://docs.python.org/3/library/subprocess.Popen.html#subprocess.Popen.terminate
+                    self.current_process.terminate()
 
-                    pids = [pid.strip() for pid in result.stdout.strip().split("\n") if pid.strip()]
-                    self.log.debug(f"Found wallpaper processes: {pids}")
-
-                    # Check process states - handle zombies and crashed processes
-                    active_pids = []
-                    for pid in pids:
-                        if not pid:
-                            continue
+                    # Wait for graceful termination with timeout
+                    # Reference: https://docs.python.org/3/library/subprocess.Popen.html#subprocess.Popen.wait
+                    try:
+                        self.current_process.wait(timeout=sigterm_timeout)
+                        self.log.debug(f"Process {pid} terminated gracefully")
+                    except subprocess.TimeoutExpired:
+                        self.log.warning(f"Process {pid} did not terminate, sending SIGKILL")
+                        # Force kill if graceful termination failed
+                        # Reference: https://docs.python.org/3/library/subprocess.Popen.html#subprocess.Popen.kill
+                        self.current_process.kill()
                         try:
-                            # Check process state
-                            state_result = subprocess.run(
-                                ["ps", "-o", "state=", "-p", pid],
-                                capture_output=True,
-                                text=True,
-                                timeout=1,
-                            )
-                            state = state_result.stdout.strip()
+                            self.current_process.wait(timeout=sigkill_timeout)
+                            self.log.debug(f"Process {pid} killed")
+                        except subprocess.TimeoutExpired:
+                            self.log.error(f"Process {pid} failed to die even after SIGKILL")
+                            return False
 
-                            if state == "Z":  # Zombie process
-                                self.log.warning(f"Process {pid} is zombie, attempting to reap...")
-                                try:
-                                    # Try to reap zombie (non-blocking)
-                                    os.waitpid(int(pid), os.WNOHANG)
-                                except (OSError, ValueError, ProcessLookupError):
-                                    pass
-                                # Don't add to active_pids - zombie will be cleaned up
-                            elif state == "D":  # Uninterruptible sleep
-                                self.log.warning(
-                                    f"Process {pid} in uninterruptible sleep, will force kill"
-                                )
-                                active_pids.append(pid)
-                            elif state:  # Running or other active state
-                                active_pids.append(pid)
-                            else:
-                                # Process doesn't exist or already dead
-                                self.log.debug(f"Process {pid} no longer exists")
-                        except (subprocess.TimeoutExpired, ValueError, ProcessLookupError) as e:
-                            self.log.debug(f"Could not check state of process {pid}: {e}")
-                            # Assume it's active if we can't check
-                            active_pids.append(pid)
-
-                    # If no active processes, we're done
-                    if not active_pids:
-                        self.log.debug("No active processes found (all zombies or dead)")
-                        break
-
-                    # Try SIGTERM first with timeout
-                    self.log.debug("Sending SIGTERM to all processes")
-                    try:
-                        # Exclude GTK app: use negative lookahead to prevent matching processes with "gtk" in command
-                        search_pattern = f"{self.wpe_path}\\b|docker.*linux-wallpaperengine|linux-wallpaperengine(?!.*gtk)"
-                        subprocess.run(
-                            ["pkill", "-15", "-f", search_pattern], timeout=2, check=False
-                        )
-                    except subprocess.TimeoutExpired:
-                        self.log.warning("pkill -15 timed out, trying SIGKILL")
-
-                    time.sleep(0.2)  # Brief pause
-
-                    # If processes still exist, use SIGKILL
-                    try:
-                        # Exclude GTK app: use negative lookahead to prevent matching processes with "gtk" in command
-                        search_pattern = f"{self.wpe_path}\\b|docker.*linux-wallpaperengine|linux-wallpaperengine(?!.*gtk)"
-                        check = subprocess.run(
-                            ["pgrep", "-f", search_pattern], capture_output=True, timeout=2
-                        )
-                        self.log.debug(f"After SIGTERM check return code: {check.returncode}")
-
-                        if check.returncode == 0:
-                            self.log.debug("SIGTERM failed, using SIGKILL")
-                            try:
-                                # Exclude GTK app: use negative lookahead to prevent matching processes with "gtk" in command
-                                search_pattern = f"{self.wpe_path}\\b|docker.*linux-wallpaperengine|linux-wallpaperengine(?!.*gtk)"
-                                subprocess.run(
-                                    ["pkill", "-9", "-f", search_pattern], timeout=2, check=False
-                                )
-                                # Also force stop containers
-                                subprocess.run(
-                                    [
-                                        "docker",
-                                        "stop",
-                                        "$(docker ps -q --filter name=lwpe-backend)",
-                                    ],
-                                    shell=True,
-                                    timeout=2,
-                                    check=False,
-                                )
-                                self.log.debug("Sent SIGKILL")
-                            except subprocess.TimeoutExpired:
-                                self.log.error("SIGKILL timed out - process may be stuck")
-                                return False
-
-                            time.sleep(0.2)
-
-                        # Verify cleanup
-                        # Exclude GTK app: use negative lookahead to prevent matching processes with "gtk" in command
-                        search_pattern = f"{self.wpe_path}\\b|docker.*linux-wallpaperengine|linux-wallpaperengine(?!.*gtk)"
-                        final_check = subprocess.run(
-                            ["pgrep", "-f", search_pattern], capture_output=True, timeout=2
-                        )
-                        self.log.debug(f"Final check return code: {final_check.returncode}")
-
-                        if final_check.returncode != 0:
-                            break  # Successfully stopped
-
-                    except subprocess.TimeoutExpired:
-                        self.log.warning("pgrep check timed out, retrying...")
-                        continue
-
-                except subprocess.TimeoutExpired:
-                    self.log.warning(f"pgrep timed out (iteration {iteration})")
-                    # Continue to next iteration
-                    continue
+                except (ProcessLookupError, ValueError) as e:
+                    # Process already dead or invalid PID
+                    self.log.debug(f"Tracked process already terminated: {e}")
                 except Exception as e:
-                    self.log.error(f"Unexpected error in stop loop: {e}")
-                    # Try to continue, but log the error
-                    continue
+                    self.log.warning(f"Error stopping tracked process: {e}")
 
-            # Check if we exited due to timeout
-            if iteration >= max_iterations:
-                elapsed = time.time() - start_time
-                self.log.error(
-                    f"Stop operation exceeded timeout after {elapsed:.2f}s ({iteration} iterations)"
-                )
-                # Final attempt with SIGKILL
-                try:
-                    # Exclude GTK app: use negative lookahead to prevent matching processes with "gtk" in command
-                    search_pattern = f"{self.wpe_path}\\b|docker.*linux-wallpaperengine|linux-wallpaperengine(?!.*gtk)"
-                    subprocess.run(["pkill", "-9", "-f", search_pattern], timeout=2, check=False)
-                    # Also force stop containers
-                    subprocess.run(
-                        ["docker", "stop", "$(docker ps -q --filter name=lwpe-backend)"],
-                        shell=True,
-                        timeout=2,
-                        check=False,
-                    )
-                except subprocess.TimeoutExpired:
-                    pass
-                return False
+            # Step 2: Stop Docker containers (if any)
+            # Reference: Docker CLI docs - https://docs.docker.com/engine/reference/commandline/ps/
+            self._stop_docker_containers()
 
+            # Step 3: Clean up any orphaned processes by pattern matching
+            # This handles cases where process was started outside this instance
+            remaining_time = timeout - (time.time() - start_time)
+            if remaining_time > 0.5:  # Only if we have time left
+                if not self._stop_orphaned_processes(remaining_time):
+                    self.log.warning("Some orphaned processes may still be running")
+
+            # Clean up state
             self.current_process = None
             self.current_wallpaper = None
+
             elapsed = time.time() - start_time
-            self.log.info(f"All wallpaper processes stopped in {elapsed:.2f}s")
-            time.sleep(0.2)  # Final pause before allowing new wallpaper
+            self.log.info(f"Wallpaper stopped successfully in {elapsed:.2f}s")
             return True
 
         except Exception as e:
             self.log.error(f"Failed to stop wallpaper: {e}", exc_info=True)
+            return False
+
+    def _stop_docker_containers(self):
+        """Stop Docker containers running wallpaper engine.
+
+        Uses Docker CLI without shell injection vulnerabilities.
+        Reference: https://docs.docker.com/engine/reference/commandline/ps/
+        """
+        try:
+            # List containers without shell expansion
+            # Reference: https://docs.python.org/3/library/subprocess.html#security-considerations
+            result = subprocess.run(
+                ["docker", "ps", "--filter", "name=lwpe-backend", "--format", "{{.ID}}"],
+                capture_output=True,
+                text=True,
+                timeout=2,
+                check=False,
+            )
+
+            if result.returncode == 0 and result.stdout.strip():
+                container_ids = [
+                    cid.strip() for cid in result.stdout.strip().split("\n") if cid.strip()
+                ]
+                for cid in container_ids:
+                    self.log.info(f"Stopping Docker container: {cid}")
+                    # Stop container
+                    subprocess.run(["docker", "stop", cid], timeout=5, check=False)
+                    # Remove container
+                    subprocess.run(["docker", "rm", cid], timeout=5, check=False)
+
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            # Docker not available or timed out - not an error
+            pass
+        except Exception as e:
+            self.log.debug(f"Error stopping Docker containers: {e}")
+
+    def _stop_orphaned_processes(self, timeout):
+        """Stop orphaned processes matching wallpaper engine pattern.
+
+        Uses POSIX signals directly via os.kill() instead of shell commands.
+        Reference: https://docs.python.org/3/library/os.html#os.kill
+
+        Args:
+            timeout: Maximum time to spend on cleanup
+
+        Returns:
+            bool: True if all processes stopped, False otherwise
+        """
+        try:
+            # Find processes by executable path
+            # Reference: pgrep(1) - POSIX-compliant process search
+            # Use word boundary to avoid matching this GTK app
+            pattern = f"{self.wpe_path}\\b"
+            result = subprocess.run(
+                ["pgrep", "-f", pattern],
+                capture_output=True,
+                text=True,
+                timeout=2,
+                check=False,
+            )
+
+            if result.returncode != 0:
+                # No processes found
+                return True
+
+            # Parse PIDs
+            pids = []
+            for line in result.stdout.strip().split("\n"):
+                pid_str = line.strip()
+                if pid_str:
+                    try:
+                        pids.append(int(pid_str))
+                    except ValueError:
+                        continue
+
+            if not pids:
+                return True
+
+            self.log.debug(f"Found {len(pids)} orphaned process(es): {pids}")
+
+            # Send SIGTERM to all processes
+            # Reference: https://docs.python.org/3/library/signal.html#signal.SIGTERM
+            for pid in pids:
+                try:
+                    # Reference: https://docs.python.org/3/library/os.html#os.kill
+                    os.kill(pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    # Process already dead
+                    continue
+                except PermissionError:
+                    self.log.warning(f"Permission denied killing process {pid}")
+                    continue
+                except Exception as e:
+                    self.log.debug(f"Error sending SIGTERM to {pid}: {e}")
+
+            # Wait for processes to terminate
+            time.sleep(min(2.0, timeout * 0.5))
+
+            # Check which processes are still alive and force kill
+            remaining_pids = []
+            for pid in pids:
+                try:
+                    # Check if process exists by sending signal 0 (no-op)
+                    # Reference: https://docs.python.org/3/library/os.html#os.kill
+                    os.kill(pid, 0)
+                    remaining_pids.append(pid)
+                except ProcessLookupError:
+                    # Process is dead
+                    continue
+                except Exception:
+                    # Assume dead if we can't check
+                    continue
+
+            if remaining_pids:
+                self.log.debug(f"Force killing {len(remaining_pids)} process(es): {remaining_pids}")
+                # Send SIGKILL to remaining processes
+                # Reference: https://docs.python.org/3/library/signal.html#signal.SIGKILL
+                for pid in remaining_pids:
+                    try:
+                        os.kill(pid, signal.SIGKILL)
+                    except (ProcessLookupError, PermissionError):
+                        continue
+                    except Exception as e:
+                        self.log.debug(f"Error sending SIGKILL to {pid}: {e}")
+
+                # Brief wait for SIGKILL to take effect
+                time.sleep(min(1.0, timeout * 0.3))
+
+            return True
+
+        except subprocess.TimeoutExpired:
+            self.log.warning("Process discovery timed out")
+            return False
+        except Exception as e:
+            self.log.debug(f"Error stopping orphaned processes: {e}")
             return False
 
     def _is_wayland(self):
@@ -1651,7 +1641,13 @@ class WallpaperWindow(Gtk.Window):
             if hasattr(box, "wallpaper_id") and box.wallpaper_id == wallpaper_id:
                 self.highlight_current_wallpaper(box)
                 # Get the scrolled window and scroll to the child's position
-                adj = child.get_parent().get_parent().get_vadjustment()
+                # Get scroll adjustment - use ScrolledWindow API directly
+                scrolled_window = child.get_parent().get_parent()
+                if isinstance(scrolled_window, Gtk.ScrolledWindow):
+                    adj = scrolled_window.get_vadjustment()
+                else:
+                    # Fallback: try deprecated method if ScrolledWindow check fails
+                    adj = getattr(scrolled_window, "get_vadjustment", lambda: None)()
                 if adj:
                     alloc = child.get_allocation()
                     adj.set_value(alloc.y - (adj.get_page_size() / 2))
@@ -2661,26 +2657,103 @@ class WallpaperContextMenu(Gtk.Menu):
         pass
 
 
-def main():
-    # Check dependencies first, before any GTK imports
-    success, error_msg = check_dependencies()
-    if not success:
-        print(error_msg, file=sys.stderr)
+def setup_dev_environment():
+    """Setup development environment with all analysis tools.
+
+    Installs pre-commit, analysis tools (ruff, bandit, pylint, mypy, radon, vulture),
+    and configures pre-commit hooks. This function replaces the separate setup-dev.sh script.
+
+    References:
+        - pre-commit: https://pre-commit.com/
+        - ruff: https://docs.astral.sh/ruff/
+        - bandit: https://bandit.readthedocs.io/
+    """
+    print("🔧 Setting up development environment...")
+    print()
+
+    # Check if we're in the right directory
+    if not os.path.exists("linux-wallpaperengine-gtk.py"):
+        print("❌ Error: Must run from project root directory")
+        print("   Current directory:", os.getcwd())
         sys.exit(1)
 
-    # Setup logging with more verbose output
-    logging.basicConfig(
-        level=logging.DEBUG,  # Changed from INFO to DEBUG
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.StreamHandler(),  # Console output
-            logging.FileHandler("wallpaper-engine.log"),  # File output
-        ],
-    )
+    try:
+        # Install pre-commit
+        print("📦 Installing pre-commit...")
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "--upgrade", "pip"],
+            check=True,
+            capture_output=True,
+        )
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "pre-commit"],
+            check=True,
+            capture_output=True,
+        )
 
-    logging.info("Starting Linux Wallpaper Engine GTK...")
+        # Install analysis tools
+        print("📦 Installing analysis tools...")
+        tools = ["ruff", "bandit", "pylint", "mypy", "radon", "vulture"]
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install"] + tools,
+            check=True,
+            capture_output=True,
+        )
 
-    # Parse command line arguments with modern help formatting
+        # Install project dev dependencies (if pyproject.toml exists)
+        print("📦 Installing project dev dependencies...")
+        if os.path.exists("pyproject.toml"):
+            try:
+                subprocess.run(
+                    [sys.executable, "-m", "pip", "install", "-e", ".[dev]"],
+                    check=True,
+                    capture_output=True,
+                )
+            except subprocess.CalledProcessError:
+                print(
+                    "⚠️  Could not install dev dependencies (may need to install PyGObject separately)"
+                )
+
+        # Install pre-commit hooks
+        print("🔗 Installing pre-commit hooks...")
+        subprocess.run(["pre-commit", "install", "--install-hooks"], check=True)
+
+        # Install commit-msg hook
+        print("🔗 Installing commit-msg hook...")
+        subprocess.run(["pre-commit", "install", "--hook-type", "commit-msg"], check=True)
+
+        print()
+        print("✅ Development environment ready!")
+        print()
+        print("Next steps:")
+        print("  - Run 'pre-commit run --all-files' to test all hooks")
+        print("  - Run 'pre-commit run ruff --all-files' to test specific hook")
+        print("  - Hooks will run automatically on 'git commit'")
+        print()
+        print("Tools installed:")
+        print("  ✓ pre-commit - Git hook framework")
+        print("  ✓ ruff - Fast Python linter")
+        print("  ✓ bandit - Security linter")
+        print("  ✓ pylint - Comprehensive linter")
+        print("  ✓ mypy - Static type checker")
+        print("  ✓ radon - Complexity checker")
+        print("  ✓ vulture - Dead code detector")
+
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Error during setup: {e}")
+        if e.stdout:
+            print("STDOUT:", e.stdout.decode() if isinstance(e.stdout, bytes) else e.stdout)
+        if e.stderr:
+            print("STDERR:", e.stderr.decode() if isinstance(e.stderr, bytes) else e.stderr)
+        sys.exit(1)
+    except FileNotFoundError:
+        print("❌ Error: pre-commit command not found after installation")
+        print("   Try running: pip install pre-commit")
+        sys.exit(1)
+
+
+def main():
+    # Parse command line arguments first (before GTK imports)
     # References:
     # - argparse formatters: https://docs.python.org/3/library/argparse.html#formatter-class
     # - ArgumentDefaultsHelpFormatter: https://docs.python.org/3/library/argparse.html#argparse.ArgumentDefaultsHelpFormatter
@@ -2700,10 +2773,21 @@ Examples:
   %(prog)s --fps 30 --volume 50               # Set FPS to 30 and volume to 50%%
   %(prog)s --mute --disable-mouse             # Mute audio and disable mouse interaction
   %(prog)s --scaling fit --clamp border       # Use fit scaling with border clamping
+  %(prog)s --setup-dev                        # Setup development environment
 
 For more information, visit:
   https://github.com/abcdqfr/linux-wallpaperengine-gtk
         """.strip(),
+    )
+
+    # Development Options (must be first to allow early exit)
+    dev_group = parser.add_argument_group(
+        "Development Options", "Development and maintenance tools"
+    )
+    dev_group.add_argument(
+        "--setup-dev",
+        action="store_true",
+        help="Setup development environment (installs pre-commit, linters, and hooks)",
     )
 
     # Performance Options
@@ -2767,6 +2851,29 @@ For more information, visit:
     )
 
     args = parser.parse_args()
+
+    # Handle --setup-dev early (before GTK imports and dependency checks)
+    if args.setup_dev:
+        setup_dev_environment()
+        sys.exit(0)
+
+    # Check dependencies first, before any GTK imports
+    success, error_msg = check_dependencies()
+    if not success:
+        print(error_msg, file=sys.stderr)
+        sys.exit(1)
+
+    # Setup logging with more verbose output
+    logging.basicConfig(
+        level=logging.DEBUG,  # Changed from INFO to DEBUG
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[
+            logging.StreamHandler(),  # Console output
+            logging.FileHandler("wallpaper-engine.log"),  # File output
+        ],
+    )
+
+    logging.info("Starting Linux Wallpaper Engine GTK...")
 
     # Create and show window
     win = WallpaperWindow(

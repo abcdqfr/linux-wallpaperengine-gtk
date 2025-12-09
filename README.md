@@ -21,11 +21,9 @@ A beautiful, deterministic GTK frontend for [linux-wallpaperengine](https://gith
 - 🛡️ **AMD GPU Workarounds**: Built-in radeonsi driver crash prevention
 - 🎯 **Smart Argument Filtering**: Automatically prevents crashes in single-process mode
 - ⚙️ **Advanced Settings**: CEF arguments, environment variables, and workarounds
-- 📱 **System Tray Integration**: Minimize to tray with AppIndicator3, context menu with controls
+- 📱 **System Tray Integration**: Minimize to tray with AppIndicator3
 - 🎵 **Audio Controls**: Volume slider and mute toggle
 - 🔄 **Auto-Detection**: Automatically finds wallpapers and backend executable using XDG standards
-- 🖥️ **Desktop Icon & Menu Entry**: .desktop file for application menu integration (needs portable path fix) _(partial)_
-- 📋 **Playlist Management**: Create and manage wallpaper playlists _(planned)_
 
 ## Installation
 
@@ -234,10 +232,20 @@ DEBUG=1 ./linux-wallpaperengine-gtk.py
 </details>
 
 <details>
-<summary><strong>🗺️ Roadmap</strong></summary>
+<summary><strong>🗺️ Roadmap & Feature Status</strong></summary>
 
 ### Current Status: v1.2.0 (Deterministic Monolith)
 
+#### ✅ Implemented Features
+
+- 🎨 **Beautiful GTK3 Interface**: Intuitive FlowBox-based wallpaper browser
+- 🐳 **Containerization Support**: Optional Docker isolation for crash protection (standalone, no external scripts)
+- 🛡️ **AMD GPU Workarounds**: Built-in radeonsi driver crash prevention
+- 🎯 **Smart Argument Filtering**: Automatically prevents crashes in single-process mode
+- ⚙️ **Advanced Settings**: CEF arguments, environment variables, and workarounds
+- 📱 **System Tray Integration**: Minimize to tray with AppIndicator3
+- 🎵 **Audio Controls**: Volume slider and mute toggle
+- 🔄 **Auto-Detection**: Automatically finds wallpapers and backend executable using XDG standards
 - ✅ Single-file monolithic structure
 - ✅ Standalone containerization (no external scripts)
 - ✅ Comprehensive environment detection
@@ -246,6 +254,13 @@ DEBUG=1 ./linux-wallpaperengine-gtk.py
 - ✅ Smart argument filtering
 - ✅ System tray integration
 - ✅ Standalone Docker execution
+
+#### 🚧 Partial/Planned Features
+
+- 🖥️ **Desktop Icon & Menu Entry**: .desktop file for application menu integration _(needs portable path fix)_
+- 📋 **Playlist Management**: Create and manage wallpaper playlists _(planned)_
+
+**Note**: The main Features section (top of README) only lists implemented features for clarity. Partial and planned features are tracked here in the Roadmap and in the FEATURES list (`linux-wallpaperengine-gtk.py`).
 
 </details>
 

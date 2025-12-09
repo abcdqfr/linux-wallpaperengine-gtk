@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff bandit pylint mypy radon vulture
+          pip install -e ".[dev]"
+
+      - name: Run Ruff
+        run: ruff check linux-wallpaperengine-gtk.py --output-format=github
+
+      - name: Run Bandit (Security)
+        run: bandit -r . -ll -f json -o bandit-report.json || true
+        continue-on-error: true
+
+      - name: Run Pylint
+        run: pylint linux-wallpaperengine-gtk.py --max-line-length=100 --output-format=json > pylint-report.json || true
+        continue-on-error: true
+
+      - name: Run MyPy
+        run: mypy linux-wallpaperengine-gtk.py --ignore-missing-imports || true
+        continue-on-error: true
+
+      - name: Run Radon (Complexity)
+        run: radon cc linux-wallpaperengine-gtk.py --min B || true
+        continue-on-error: true
+
+      - name: Run Vulture (Dead Code)
+        run: vulture linux-wallpaperengine-gtk.py --min-confidence 80 || true
+        continue-on-error: true
+
+      - name: Check for shell injection risks
+        run: |
+          if grep -n "shell=True" linux-wallpaperengine-gtk.py; then
+            echo "::error::Found shell=True (security risk)!"
+            exit 1
+          fi
+
+      - name: Check for AttributeError patterns
+        run: |
+          if grep -n "self\.settings" linux-wallpaperengine-gtk.py | grep -v "WallpaperWindow\|SettingsDialog"; then
+            echo "::error::Found self.settings in wrong class (potential AttributeError)!"
+            exit 1
+          fi
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: pre-commit/action@v3.0.0
+

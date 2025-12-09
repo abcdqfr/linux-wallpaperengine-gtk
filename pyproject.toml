@@ -1,6 +1,6 @@
 [project]
 name = "linux-wallpaperengine-gtk"
-version = "0.1.0"
+version = "1.3.0"
 description = "GTK frontend for linux-wallpaperengine"
 authors = [
     {name = "abcdqfr", email = "abcdqfr@users.noreply.github.com"},
@@ -67,6 +67,26 @@ warn_unused_ignores = false
 warn_no_return = false
 warn_unreachable = false
 strict_equality = false
+# Ignore missing type stubs for PyGObject (gi module)
+[[tool.mypy.overrides]]
+module = ["gi.*", "gi.repository.*"]
+ignore_missing_imports = true
+
+# Pylint configuration
+[tool.pylint.main]
+max-line-length = 100
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint."messages control"]
+disable = [
+    "C0111",  # missing-docstring
+    "C0103",  # invalid-name
+    "R0903",  # too-few-public-methods
+    "R0913",  # too-many-arguments
+    "C0301",  # line-too-long (handled by formatter)
+]
 
 # Build tools for creating standalone monolith
 [tool.hatch.build.targets.wheel]

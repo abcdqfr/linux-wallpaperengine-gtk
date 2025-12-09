@@ -43,3 +43,11 @@ Thumbs.db
 # Git
 .git/
 .history/
+
+# jscpd reports
+.jscpd/
+jscpd-report.*
+
+# Git hooks (local only, not tracked)
+.git/hooks/.pre-commit-executed
+.git/hooks/.no-verify-log
