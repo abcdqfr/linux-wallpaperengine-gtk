@@ -9,9 +9,9 @@
 !README.md
 !.gitignore
 !LICENSE
-!pyproject.toml
 !.pre-commit-config.yaml
 !.releaserc.json
+!pyproject.toml
 !.github/
 !.github/**
 !.github/workflows/

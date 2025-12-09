@@ -45,7 +45,7 @@ chmod +x linux-wallpaperengine-gtk.py
 ./linux-wallpaperengine-gtk.py
 ```
 
-**That's it!** The standalone file is all you need. All other files in this repository are for developers only.
+**That's it!** The standalone file is all you need. It uses system packages (python3-gi, gtk3) which you install via your distro's package manager - no pip/pyproject.toml needed. All other files in this repository are for developers only.
 
 <details>
 <summary><strong>🔧 Developer Setup</strong></summary>
