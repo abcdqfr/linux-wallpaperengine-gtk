@@ -11,6 +11,8 @@
 !LICENSE
 !pyproject.toml
 !.pre-commit-config.yaml
+!.releaserc.json
+!SEMANTIC_RELEASE_SETUP.md
 !.github/
 !.github/**
 !.github/workflows/
