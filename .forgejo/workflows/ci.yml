@@ -13,6 +13,56 @@ on:
   workflow_dispatch:
 
 jobs:
+  commit-messages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce Conventional Commit subjects
+        run: |
+          set -euo pipefail
+
+          # Determine the range to validate.
+          if [ "${GITHUB_EVENT_NAME:-}" = "pull_request" ]; then
+            # `base_ref` is set for PR events in the Actions compatibility layer.
+            base_ref="${GITHUB_BASE_REF:-}"
+            if [ -z "${base_ref}" ]; then
+              echo "missing GITHUB_BASE_REF for pull_request" >&2
+              exit 2
+            fi
+            git fetch --no-tags origin "${base_ref}:${base_ref}" >/dev/null 2>&1 || true
+            range="${base_ref}..HEAD"
+          else
+            before="${GITHUB_EVENT_BEFORE:-}"
+            sha="${GITHUB_SHA:-HEAD}"
+            if [ -n "${before}" ] && git cat-file -e "${before}^{commit}" 2>/dev/null; then
+              range="${before}..${sha}"
+            else
+              # Fallback: validate the last 50 commits (covers first push / missing before).
+              range="HEAD~50..HEAD"
+            fi
+          fi
+
+          echo "Validating commit subjects in range: ${range}"
+
+          # Allowed types (keep in sync with Cursor rule + release.sh bump parser).
+          pattern='^(feat|fix|chore|ci|build|test|docs)(\\([a-z0-9._-]+\\))?(!)?: .+'
+
+          bad=0
+          while IFS= read -r subj; do
+            if ! printf '%s\n' "${subj}" | python3 -c "import re,sys; sys.exit(0 if re.match(r'${pattern}', sys.stdin.read().rstrip()) else 1)"; then
+              echo "::error::Bad commit subject: ${subj}"
+              bad=1
+            fi
+          done < <(git log --format=%s "${range}")
+
+          if [ "${bad}" -ne 0 ]; then
+            echo "::error::Commit subjects must match: <type>(<scope>)?!: <summary>"
+            exit 1
+          fi
+
   lint-and-test:
     runs-on: ubuntu-latest
     strategy:

@@ -21,7 +21,7 @@ to safely enable automated releases. This file tracks what remains.
 
 ### 1. Gating gaps (must-fix before automated release)
 
-- [ ] **Conventional commit enforcement in CI**
+- [x] **Conventional commit enforcement in CI**
   - **Why**: `scripts/release.sh` bumps based on commit subjects; without enforcement it’s easy to mint bad versions.
   - **Acceptance**:
     - CI fails if any commit subject in the pushed range does not match agreed patterns:
@@ -81,4 +81,3 @@ to safely enable automated releases. This file tracks what remains.
 2. Add `release.yml` workflow that is manual-dispatch and depends on green CI.
 3. Add `--self-test` mode (no GUI) and run it in CI.
 4. Only then consider auto-release (still recommend manual dispatch).
-
