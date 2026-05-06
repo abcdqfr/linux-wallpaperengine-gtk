@@ -55,7 +55,7 @@ to safely enable automated releases. This file tracks what remains.
     - OR run under Xvfb in CI (harder due to tray/WM specifics) to:
       - create window, exercise quit path, ensure process exits.
 
-- [ ] **Runtime failure visibility (optional but high value)**
+- [x] **Runtime failure visibility (optional but high value)**
   - **Why**: “engine starts then dies” still requires eyeballing logs.
   - **Acceptance**:
     - When the wallpaper subprocess exits after a successful start, surface a user-visible error (status label + log hint).
@@ -65,7 +65,7 @@ to safely enable automated releases. This file tracks what remains.
 
 ### 3. Release hygiene (nice-to-have, but cheap)
 
-- [ ] **Release notes include commit hash + compare range**
+- [x] **Release notes include commit hash + compare range**
   - **Acceptance**:
     - Release body includes the commit SHA and the range used for bump computation (`vX.Y.Z-1..vX.Y.Z`).
 

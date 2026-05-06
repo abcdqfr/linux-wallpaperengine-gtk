@@ -115,9 +115,17 @@ echo "current: ${current_version}"
 echo "next:    ${next_version}"
 echo "tag:     ${tag}"
 
+head_sha="$(git rev-parse HEAD)"
+
 body="$(cat <<EOF
 ## Changes
 ${range}
+
+## Commit
+${head_sha}
+
+## Compare
+${BASE_URL}/${OWNER}/${REPO}/compare/${latest_tag:-none}...${tag}
 
 EOF
 )"

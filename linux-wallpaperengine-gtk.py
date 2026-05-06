@@ -1900,6 +1900,11 @@ class WallpaperEngine:
                 self.current_wallpaper = wallpaper_id
                 self.current_process = process
                 self.log.info(f"Wallpaper process started successfully (PID: {process.pid})")
+                try:
+                    # Event-driven exit detection (no polling timers).
+                    GLib.child_watch_add(process.pid, self._on_wallpaper_child_exit, process)
+                except Exception as e:
+                    self.log.debug(f"child watch not installed: {e}")
                 if (
                     gnome_compat
                     and self.env.get("desktop") == "gnome"
@@ -1919,6 +1924,34 @@ class WallpaperEngine:
         finally:
             self.log.debug(f"Returning to original directory: {original_dir}")
             os.chdir(original_dir)
+
+    def _notify_wallpaper_exit(self, wallpaper_id, exit_status, stderr_output):
+        """Optional callback hook set by GUI for user-visible exit reporting."""
+        cb = getattr(self, "on_wallpaper_exit", None)
+        if callable(cb):
+            try:
+                cb(wallpaper_id, exit_status, stderr_output)
+            except Exception as e:
+                self.log.debug(f"on_wallpaper_exit callback failed: {e}")
+
+    def _on_wallpaper_child_exit(self, pid, status, process):
+        """GLib child-watch callback: called when the wallpaper process exits."""
+        try:
+            exit_status = process.poll()
+        except Exception:
+            exit_status = None
+
+        stderr_output = self._read_process_stderr_to_string(process)
+        wid = getattr(self, "current_wallpaper", None)
+
+        # Only clear state / notify if this is still the active process.
+        if getattr(self, "current_process", None) is process:
+            self.current_process = None
+            self.current_wallpaper = None
+            self._notify_wallpaper_exit(wid, exit_status, stderr_output)
+
+        # Return False so the watch is removed.
+        return False
 
     def stop_wallpaper(self, timeout=10):
         """Stop currently running wallpaper using POSIX-compliant process management.
@@ -2142,6 +2175,7 @@ class WallpaperWindow(Gtk.Window):
 
         # Initialize engine
         self.engine = WallpaperEngine()
+        self.engine.on_wallpaper_exit = self._on_engine_wallpaper_exit
 
         # Setup logging
         self.log = logging.getLogger("GUI")
@@ -3003,6 +3037,36 @@ class WallpaperWindow(Gtk.Window):
 
         self._quit_main_loops()
         return False
+
+    def _on_engine_wallpaper_exit(self, wallpaper_id, exit_status, stderr_output):
+        # UI-thread only: GLib child watch runs on main loop.
+        if getattr(self, "_quitting", False):
+            return
+
+        msg = "Wallpaper exited"
+        if wallpaper_id:
+            msg += f" ({wallpaper_id})"
+        if exit_status is not None:
+            msg += f" status={exit_status}"
+        self.status_label.set_text(msg)
+
+        tail = (stderr_output or "").strip()
+        if tail:
+            tail_lines = tail.splitlines()[-12:]
+            sec = "\n".join(tail_lines)
+        else:
+            sec = "No stderr captured. Check wallpaper-engine.log for details."
+
+        md = Gtk.MessageDialog(
+            transient_for=self,
+            modal=False,
+            message_type=Gtk.MessageType.WARNING,
+            buttons=Gtk.ButtonsType.OK,
+            text="Wallpaper engine stopped",
+        )
+        md.format_secondary_text(sec)
+        md.connect("response", lambda d, _r: d.destroy())
+        md.show_all()
 
     def on_mute_toggled(self, button):
         """Handle mute button toggle"""
