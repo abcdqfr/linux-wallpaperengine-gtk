@@ -6,7 +6,7 @@ set -euo pipefail
 # - bumps pyproject.toml, commits, tags vX.Y.Z, pushes to chosen host
 # - creates a Release and uploads:
 #   1) linux-wallpaperengine-gtk.py (standalone script)
-#   2) source-minimal.tar.gz (small archive of tracked essentials)
+#   2) SHA256SUMS.txt (sha256 over the shipped artifacts)
 #
 # Requires LAN Forgejo token file (per project rule):
 #   ~/.config/forgejo/api-token
@@ -201,15 +201,8 @@ git -c "http.extraHeader=${auth_header}" push "${push_url}" "${tag}"
 mkdir -p dist
 cp -f linux-wallpaperengine-gtk.py "dist/linux-wallpaperengine-gtk.py"
 
-# Minimal archive: keep it small and reproducible; include top-level essentials and scripts/tests.
-tar -czf "dist/source-minimal.tar.gz" \
-  linux-wallpaperengine-gtk.py wallpaper_process_probe.py pyproject.toml README.md LICENSE \
-  .pre-commit-config.yaml .gitignore Makefile \
-  .forgejo/workflows .github/workflows \
-  scripts/ci-core.sh scripts/ci-local.sh scripts/release.sh tests \
-  2>/dev/null
-
-sha256sum dist/* > dist/SHA256SUMS.txt
+# Hash only the artifacts we intentionally ship (Git hosts also auto-generate “Source code” archives).
+sha256sum "dist/linux-wallpaperengine-gtk.py" > dist/SHA256SUMS.txt
 
 # Create release
 # Use environment variables to avoid bash expanding Python syntax (and to avoid JSON quoting bugs).
@@ -253,7 +246,6 @@ upload() {
 }
 
 upload "dist/linux-wallpaperengine-gtk.py" "linux-wallpaperengine-gtk.py"
-upload "dist/source-minimal.tar.gz" "source-minimal.tar.gz"
 upload "dist/SHA256SUMS.txt" "SHA256SUMS.txt"
 
 echo "release created: ${WEB_BASE}/${OWNER}/${REPO}/releases/tag/${tag}"

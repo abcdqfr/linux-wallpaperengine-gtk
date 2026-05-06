@@ -37,17 +37,9 @@ mkdir -p "${tmp}/dist"
 
 cp -f "${tmp}/linux-wallpaperengine-gtk.py" "${tmp}/dist/linux-wallpaperengine-gtk.py"
 
-tar -czf "${tmp}/dist/source-minimal.tar.gz" \
-  -C "${tmp}" \
-  linux-wallpaperengine-gtk.py wallpaper_process_probe.py pyproject.toml README.md LICENSE \
-  .pre-commit-config.yaml .gitignore Makefile \
-  .forgejo/workflows .github/workflows \
-  scripts/ci-core.sh scripts/ci-local.sh scripts/release.sh tests \
-  2>/dev/null || true
-
 (
   cd "${tmp}"
-  sha256sum dist/* > dist/SHA256SUMS.txt
+  sha256sum dist/linux-wallpaperengine-gtk.py > dist/SHA256SUMS.txt
 )
 
 release_body="$(cat <<EOF
@@ -66,7 +58,6 @@ publish_github() {
   echo "[github] upload assets"
   gh release upload "${TAG}" -R "${GITHUB_OWNER}/${GITHUB_REPO}" \
     "${tmp}/dist/linux-wallpaperengine-gtk.py" \
-    "${tmp}/dist/source-minimal.tar.gz" \
     "${tmp}/dist/SHA256SUMS.txt" \
     --clobber
 }
@@ -120,7 +111,6 @@ PY
 
   echo "[forgejo] upload assets"
   upload "${tmp}/dist/linux-wallpaperengine-gtk.py" "linux-wallpaperengine-gtk.py"
-  upload "${tmp}/dist/source-minimal.tar.gz" "source-minimal.tar.gz"
   upload "${tmp}/dist/SHA256SUMS.txt" "SHA256SUMS.txt"
 }
 
