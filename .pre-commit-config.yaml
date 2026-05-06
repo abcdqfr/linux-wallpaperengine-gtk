@@ -5,7 +5,10 @@ repos:
     rev: v0.14.8
     hooks:
       - id: ruff
-        args: [--fix, --select=E, F, B, I, W, UP, ARG, PLR, PERF, SIM]
+        # Keep this aligned with `pyproject.toml` (select/ignore live there).
+        # CI should fail if formatting/lint changes are needed, so we do NOT
+        # auto-fix here.
+        args: []
       - id: ruff-format
 
   # Black - Uncompromising Python code formatter (always enabled)
@@ -16,55 +19,9 @@ repos:
         language_version: python3
         args: [--line-length=100]
 
-  # Bandit - Security linter (ENABLED with custom config)
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.9.2
-    hooks:
-      - id: bandit
-        args: [-r, ., -ll, --skip, B101, B601]  # Skip assert_used, shell_injection_subprocess
-        files: ^linux-wallpaperengine-gtk\.py$
-
-  # Pylint - Comprehensive linting (ENABLED)
-  - repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v3.0.0a5
-    hooks:
-      - id: pylint
-        args: [
-          --disable=C0111,
-          C0103,
-          R0903,
-          R0913,
-          C0301,
-          --max-line-length=100,
-        ]  # Disable docstring, naming, too-few/many args, line-too-long (handled by formatter)
-        files: ^linux-wallpaperengine-gtk\.py$
-
-  # MyPy - Static type checker (conditional based on version)
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.19.0
-    hooks:
-      - id: mypy
-        args: [--ignore-missing-imports, --no-strict-optional]
-        files: ^linux-wallpaperengine-gtk\.py$
-
-  # Xenon (Radon) - Complexity checker (remote hook using radon)
-  # References:
-  #   - Xenon: https://github.com/rubik/xenon
-  #   - pre-commit-xenon: https://github.com/yunojuno/pre-commit-xenon
-  - repo: https://github.com/yunojuno/pre-commit-xenon
-    rev: v0.1
-    hooks:
-      - id: xenon
-        args: [--max-average, C, --max-modules, C, --max-absolute, C]
-        files: ^linux-wallpaperengine-gtk\.py$
-
-  # Vulture - Dead code detection (NEW)
-  - repo: https://github.com/jendrikseipp/vulture
-    rev: v2.14
-    hooks:
-      - id: vulture
-        args: ["--min-confidence", "80"]
-        files: ^linux-wallpaperengine-gtk\.py$
+  # NOTE: Heavier analyzers (bandit/pylint/mypy/xenon/vulture) are run in CI
+  # under `.github/workflows/ci.yml` (many are continue-on-error). We keep
+  # pre-commit focused on fast, deterministic, offline-friendly checks.
 
   # Custom hook: Check for common bugs (Python-based, not bash!)
   # References:
@@ -91,18 +48,8 @@ repos:
         files: ^linux-wallpaperengine-gtk\.py$
         pass_filenames: false
 
-  # Prettier - Code formatter for various file types (always enabled)
-  # References:
-  #   - Prettier: https://prettier.io/
-  #   - pre-commit prettier: https://pre-commit.com/hooks.html#prettier
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-      - id: prettier
-        types_or:
-          [javascript, jsx, ts, tsx, json, css, scss, html, yaml, markdown, mdx]
-        files: \.(js|jsx|ts|tsx|json|css|scss|html|yaml|yml|md|mdx|jsonc|code-workspace)$
-        exclude: ^\.pre-commit-config\.yaml$
+  # NOTE: Prettier is intentionally omitted to keep pre-commit node-free and
+  # avoid flakiness in CI runners without a pinned node toolchain.
 
   # Pre-commit hooks - Basic file hygiene (always enabled)
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -142,29 +89,5 @@ repos:
             {extends: default, rules: {line-length: {max: 100, level: warning},
             truthy: {allowed-values: ['true', 'false'], check-keys: false}}}
 
-  # Git hooks for commit message format (always enabled)
-  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.23.0
-    hooks:
-      - id: commitlint
-        stages: [commit-msg]
-        additional_dependencies: ["@commitlint/config-conventional"]
-  # jscpd - DRY Enforcement (Code Duplication Detection)
-  # References:
-  #   - jscpd: https://github.com/kucherenko/jscpd
-  #   - DRY principle: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
-  # Configuration: .jscpdrc.json
-  # Justification for thresholds:
-  #   - min-lines: 10 - Catches meaningful duplication, ignores trivial patterns
-  #   - min-tokens: 50 - Requires substantial code blocks to flag
-  #   - threshold: 1% - Very strict, but necessary for monolithic file structure
-  #   - Excludes: Test files, minified code, build artifacts
-  # Note: Using local hook due to npm dependency conflicts in upstream repo
-  - repo: local
-    hooks:
-      - id: jscpd
-        name: jscpd
-        entry: npx --no-install jscpd --config .jscpdrc.json
-        language: system
-        files: \.(py|js|ts|json|yaml|yml)$
-        exclude: ^(.*\.min\.js|.*\.bundle\.js|node_modules|__pycache__|\.git|.*test.*|.*spec.*)
+  # NOTE: commitlint and jscpd are intentionally omitted to keep pre-commit
+  # deterministic and node-free in CI.

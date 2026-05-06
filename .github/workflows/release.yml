@@ -5,7 +5,7 @@ on:
   push:
     tags:
       # Trigger on semantic version tags
-      - 'v*.*.*'
+      - "v*.*.*"
 
 jobs:
   release:

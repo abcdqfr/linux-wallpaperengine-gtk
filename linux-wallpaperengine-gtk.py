@@ -117,7 +117,7 @@ def check_dependencies():
     # Try to detect distro for helpful error messages
     try:
         if os.path.exists("/etc/os-release"):
-            with open("/etc/os-release", "r") as f:
+            with open("/etc/os-release") as f:
                 for line in f:
                     if line.startswith("ID="):
                         distro_info["id"] = line.split("=", 1)[1].strip().strip('"')
@@ -128,9 +128,7 @@ def check_dependencies():
 
     # Check Python version
     if sys.version_info < (3, 8):
-        missing.append(
-            "Python 3.8+ (current: {}.{})".format(sys.version_info.major, sys.version_info.minor)
-        )
+        missing.append(f"Python 3.8+ (current: {sys.version_info.major}.{sys.version_info.minor})")
 
     # Check GTK3/PyGObject
     try:
@@ -771,7 +769,9 @@ class WallpaperEngine:
 
         # Mark as desktop/sticky/below and keep it off taskbar/pager where possible.
         try:
-            subprocess.run(["wmctrl", "-ir", wid, "-b", "add,below,sticky,skip_taskbar,skip_pager"], timeout=2)
+            subprocess.run(
+                ["wmctrl", "-ir", wid, "-b", "add,below,sticky,skip_taskbar,skip_pager"], timeout=2
+            )
         except Exception:
             pass
         try:
@@ -2343,7 +2343,7 @@ class WallpaperWindow(Gtk.Window):
 
         try:
             if os.path.exists(config_file):
-                with open(config_file, "r") as f:
+                with open(config_file) as f:
                     saved_settings = json.load(f)
                     # Update defaults with saved settings
                     self.settings.update(saved_settings)
@@ -2864,9 +2864,9 @@ class SettingsDialog(Gtk.Dialog):
                 text="Menu shortcut installed",
             )
             dialog.format_secondary_text(
-                "A launcher was written to:\n{}\n\n"
+                f"A launcher was written to:\n{result}\n\n"
                 "It should appear in Activities and the Applications list shortly "
-                "(or after logging out and back in).".format(result)
+                "(or after logging out and back in)."
             )
         else:
             dialog = Gtk.MessageDialog(
@@ -3155,9 +3155,9 @@ For more information, visit:
     if args.install_desktop:
         ok, result = install_desktop_entry()
         if ok:
-            print("Installed menu shortcut:\n  {}".format(result))
+            print(f"Installed menu shortcut:\n  {result}")
             sys.exit(0)
-        print("Failed to install menu shortcut: {}".format(result), file=sys.stderr)
+        print(f"Failed to install menu shortcut: {result}", file=sys.stderr)
         sys.exit(1)
 
     # Check dependencies first, before any GTK imports

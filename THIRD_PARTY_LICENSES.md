@@ -10,4 +10,3 @@ This project can optionally vendor and build upstream components under `upstream
 - **License text**: `upstream/linux-wallpaperengine/LICENSE`
 
 This GTK frontend is licensed under MIT, but the backend engine is GPL-3.0. If you distribute the engine (or a combined bundle), ensure you comply with the upstream GPL-3.0 license obligations.
-
