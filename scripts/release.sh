@@ -54,6 +54,7 @@ require curl
 require python3
 require tar
 require rg
+require base64
 
 TOKEN=""
 if [[ -n "${TOKEN_ENV}" ]]; then
@@ -150,8 +151,14 @@ git commit -m "chore(release): ${tag}"
 git tag -a "${tag}" -m "${tag}"
 
 push_url="http://oauth2:${TOKEN}@127.0.0.1:3080/${OWNER}/${REPO}.git"
-git push "${push_url}" main
-git push "${push_url}" "${tag}"
+push_url="http://127.0.0.1:3080/${OWNER}/${REPO}.git"
+
+# Avoid token-in-URL (leaks via logs / argv). Use per-command HTTP header instead.
+auth_b64="$(printf 'oauth2:%s' "${TOKEN}" | base64 -w0 2>/dev/null || printf 'oauth2:%s' "${TOKEN}" | base64)"
+auth_header="Authorization: Basic ${auth_b64}"
+
+git -c "http.extraHeader=${auth_header}" push "${push_url}" main
+git -c "http.extraHeader=${auth_header}" push "${push_url}" "${tag}"
 
 mkdir -p dist
 cp -f linux-wallpaperengine-gtk.py "dist/linux-wallpaperengine-gtk.py"
