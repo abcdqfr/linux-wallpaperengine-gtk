@@ -312,10 +312,11 @@ _STEAMCMD_URL = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux
 
 def find_steamcmd():
     """Return an executable steamcmd path, or None."""
+    # Prefer distro/system SteamCMD first; only fall back to our local install.
     for c in (
-        os.path.join(_STEAMCMD_INSTALL_DIR, "steamcmd.sh"),
-        shutil.which("steamcmd.sh"),
         shutil.which("steamcmd"),
+        shutil.which("steamcmd.sh"),
+        os.path.join(_STEAMCMD_INSTALL_DIR, "steamcmd.sh"),
     ):
         if c and os.path.isfile(c) and os.access(c, os.X_OK):
             return c
@@ -329,6 +330,9 @@ def ensure_steamcmd_installed():
     """
     Download official SteamCMD into ~/steamcmd-local. Returns path to steamcmd.sh or None.
     """
+    exe = find_steamcmd()
+    if exe:
+        return exe
     try:
         os.makedirs(_STEAMCMD_INSTALL_DIR, mode=0o755, exist_ok=True)
         curl = subprocess.Popen(
