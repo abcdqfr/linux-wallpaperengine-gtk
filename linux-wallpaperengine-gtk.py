@@ -700,8 +700,6 @@ class WallpaperEngine:
         self.wpe_path = self._resolve_wpe_path()
         self.wallpaper_dir = self._resolve_wallpaper_dir()
 
-        # Capability-based features
-        docker_caps = self.env["capabilities"]["docker"]
         # Containerization is DEV/DEBUG only: opt-in via GUI settings.
         # We still detect capabilities so the UI can inform users, but never
         # enable container execution implicitly during normal use.
