@@ -18,6 +18,7 @@ OWNER="${FORGEJO_OWNER:-abcdqfr}"
 REPO="${FORGEJO_REPO:-linux-wallpaperengine-gtk}"
 BASE_URL="${FORGEJO_BASE_URL:-http://127.0.0.1:3080}"
 TOKEN_FILE="${FORGEJO_TOKEN_FILE:-${HOME}/.config/forgejo/api-token}"
+TOKEN_ENV="${FORGEJO_TOKEN:-}"
 
 DRY_RUN=0
 EXPLICIT_VERSION=""
@@ -52,12 +53,17 @@ require git
 require curl
 require python3
 require tar
+require rg
 
-if [[ ! -r "${TOKEN_FILE}" ]]; then
-  echo "Forgejo token missing: ${TOKEN_FILE}" >&2
+TOKEN=""
+if [[ -n "${TOKEN_ENV}" ]]; then
+  TOKEN="${TOKEN_ENV}"
+elif [[ -r "${TOKEN_FILE}" ]]; then
+  TOKEN="$(cat "${TOKEN_FILE}")"
+else
+  echo "Forgejo token missing: set FORGEJO_TOKEN or provide ${TOKEN_FILE}" >&2
   exit 2
 fi
-TOKEN="$(cat "${TOKEN_FILE}")"
 
 # Require no tracked changes (untracked files are allowed).
 if ! git diff --quiet || ! git diff --cached --quiet; then
@@ -188,4 +194,3 @@ upload "dist/source-minimal.tar.gz" "source-minimal.tar.gz"
 upload "dist/SHA256SUMS.txt" "SHA256SUMS.txt"
 
 echo "release created: ${BASE_URL}/${OWNER}/${REPO}/releases/tag/${tag}"
-

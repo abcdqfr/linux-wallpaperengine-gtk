@@ -30,14 +30,14 @@ to safely enable automated releases. This file tracks what remains.
       - breaking: `type!: ...` or footer `BREAKING CHANGE: ...`
     - CI also fails if a breaking change is detected but the major bump isn’t performed (release workflow validation).
 
-- [ ] **Release must be tied to a green CI run**
+- [x] **Release must be tied to a green CI run**
   - **Why**: “tagging broken HEAD” is worse than no releases.
   - **Acceptance**:
     - A dedicated Forgejo Actions workflow `release.yml` exists.
     - It is **manual trigger only** (`workflow_dispatch`) until we trust it.
     - It refuses to run unless required checks are green for the exact commit being released.
 
-- [ ] **Prevent tagging/releasing from dirty or detached states**
+- [x] **Prevent tagging/releasing from dirty or detached states**
   - **Why**: avoid accidental releases from local-only commits or worktrees.
   - **Acceptance**:
     - Release workflow runs in CI only (not from arbitrary local worktrees).
@@ -81,3 +81,4 @@ to safely enable automated releases. This file tracks what remains.
 2. Add `release.yml` workflow that is manual-dispatch and depends on green CI.
 3. Add `--self-test` mode (no GUI) and run it in CI.
 4. Only then consider auto-release (still recommend manual dispatch).
+
