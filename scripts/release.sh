@@ -70,11 +70,15 @@ case "${RELEASE_HOST}" in
   forgejo)
     API_BASE="${BASE_URL}/api/v1"
     WEB_BASE="${BASE_URL}"
-    GIT_BASE="http://127.0.0.1:3080"
+    # Use BASE_URL host for both API and git pushes (runner must be able to reach it).
+    GIT_BASE="${BASE_URL}"
     TOKEN_ENV="${FORGEJO_TOKEN:-}"
     ;;
   github)
-    echo "note: RELEASE_HOST=github is supported, but this repo's policy is Forgejo-only authority." >&2
+    if [[ "${ALLOW_GITHUB_RELEASE:-}" != "1" ]]; then
+      echo "GitHub releases are disabled by policy (Forgejo is authority). Set ALLOW_GITHUB_RELEASE=1 to override." >&2
+      exit 2
+    fi
     API_BASE="https://api.github.com"
     WEB_BASE="https://github.com"
     GIT_BASE="https://github.com"
@@ -202,7 +206,7 @@ tar -czf "dist/source-minimal.tar.gz" \
   linux-wallpaperengine-gtk.py wallpaper_process_probe.py pyproject.toml README.md LICENSE \
   .pre-commit-config.yaml .gitignore Makefile \
   .forgejo/workflows .github/workflows \
-  scripts tests .cursor/rules \
+  scripts/ci-core.sh scripts/ci-local.sh scripts/release.sh tests .cursor/rules \
   2>/dev/null
 
 sha256sum dist/* > dist/SHA256SUMS.txt

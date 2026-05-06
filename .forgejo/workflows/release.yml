@@ -10,9 +10,29 @@ on:
         default: ""
 
 jobs:
+  core:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Core gates (same as GitHub CI)
+        run: bash scripts/ci-core.sh
+
   release:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    needs: [core]
 
     steps:
       - uses: actions/checkout@v4
@@ -61,12 +81,19 @@ jobs:
       - name: Release (tag + Forgejo release + assets)
         env:
           FORGEJO_TOKEN: ${{ secrets.FORGEJO_RELEASE_TOKEN }}
-          FORGEJO_BASE_URL: http://127.0.0.1:3080
+          # Must be reachable from the runner container/host.
+          # If your runner is not on the Forgejo host network namespace, set this to the
+          # Forgejo container hostname/IP on the runner network.
+          FORGEJO_BASE_URL: ${{ vars.FORGEJO_BASE_URL }}
           FORGEJO_OWNER: abcdqfr
           FORGEJO_REPO: linux-wallpaperengine-gtk
         run: |
           if [ -z "${FORGEJO_TOKEN}" ]; then
             echo "::error::Missing Forgejo secret FORGEJO_RELEASE_TOKEN"
+            exit 2
+          fi
+          if [ -z "${FORGEJO_BASE_URL}" ]; then
+            echo "::error::Missing Forgejo variable FORGEJO_BASE_URL (runner must reach Forgejo API)"
             exit 2
           fi
           if [ -n "${{ inputs.version }}" ]; then

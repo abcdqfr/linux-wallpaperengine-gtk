@@ -36,6 +36,9 @@
 # Release artifacts
 dist/
 
+# Local-only helpers / scratch
+scripts/redownload-workshop-item.sh
+
 # Bundled upstream engine (git submodule)
 !upstream/
 !upstream/**
