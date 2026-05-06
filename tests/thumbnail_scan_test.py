@@ -50,4 +50,3 @@ def test_scan_item_root_preview_is_directory(tmp_path: Path):
     (d / "preview.jpg").mkdir()
     r = scan_item_root(d)
     assert "preview_not_a_file" in r.suspicious
-

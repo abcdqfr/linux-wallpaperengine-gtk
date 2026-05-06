@@ -18,7 +18,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Scan a Wallpaper Engine Workshop library for thumbnail/preview inconsistencies (metadata only)."
     )
-    ap.add_argument("workshop_root", type=Path, help="Workshop content root (e.g. .../workshop/content/431960)")
+    ap.add_argument(
+        "workshop_root", type=Path, help="Workshop content root (e.g. .../workshop/content/431960)"
+    )
     ap.add_argument("--limit", type=int, default=None, help="Limit number of items scanned (debug)")
     ap.add_argument("--json", action="store_true", help="Emit full JSON results")
     args = ap.parse_args()
@@ -58,4 +60,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
