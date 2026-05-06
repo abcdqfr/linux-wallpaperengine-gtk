@@ -8,6 +8,7 @@
 !linux-wallpaperengine-gtk.py
 !wallpaper_process_probe.py
 !README.md
+!Makefile
 !.gitignore
 !LICENSE
 !.pre-commit-config.yaml
