@@ -30,9 +30,10 @@ build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-python_files = ["test_*.py"]
+python_files = ["test_*.py", "*_test.py"]
 addopts = "-v"
-pythonpath = ["src"]
+# Repo root modules (e.g. wallpaper_process_probe); there is no hatch `src/` tree in this checkout.
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100
@@ -49,12 +50,12 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"linux-wallpaperengine-gtk.py" = ["E402", "F821"]  # E402: gi.require_version must come before imports, F821: false positives
+"linux-wallpaperengine-gtk.py" = ["E402", "F821", "I001"]  # E402/I001: gi.require_version ordering; F821: false positives
 "linux-wallpaperengine-gtk-standalone.py" = ["F821", "E402", "D100", "D101", "D102", "D107", "D200", "D205", "D212", "D415"]
 
 # MyPy configuration - more lenient for development
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 warn_return_any = false
 warn_unused_configs = false
 disallow_untyped_defs = false

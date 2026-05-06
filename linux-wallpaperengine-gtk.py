@@ -18,11 +18,59 @@ import json
 import logging
 import os
 import random
+import shlex
+import shutil
 import signal
 import subprocess
 import sys
 import threading
 import time
+
+try:
+    # Optional: keep a tiny stdlib module for pytest/CI. The app remains runnable as a
+    # single-file script if this module is missing (e.g. when users download only
+    # `linux-wallpaperengine-gtk.py` from a release asset).
+    from wallpaper_process_probe import pid_exists as _pid_exists
+    from wallpaper_process_probe import wallpaper_subprocess_running
+except Exception:
+
+    def _pid_exists(pid: int) -> bool:
+        if pid <= 0:
+            return False
+        if sys.platform.startswith("linux"):
+            return os.path.isdir(os.path.join("/proc", str(pid)))
+        try:
+            os.kill(pid, 0)
+            return True
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return False
+
+    def wallpaper_subprocess_running(process, *, on_kill_permission_denied=None) -> bool:
+        rc = process.poll()
+        if rc is not None:
+            return False
+        pid = process.pid
+        if sys.platform.startswith("linux"):
+            proc_dir = os.path.join("/proc", str(pid))
+            if not os.path.isdir(proc_dir):
+                process.poll()
+                return False
+            rc = process.poll()
+            if rc is not None:
+                return False
+            return True
+        try:
+            os.kill(pid, 0)
+            return True
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            if on_kill_permission_denied:
+                on_kill_permission_denied()
+            return True
+
 
 from gi.repository import Gdk, GdkPixbuf, GLib, Gtk
 
@@ -117,7 +165,7 @@ def check_dependencies():
     # Try to detect distro for helpful error messages
     try:
         if os.path.exists("/etc/os-release"):
-            with open("/etc/os-release") as f:
+            with open("/etc/os-release", "r") as f:
                 for line in f:
                     if line.startswith("ID="):
                         distro_info["id"] = line.split("=", 1)[1].strip().strip('"')
@@ -128,7 +176,9 @@ def check_dependencies():
 
     # Check Python version
     if sys.version_info < (3, 8):
-        missing.append(f"Python 3.8+ (current: {sys.version_info.major}.{sys.version_info.minor})")
+        missing.append(
+            "Python 3.8+ (current: {}.{})".format(sys.version_info.major, sys.version_info.minor)
+        )
 
     # Check GTK3/PyGObject
     try:
@@ -181,6 +231,485 @@ See README.md for complete installation instructions:
         return False, error_msg
 
     return True, None
+
+
+def run_self_test():
+    """Headless self-test: no Gtk.main(), no window, no wallpaper subprocess."""
+    cfg_dir = os.path.expanduser("~/.config/linux-wallpaperengine-gtk")
+    cfg_file = os.path.join(cfg_dir, "settings.json")
+    wpe_path = (os.environ.get("LWPEG_SELFTEST_WPE_PATH") or "").strip() or None
+    wallpaper_dir = (os.environ.get("LWPEG_SELFTEST_WALLPAPER_DIR") or "").strip() or None
+    if os.path.isfile(cfg_file):
+        try:
+            with open(cfg_file, encoding="utf-8") as f:
+                s = json.load(f)
+            wpe_path = wpe_path or (s.get("wpe_path") or "").strip() or None
+            wallpaper_dir = wallpaper_dir or (s.get("wallpaper_dir") or "").strip() or None
+        except Exception as e:
+            print(f"[self-test] cannot read settings.json: {e}", file=sys.stderr)
+            return 1
+
+    if not wpe_path:
+        print("[self-test] wpe_path not set in settings.json", file=sys.stderr)
+        return 1
+    if not os.path.isfile(wpe_path):
+        print(f"[self-test] wpe_path does not exist:\n{wpe_path}", file=sys.stderr)
+        return 1
+
+    if not wallpaper_dir:
+        print("[self-test] wallpaper_dir not set in settings.json", file=sys.stderr)
+        return 1
+    if not os.path.isdir(wallpaper_dir):
+        print(f"[self-test] wallpaper_dir does not exist:\n{wallpaper_dir}", file=sys.stderr)
+        return 1
+
+    # Enumerate candidate workshop items (numeric directories).
+    try:
+        entries = sorted(os.listdir(wallpaper_dir))
+    except OSError as e:
+        print(f"[self-test] cannot list wallpaper_dir: {e}", file=sys.stderr)
+        return 1
+
+    ids = [e for e in entries if e.isdigit() and os.path.isdir(os.path.join(wallpaper_dir, e))]
+    if not ids:
+        print(
+            f"[self-test] no numeric workshop item folders found under:\n{wallpaper_dir}",
+            file=sys.stderr,
+        )
+        return 1
+
+    # Perform one local workshop verification: choose the first item that verifies cleanly.
+    verified = None
+    verified_msg = None
+    for item_id in ids[:200]:
+        ok, msg = workshop_item_local_status(wallpaper_dir, item_id)
+        if ok:
+            verified = item_id
+            verified_msg = msg
+            break
+
+    if not verified:
+        ok, msg = workshop_item_local_status(wallpaper_dir, ids[0])
+        print("[self-test] could not find a locally-verifiable item.", file=sys.stderr)
+        print("[self-test] example verification result:", file=sys.stderr)
+        print(msg, file=sys.stderr)
+        return 1
+
+    print("[self-test] OK")
+    print(f"[self-test] wpe_path: {wpe_path}")
+    print(f"[self-test] wallpaper_dir: {wallpaper_dir}")
+    print(f"[self-test] wallpapers: {len(ids)}")
+    print(f"[self-test] verified_item: {verified}")
+    print(verified_msg)
+    return 0
+
+
+# Steam Workshop (Wallpaper Engine) — GUI wraps Valve SteamCMD; auth is their stack.
+STEAM_WALLPAPER_ENGINE_APP_ID = "431960"
+_STEAMCMD_INSTALL_DIR = os.path.join(os.path.expanduser("~"), "steamcmd-local")
+_STEAMCMD_URL = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz"
+
+
+def find_steamcmd():
+    """Return an executable steamcmd path, or None."""
+    # Prefer distro/system SteamCMD first; only fall back to our local install.
+    for c in (
+        shutil.which("steamcmd"),
+        shutil.which("steamcmd.sh"),
+        os.path.join(_STEAMCMD_INSTALL_DIR, "steamcmd.sh"),
+    ):
+        if c and os.path.isfile(c) and os.access(c, os.X_OK):
+            return c
+    sh = os.path.join(_STEAMCMD_INSTALL_DIR, "steamcmd.sh")
+    if os.path.isfile(sh) and os.access(sh, os.R_OK):
+        return sh
+    return None
+
+
+def ensure_steamcmd_installed():
+    """
+    Download official SteamCMD into ~/steamcmd-local. Returns path to steamcmd.sh or None.
+    """
+    exe = find_steamcmd()
+    if exe:
+        return exe
+    try:
+        os.makedirs(_STEAMCMD_INSTALL_DIR, mode=0o755, exist_ok=True)
+        curl = subprocess.Popen(
+            ["curl", "-fsSL", _STEAMCMD_URL],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+        try:
+            subprocess.run(
+                ["tar", "-C", _STEAMCMD_INSTALL_DIR, "-zx"],
+                stdin=curl.stdout,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                timeout=120,
+                check=True,
+            )
+        finally:
+            curl.stdout.close()
+            curl.wait(timeout=30)
+        exe = os.path.join(_STEAMCMD_INSTALL_DIR, "steamcmd.sh")
+        if os.path.isfile(exe):
+            os.chmod(exe, 0o755)
+            return exe
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError):
+        pass
+    return None
+
+
+def workshop_item_local_status(wallpaper_root, item_id):
+    """
+    Check project.json main asset exists on disk. Returns (ok: bool, message: str).
+
+    Be conservative about sidecar assumptions: do NOT treat `scene.json` as mandatory
+    unless `project.json` references it somewhere. Many Workshop items are video-only
+    and never ship a scene file.
+    """
+    folder = os.path.join(wallpaper_root or "", str(item_id).strip())
+    pj = os.path.join(folder, "project.json")
+    if not os.path.isdir(folder):
+        return False, f"Workshop folder missing:\n{folder}"
+    if not os.path.isfile(pj):
+        return False, f"No project.json in:\n{folder}"
+    try:
+        with open(pj, encoding="utf-8") as f:
+            meta = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        return False, f"Cannot read project.json: {e}"
+    fname = meta.get("file")
+    if not fname:
+        return False, "project.json has no top-level file entry."
+    path = os.path.join(folder, fname)
+    if os.path.isfile(path):
+        referenced_scene_paths = set()
+
+        def _walk(x):
+            if isinstance(x, dict):
+                for v in x.values():
+                    _walk(v)
+                return
+            if isinstance(x, list):
+                for v in x:
+                    _walk(v)
+                return
+            if isinstance(x, str):
+                s = x.strip()
+                s = s.lstrip("./")
+                if s.lower().endswith("scene.json"):
+                    referenced_scene_paths.add(s)
+
+        _walk(meta)
+
+        missing = []
+        for rel in sorted(referenced_scene_paths):
+            candidate = os.path.join(folder, rel)
+            if not os.path.isfile(candidate):
+                missing.append(candidate)
+
+        if missing:
+            return (
+                False,
+                "Main asset present, but project.json references missing scene files:\n"
+                + "\n".join(missing)
+                + "\n\nIf Steam never downloads these files, the item may simply not include them "
+                "(broken upload or removed content). Try SteamCMD repair; if it persists, "
+                "treat this wallpaper as incomplete and skip it.",
+            )
+
+        ok_msg = f"OK — asset present:\n{path}"
+        if not referenced_scene_paths and not os.path.isfile(os.path.join(folder, "scene.json")):
+            ok_msg += (
+                "\n\nNote: no scene.json referenced by project.json (common for video wallpapers)."
+            )
+        return True, ok_msg
+
+    return False, f'Missing main asset file:\n{path}\n(expected from project.json "file")'
+
+
+def steamcmd_sidecar_paths():
+    """Paths where the SteamCMD wrapper leaves exit code and optional typescript transcript."""
+    cfg = os.path.expanduser("~/.config/linux-wallpaperengine-gtk")
+    return (
+        cfg,
+        os.path.join(cfg, "last-steamcmd-typescript.txt"),
+        os.path.join(cfg, "last-steamcmd.exit"),
+    )
+
+
+def _bash_script_steamcmd_terminal(steamcmd_exe, username, item_id):
+    """
+    Bash driver for SteamCMD in a real terminal.
+
+    Important: do NOT use exec(1) on steamcmd — it replaces the shell, so the final read never
+    runs and the terminal vanishes before you can see errors.
+
+    When util-linux script(1) exists, wrap SteamCMD so output is saved to a typescript file the
+    GUI can show later; otherwise run steamcmd directly but still pause at the end.
+    """
+    cfg, transcript, exit_f = steamcmd_sidecar_paths()
+    steam_cmd = (
+        f"{shlex.quote(steamcmd_exe)} +@ShutdownOnFailedCommand 1 "
+        f"+login {shlex.quote(username)} "
+        f"+workshop_download_item {STEAM_WALLPAPER_ENGINE_APP_ID} {shlex.quote(str(item_id))} +quit"
+    )
+    return f"""set +e
+mkdir -p {shlex.quote(cfg)}
+T={shlex.quote(transcript)}
+E={shlex.quote(exit_f)}
+CMD={shlex.quote(steam_cmd)}
+if command -v script >/dev/null 2>&1; then
+  script -q -e -c "$CMD" "$T"
+else
+  bash -c "$CMD"
+fi
+ec=$?
+printf %s "$ec" > "$E" 2>/dev/null || true
+echo ""
+echo "SteamCMD exit code: $ec"
+echo "Transcript file (if util-linux script was used): $T"
+echo "Exit code file: $E"
+read -rp "Press Enter to close…" _
+"""
+
+
+def launch_steamcmd_workshop_in_terminal(steamcmd_exe, username, item_id):
+    """
+    Start SteamCMD inside a real terminal emulator. Login/password/Steam Guard are handled
+    only by Valve's SteamCMD in that TTY — this process never reads or injects credentials.
+    Uses +login USER without a password on the command line so SteamCMD prompts interactively.
+    """
+    inner = _bash_script_steamcmd_terminal(steamcmd_exe, username, item_id)
+    for argv in (
+        ["gnome-terminal", "--", "bash", "-lc", inner],
+        ["konsole", "-e", "bash", "-lc", inner],
+        ["x-terminal-emulator", "-e", f"bash -lc {shlex.quote(inner)}"],
+    ):
+        try:
+            subprocess.Popen(argv, start_new_session=True)
+            return True
+        except OSError:
+            continue
+    return False
+
+
+class SteamWorkshopDialog(Gtk.Dialog):
+    """Verify local Workshop files and optionally refresh via SteamCMD (Valve)."""
+
+    def __init__(self, parent, preset_item_id=None):
+        super().__init__(
+            title="Steam Workshop",
+            transient_for=parent,
+            modal=True,
+            destroy_with_parent=True,
+        )
+        self.main_window = parent
+        self.set_default_size(560, 440)
+        self.add_buttons("_Close", Gtk.ResponseType.CLOSE)
+
+        grid = Gtk.Grid(row_spacing=8, column_spacing=10, margin=12)
+        grid.set_hexpand(True)
+
+        blurb = Gtk.Label(
+            xalign=0,
+            wrap=True,
+            justify=Gtk.Justification.LEFT,
+            selectable=False,
+        )
+        blurb.set_markup(
+            "<small>Verify Workshop folders on disk, install Valve SteamCMD here if needed, "
+            "or open SteamCMD in a <b>real terminal</b>. Login, password, Steam Guard, and "
+            "download failures are handled only by SteamCMD in that terminal — not by this GUI.</small>"
+        )
+        grid.attach(blurb, 0, 0, 3, 1)
+
+        grid.attach(Gtk.Label(label="Workshop item ID:", halign=Gtk.Align.END), 0, 1, 1, 1)
+        self.item_entry = Gtk.Entry()
+        self.item_entry.set_placeholder_text("e.g. 2875861661")
+        wid = preset_item_id or getattr(parent.engine, "current_wallpaper", None) or ""
+        self.item_entry.set_text(str(wid) if wid else "")
+        grid.attach(self.item_entry, 1, 1, 2, 1)
+
+        grid.attach(Gtk.Label(label="Steam username:", halign=Gtk.Align.END), 0, 2, 1, 1)
+        self.user_entry = Gtk.Entry()
+        self.user_entry.set_placeholder_text(
+            "For SteamCMD +login — password typed in terminal only"
+        )
+        self.user_entry.set_text((parent.settings.get("steam_username") or "").strip())
+        grid.attach(self.user_entry, 1, 2, 2, 1)
+
+        self.remember_user = Gtk.CheckButton(label="Remember Steam username in settings")
+        self.remember_user.set_active(bool((parent.settings.get("steam_username") or "").strip()))
+        grid.attach(self.remember_user, 1, 3, 2, 1)
+
+        btn_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        self.verify_btn = Gtk.Button(label="Verify local files")
+        self.verify_btn.set_tooltip_text(
+            "Check project.json and main asset file on disk (no network)"
+        )
+        self.verify_btn.connect("clicked", self._on_verify_clicked)
+        self.bootstrap_btn = Gtk.Button(label="Install SteamCMD")
+        self.bootstrap_btn.set_tooltip_text(f"Download Valve SteamCMD into {_STEAMCMD_INSTALL_DIR}")
+        self.bootstrap_btn.connect("clicked", self._on_bootstrap_clicked)
+        self.terminal_btn = Gtk.Button(label="Repair (SteamCMD terminal)")
+        self.terminal_btn.set_tooltip_text(
+            "Re-download Workshop content via Valve SteamCMD in a real terminal (+login username only). "
+            "Use after verification fails or when files are missing. Password / Steam Guard stay in that terminal."
+        )
+        self.terminal_btn.connect("clicked", self._on_terminal_clicked)
+        self.show_steam_log_btn = Gtk.Button(label="Show last SteamCMD log")
+        self.show_steam_log_btn.set_tooltip_text(
+            "Load exit code and transcript tail from the last terminal repair "
+            "(under ~/.config/linux-wallpaperengine-gtk/)"
+        )
+        self.show_steam_log_btn.connect("clicked", self._on_show_last_steamcmd_log_clicked)
+        btn_row.pack_start(self.verify_btn, False, False, 0)
+        btn_row.pack_start(self.bootstrap_btn, False, False, 0)
+        btn_row.pack_start(self.terminal_btn, False, False, 0)
+        btn_row.pack_start(self.show_steam_log_btn, False, False, 0)
+        grid.attach(btn_row, 0, 4, 3, 1)
+
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        scroll.set_min_content_height(160)
+        self.log_view = Gtk.TextView()
+        self.log_view.set_editable(False)
+        self.log_view.set_monospace(True)
+        self.log_view.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
+        scroll.add(self.log_view)
+        grid.attach(scroll, 0, 5, 3, 1)
+
+        self.get_content_area().pack_start(grid, True, True, 0)
+        self.show_all()
+
+    def _append_log_line(self, text):
+        buf = self.log_view.get_buffer()
+        buf.insert(buf.get_end_iter(), text + "\n")
+        adj = self.log_view.get_parent().get_vadjustment()
+        adj.set_value(adj.get_upper())
+
+    def _on_verify_clicked(self, _btn):
+        item = self.item_entry.get_text().strip()
+        if not item:
+            self._append_log_line("Enter a Workshop item ID.")
+            return
+        root = self.main_window.engine.wallpaper_dir
+        ok, msg = workshop_item_local_status(root, item)
+        self._append_log_line(msg)
+        if ok:
+            md = Gtk.MessageDialog(
+                transient_for=self,
+                modal=True,
+                message_type=Gtk.MessageType.INFO,
+                buttons=Gtk.ButtonsType.OK,
+                text="Local verification OK",
+            )
+            md.format_secondary_text(msg)
+            md.run()
+            md.destroy()
+            return
+
+        md = Gtk.MessageDialog(
+            transient_for=self,
+            modal=True,
+            message_type=Gtk.MessageType.WARNING,
+            buttons=Gtk.ButtonsType.NONE,
+            text="Verification failed — missing or incomplete Workshop files",
+        )
+        md.format_secondary_text(
+            msg + "\n\nYou can open SteamCMD in a terminal to let Steam re-fetch this item "
+            "(requires Wallpaper Engine on your account). Password entry stays in that terminal."
+        )
+        md.add_button("_Ignore", Gtk.ResponseType.CANCEL)
+        md.add_button("Repair via SteamCMD…", Gtk.ResponseType.APPLY)
+        md.set_default_response(Gtk.ResponseType.APPLY)
+        resp = md.run()
+        md.destroy()
+        if resp == Gtk.ResponseType.APPLY:
+            self._run_steamcmd_repair_terminal()
+
+    def _on_bootstrap_clicked(self, _btn):
+        self.bootstrap_btn.set_sensitive(False)
+        self._append_log_line("Installing SteamCMD (Valve CDN) …")
+
+        def work():
+            path = ensure_steamcmd_installed()
+            GLib.idle_add(self._bootstrap_done, path)
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _bootstrap_done(self, path):
+        self.bootstrap_btn.set_sensitive(True)
+        if path:
+            self._append_log_line(f"SteamCMD ready: {path}")
+        else:
+            self._append_log_line("SteamCMD install failed (network or tar error).")
+
+    def _on_terminal_clicked(self, _btn):
+        self._run_steamcmd_repair_terminal()
+
+    def _run_steamcmd_repair_terminal(self):
+        """Open SteamCMD in an external terminal to re-download Workshop content (Valve)."""
+        item = self.item_entry.get_text().strip()
+        user = self.user_entry.get_text().strip()
+        if not item or not user:
+            self._append_log_line("Workshop item ID and Steam username are required.")
+            return
+        exe = find_steamcmd()
+        if not exe:
+            self._append_log_line("SteamCMD not found. Use “Install SteamCMD” first.")
+            return
+        if launch_steamcmd_workshop_in_terminal(exe, user, item):
+            _, transcript, exit_f = steamcmd_sidecar_paths()
+            self._append_log_line(
+                "Opened a terminal running SteamCMD. If it exits too fast, check errors below — "
+                "the shell now waits for Enter before closing. Enter password / Steam Guard only in that terminal."
+            )
+            self._append_log_line(f"Exit code will be saved to: {exit_f}")
+            self._append_log_line(f"Transcript (if script is installed): {transcript}")
+            self._append_log_line(
+                "Then click “Show last SteamCMD log” or “Verify local files” again."
+            )
+            if self.remember_user.get_active():
+                self.main_window.settings["steam_username"] = user
+                self.main_window.save_settings()
+        else:
+            self._append_log_line(
+                "Could not launch a terminal (tried gnome-terminal, konsole, x-terminal-emulator)."
+            )
+
+    def _on_show_last_steamcmd_log_clicked(self, _btn):
+        _, transcript, exit_f = steamcmd_sidecar_paths()
+        self._append_log_line("--- last SteamCMD sidecar ---")
+        if os.path.isfile(exit_f):
+            try:
+                with open(exit_f, encoding="utf-8", errors="replace") as fp:
+                    code = fp.read().strip()
+                self._append_log_line(f"Exit code file ({exit_f}): {code}")
+            except OSError as exc:
+                self._append_log_line(f"Could not read exit file: {exc}")
+        else:
+            self._append_log_line(
+                f"No exit code file yet ({exit_f}). Run a repair in terminal first."
+            )
+        if os.path.isfile(transcript):
+            try:
+                with open(transcript, encoding="utf-8", errors="replace") as fp:
+                    lines = fp.readlines()
+                tail = lines[-160:] if len(lines) > 160 else lines
+                self._append_log_line(f"--- transcript tail ({transcript}) ---")
+                for ln in tail:
+                    self._append_log_line(ln.rstrip("\n"))
+            except OSError as exc:
+                self._append_log_line(f"Could not read transcript: {exc}")
+        else:
+            self._append_log_line(
+                f"No typescript yet ({transcript}). Install util-linux script(1) for transcripts, "
+                "or read errors directly in the terminal before pressing Enter."
+            )
 
 
 class EnvironmentDetector:
@@ -736,46 +1265,109 @@ class WallpaperEngine:
 
         return 1920, 1080
 
-    def _apply_gnome_window_hints(self, pid):
-        """Try to make a window-mode wallpaper behave like a desktop background on GNOME/X11."""
-        # Requires external tools; if unavailable, we still have a normal window preview.
-        for tool in ("xdotool", "wmctrl", "xprop"):
-            if subprocess.run(["which", tool], capture_output=True, text=True).returncode != 0:
-                self.log.debug(f"GNOME hints skipped: missing {tool}")
-                return
+    def _wallpaper_engine_candidate_pids(self, root_pid, max_depth=6):
+        """Root PID plus descendants (mpv, CEF, etc. often own the mapped X11 window)."""
+        from collections import deque
 
-        # Wait briefly for the engine to create an X11 window, then set hints.
-        deadline = time.time() + 2.0
-        wid = None
-        while time.time() < deadline:
+        seen = set()
+        ordered = []
+        queue = deque([(root_pid, 0)])
+        while queue:
+            pid, depth = queue.popleft()
+            if pid <= 0 or pid in seen or depth > max_depth or len(ordered) >= 48:
+                continue
+            seen.add(pid)
+            ordered.append(pid)
             try:
-                # xdotool search returns decimal window ids
-                res = subprocess.run(
-                    ["xdotool", "search", "--onlyvisible", "--pid", str(pid)],
+                proc = subprocess.run(
+                    ["pgrep", "-P", str(pid)],
                     capture_output=True,
                     text=True,
-                    timeout=1,
+                    timeout=0.5,
                 )
-                if res.returncode == 0 and res.stdout.strip():
-                    wid = res.stdout.strip().splitlines()[0]
-                    break
-            except Exception:
+                if proc.returncode != 0 or not proc.stdout.strip():
+                    continue
+                for line in proc.stdout.strip().splitlines():
+                    try:
+                        queue.append((int(line.strip()), depth + 1))
+                    except ValueError:
+                        pass
+            except (subprocess.TimeoutExpired, FileNotFoundError, ValueError):
                 pass
-            time.sleep(0.1)
+        return ordered
 
-        if not wid:
-            self.log.debug("GNOME hints skipped: could not find window for pid")
-            return
+    def _x11_net_wm_pid(self, window_id):
+        """Read _NET_WM_PID for an X11 window, or None."""
+        try:
+            proc = subprocess.run(
+                ["xprop", "-id", window_id, "_NET_WM_PID"],
+                capture_output=True,
+                text=True,
+                timeout=2,
+            )
+            if proc.returncode != 0 or "=" not in proc.stdout:
+                return None
+            tail = proc.stdout.split("=", 1)[1].strip()
+            return int(tail.split()[0])
+        except (ValueError, subprocess.TimeoutExpired, IndexError):
+            return None
 
-        # Mark as desktop/sticky/below and keep it off taskbar/pager where possible.
+    def _xdotool_search_pids(self, pid, only_visible):
+        """Return first matching window id for pid, or None."""
+        args = ["xdotool", "search"]
+        if only_visible:
+            args.append("--onlyvisible")
+        args.extend(["--pid", str(pid)])
+        try:
+            proc = subprocess.run(args, capture_output=True, text=True, timeout=1)
+            if proc.returncode == 0 and proc.stdout.strip():
+                return proc.stdout.strip().splitlines()[0]
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+        return None
+
+    def _find_wallpaper_x11_window(self, root_pid, candidate_pids):
+        """Resolve X11 window id: try each PID (visible + not), then WM_CLASS + _NET_WM_PID."""
+        for pid in candidate_pids:
+            wid = self._xdotool_search_pids(pid, only_visible=False)
+            if wid:
+                return wid
+            wid = self._xdotool_search_pids(pid, only_visible=True)
+            if wid:
+                return wid
+
+        cand_set = set(candidate_pids)
+        for class_flag in ("--class", "--classname"):
+            try:
+                proc = subprocess.run(
+                    ["xdotool", "search", class_flag, "linux-wallpaperengine"],
+                    capture_output=True,
+                    text=True,
+                    timeout=2,
+                )
+                if proc.returncode != 0 or not proc.stdout.strip():
+                    continue
+                for wid in proc.stdout.strip().splitlines():
+                    wid = wid.strip()
+                    if not wid:
+                        continue
+                    net_pid = self._x11_net_wm_pid(wid)
+                    if net_pid is not None and net_pid in cand_set:
+                        return wid
+            except (subprocess.TimeoutExpired, OSError):
+                pass
+        return None
+
+    def _apply_x11_desktop_hints_to_window(self, wid):
         try:
             subprocess.run(
-                ["wmctrl", "-ir", wid, "-b", "add,below,sticky,skip_taskbar,skip_pager"], timeout=2
+                ["wmctrl", "-ir", wid, "-b", "add,below,sticky,skip_taskbar,skip_pager"],
+                timeout=2,
+                capture_output=True,
             )
-        except Exception:
+        except OSError:
             pass
         try:
-            # Attempt to set window type to DESKTOP
             subprocess.run(
                 [
                     "xprop",
@@ -789,14 +1381,57 @@ class WallpaperEngine:
                     "_NET_WM_WINDOW_TYPE_DESKTOP",
                 ],
                 timeout=2,
+                capture_output=True,
             )
-        except Exception:
+        except OSError:
             pass
         try:
-            # Fullscreen as belt-and-suspenders
-            subprocess.run(["wmctrl", "-ir", wid, "-b", "add,fullscreen"], timeout=2)
-        except Exception:
+            subprocess.run(
+                ["wmctrl", "-ir", wid, "-b", "add,fullscreen"],
+                timeout=2,
+                capture_output=True,
+            )
+        except OSError:
             pass
+
+    def _apply_gnome_window_hints(self, process):
+        """Make window-mode wallpaper behave like a desktop background (GNOME/X11).
+
+        Runs in a background thread with extended search: child PIDs, non-visible windows,
+        and WM_CLASS linux-wallpaperengine (see upstream GLFW hints), so we do not block GTK.
+        """
+        for tool in ("xdotool", "wmctrl", "xprop"):
+            if subprocess.run(["which", tool], capture_output=True, text=True).returncode != 0:
+                self.log.debug(f"GNOME hints skipped: missing {tool}")
+                return
+
+        root_pid = process.pid
+
+        def worker():
+            deadline = time.time() + 15.0
+            poll = 0.2
+            wid = None
+            while time.time() < deadline:
+                if process.poll() is not None:
+                    return
+                if getattr(self, "current_process", None) is not process:
+                    return
+                candidates = self._wallpaper_engine_candidate_pids(root_pid)
+                wid = self._find_wallpaper_x11_window(root_pid, candidates)
+                if wid:
+                    break
+                time.sleep(poll)
+                poll = min(poll + 0.05, 0.5)
+
+            if not wid:
+                self.log.warning(
+                    "GNOME desktop hints: no X11 window matched (engine children / class fallback)"
+                )
+                return
+            self._apply_x11_desktop_hints_to_window(wid)
+            self.log.info(f"GNOME desktop hints applied (X11 window id {wid})")
+
+        threading.Thread(target=worker, daemon=True, name="gnome-x11-hints").start()
 
     def _detect_display_x11(self):
         """Detect primary display using xrandr (X11)
@@ -1033,6 +1668,31 @@ class WallpaperEngine:
         except ValueError:
             return wallpapers[-1]
 
+    @staticmethod
+    def _read_process_stderr_to_string(process) -> str:
+        try:
+            if process.stderr:
+                return process.stderr.read().decode("utf-8", errors="replace")
+        except Exception:
+            pass
+        return ""
+
+    def _log_immediate_wallpaper_failure(self, process) -> None:
+        stderr_output = self._read_process_stderr_to_string(process)
+        if stderr_output:
+            self.log.error(f"Process failed to start. Error output:\n{stderr_output}")
+        else:
+            self.log.error("Process failed to start (no error output available)")
+
+    def _wallpaper_child_is_running(self, process) -> bool:
+        """Whether the child is still running — ``poll()`` + kernel PID facts (no wall-clock wait)."""
+        return wallpaper_subprocess_running(
+            process,
+            on_kill_permission_denied=lambda: self.log.warning(
+                "Cannot verify wallpaper child PID (permission); assuming running"
+            ),
+        )
+
     def run_wallpaper(self, wallpaper_id, **options):
         """Run wallpaper with specified options"""
         if not all([self.wpe_path, self.display, wallpaper_id]):
@@ -1240,35 +1900,26 @@ class WallpaperEngine:
                 env=env,
             )
 
-            # Brief pause to check if process started
-            time.sleep(0.1)
-
-            if process.poll() is None:  # Process is running
+            if self._wallpaper_child_is_running(process):
                 self.current_wallpaper = wallpaper_id
                 self.current_process = process
                 self.log.info(f"Wallpaper process started successfully (PID: {process.pid})")
+                try:
+                    # Event-driven exit detection (no polling timers).
+                    GLib.child_watch_add(process.pid, self._on_wallpaper_child_exit, process)
+                except Exception as e:
+                    self.log.debug(f"child watch not installed: {e}")
                 if (
                     gnome_compat
                     and self.env.get("desktop") == "gnome"
                     and self.env.get("display_server") in ["x11", "xwayland"]
                     and not use_container
                 ):
-                    self._apply_gnome_window_hints(process.pid)
+                    self._apply_gnome_window_hints(process)
                 return True, cmd
-            else:
-                # Process exited immediately - read stderr to see why
-                stderr_output = ""
-                try:
-                    if process.stderr:
-                        stderr_output = process.stderr.read().decode("utf-8", errors="replace")
-                except Exception:
-                    pass
 
-                if stderr_output:
-                    self.log.error(f"Process failed to start. Error output:\n{stderr_output}")
-                else:
-                    self.log.error("Process failed to start (no error output available)")
-                return False, None
+            self._log_immediate_wallpaper_failure(process)
+            return False, None
 
         except Exception as e:
             self.log.error(f"Failed to run wallpaper: {str(e)}", exc_info=True)
@@ -1277,6 +1928,34 @@ class WallpaperEngine:
         finally:
             self.log.debug(f"Returning to original directory: {original_dir}")
             os.chdir(original_dir)
+
+    def _notify_wallpaper_exit(self, wallpaper_id, exit_status, stderr_output):
+        """Optional callback hook set by GUI for user-visible exit reporting."""
+        cb = getattr(self, "on_wallpaper_exit", None)
+        if callable(cb):
+            try:
+                cb(wallpaper_id, exit_status, stderr_output)
+            except Exception as e:
+                self.log.debug(f"on_wallpaper_exit callback failed: {e}")
+
+    def _on_wallpaper_child_exit(self, pid, status, process):
+        """GLib child-watch callback: called when the wallpaper process exits."""
+        try:
+            exit_status = process.poll()
+        except Exception:
+            exit_status = None
+
+        stderr_output = self._read_process_stderr_to_string(process)
+        wid = getattr(self, "current_wallpaper", None)
+
+        # Only clear state / notify if this is still the active process.
+        if getattr(self, "current_process", None) is process:
+            self.current_process = None
+            self.current_wallpaper = None
+            self._notify_wallpaper_exit(wid, exit_status, stderr_output)
+
+        # Return False so the watch is removed.
+        return False
 
     def stop_wallpaper(self, timeout=10):
         """Stop currently running wallpaper using POSIX-compliant process management.
@@ -1453,23 +2132,12 @@ class WallpaperEngine:
                 except Exception as e:
                     self.log.debug(f"Error sending SIGTERM to {pid}: {e}")
 
-            # Wait for processes to terminate
-            time.sleep(min(2.0, timeout * 0.5))
+            # Wait until each PID is gone from the kernel or we hit the deadline (no fixed blind sleep)
+            sigterm_deadline = time.monotonic() + min(2.0, timeout * 0.5)
+            while any(_pid_exists(p) for p in pids) and time.monotonic() < sigterm_deadline:
+                time.sleep(0.005)
 
-            # Check which processes are still alive and force kill
-            remaining_pids = []
-            for pid in pids:
-                try:
-                    # Check if process exists by sending signal 0 (no-op)
-                    # Reference: https://docs.python.org/3/library/os.html#os.kill
-                    os.kill(pid, 0)
-                    remaining_pids.append(pid)
-                except ProcessLookupError:
-                    # Process is dead
-                    continue
-                except Exception:
-                    # Assume dead if we can't check
-                    continue
+            remaining_pids = [pid for pid in pids if _pid_exists(pid)]
 
             if remaining_pids:
                 self.log.debug(f"Force killing {len(remaining_pids)} process(es): {remaining_pids}")
@@ -1483,8 +2151,12 @@ class WallpaperEngine:
                     except Exception as e:
                         self.log.debug(f"Error sending SIGKILL to {pid}: {e}")
 
-                # Brief wait for SIGKILL to take effect
-                time.sleep(min(1.0, timeout * 0.3))
+                sigkill_deadline = time.monotonic() + min(1.0, timeout * 0.3)
+                while (
+                    any(_pid_exists(p) for p in remaining_pids)
+                    and time.monotonic() < sigkill_deadline
+                ):
+                    time.sleep(0.005)
 
             return True
 
@@ -1507,6 +2179,7 @@ class WallpaperWindow(Gtk.Window):
 
         # Initialize engine
         self.engine = WallpaperEngine()
+        self.engine.on_wallpaper_exit = self._on_engine_wallpaper_exit
 
         # Setup logging
         self.log = logging.getLogger("GUI")
@@ -1546,6 +2219,10 @@ class WallpaperWindow(Gtk.Window):
             "radeonsi_disable_shader_cache": True,
             "radeonsi_enable_error_checking": True,
             "radeonsi_disable_aggressive_opts": True,
+            # Steam Workshop helper — optional remembered Steam username (no secrets)
+            "steam_username": "",
+            # Workshop verification UX
+            "verbose_workshop_warnings": False,
         }
 
         # Merge initial settings with defaults
@@ -1563,6 +2240,8 @@ class WallpaperWindow(Gtk.Window):
 
         # Connect delete-event instead of destroy to intercept close
         self.connect("delete-event", self.on_destroy)
+        # Also observe actual destroy, so a programmatic destroy still terminates cleanly.
+        self.connect("destroy", self._on_window_destroyed)
 
         # Add CSS provider for styling
         css_provider = Gtk.CssProvider()
@@ -1587,6 +2266,8 @@ class WallpaperWindow(Gtk.Window):
 
     def _setup_ui(self):
         """Setup main UI components"""
+        # Avoid persisting default UI values during startup / programmatic updates.
+        self._suppress_volume_callbacks = True
         # Main container
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         self.add(self.main_box)
@@ -1611,6 +2292,20 @@ class WallpaperWindow(Gtk.Window):
         self.statusbar.set_margin_bottom(2)
         self.command_context = self.statusbar.get_context_id("command")
         self.main_box.pack_end(self.statusbar, False, False, 0)
+
+        # Now that widgets exist, apply saved mute/volume state (callbacks suppressed above).
+        try:
+            preferred = float(self.settings.get("volume", 100) or 100)
+            muted = bool(self.settings.get("mute", False))
+
+            self.last_volume = preferred
+            self.volume_scale.set_value(preferred)
+            self.mute_button.set_active(muted)
+            if muted:
+                # UI shows muted as 0, but we keep preferred volume persisted.
+                self.volume_scale.set_value(0)
+        finally:
+            self._suppress_volume_callbacks = False
 
     def _create_toolbar(self):
         """Create the toolbar with controls"""
@@ -1641,9 +2336,14 @@ class WallpaperWindow(Gtk.Window):
         vol_box.pack_start(self.mute_button, False, False, 0)
 
         # Volume slider
-        self.last_volume = 100  # Store last volume before mute
+        self.last_volume = float(self.settings.get("volume", 100) or 100)
         adjustment = Gtk.Adjustment(
-            value=100, lower=0, upper=100, step_increment=1, page_increment=10, page_size=0
+            value=float(self.settings.get("volume", 100) or 100),
+            lower=0,
+            upper=100,
+            step_increment=1,
+            page_increment=10,
+            page_size=0,
         )
         self.volume_scale = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=adjustment)
         self.volume_scale.set_size_request(100, -1)
@@ -1689,6 +2389,7 @@ class WallpaperWindow(Gtk.Window):
             ("view-refresh-symbolic", "Refresh Wallpapers", self.on_refresh_clicked),
             ("applications-system-symbolic", "Setup Paths", self.on_setup_clicked),
             ("preferences-system-symbolic", "Settings", self.on_settings_clicked),
+            ("folder-remote-symbolic", "Steam Workshop", self.on_steam_workshop_clicked),
         ]
 
         for icon_name, tooltip, callback in buttons:
@@ -1711,107 +2412,137 @@ class WallpaperWindow(Gtk.Window):
         """Load and display wallpaper previews"""
 
         def load_preview(wallpaper_id):
+            if getattr(self, "_quitting", False):
+                return
             wallpaper_path = os.path.join(self.engine.wallpaper_dir, wallpaper_id)
 
             # Skip if directory doesn't exist
             if not os.path.exists(wallpaper_path):
                 return
 
-            preview_path = None
+            candidates: list[str] = []
 
-            # Look for preview image
+            # Prefer preview.* in our expected order.
             for ext in [".gif", ".png", ".jpg", ".webp", ".jpeg"]:
                 path = os.path.join(wallpaper_path, f"preview{ext}")
                 if os.path.exists(path):
-                    preview_path = path
-                    break
+                    candidates.append(path)
 
-            # If no preview.* file found, look for any image file as fallback
-            if not preview_path:
+            # Fall back to any image in the item root.
+            try:
                 for filename in os.listdir(wallpaper_path):
                     if filename.lower().endswith((".gif", ".png", ".jpg", ".jpeg", ".webp")):
-                        preview_path = os.path.join(wallpaper_path, filename)
-                        break
+                        path = os.path.join(wallpaper_path, filename)
+                        if path not in candidates:
+                            candidates.append(path)
+            except OSError:
+                return
 
-            # Skip if no image found at all
-            if not preview_path:
+            if not candidates:
                 return
 
             # Load actual image preview
             def add_preview():
-                try:
-                    box = Gtk.Box()
-                    box.set_margin_start(2)
-                    box.set_margin_end(2)
-                    box.set_margin_top(2)
-                    box.set_margin_bottom(2)
+                # Avoid repeatedly retrying paths that we already know are broken for this session.
+                bad = getattr(self, "_bad_preview_paths", None)
+                if bad is None:
+                    self._bad_preview_paths = set()
+                    bad = self._bad_preview_paths
 
-                    # Handle GIF animations
-                    if preview_path.lower().endswith(".gif"):
-                        try:
-                            animation = GdkPixbuf.PixbufAnimation.new_from_file(preview_path)
-                            if animation.is_static_image():
-                                pixbuf = animation.get_static_image().scale_simple(
-                                    self.preview_width,
-                                    self.preview_height,
-                                    GdkPixbuf.InterpType.BILINEAR,
+                last_exc: Exception | None = None
+                chosen: str | None = None
+
+                for preview_path in candidates:
+                    if preview_path in bad:
+                        continue
+                    try:
+                        box = Gtk.Box()
+                        box.set_margin_start(2)
+                        box.set_margin_end(2)
+                        box.set_margin_top(2)
+                        box.set_margin_bottom(2)
+
+                        # Handle GIF animations
+                        if preview_path.lower().endswith(".gif"):
+                            try:
+                                animation = GdkPixbuf.PixbufAnimation.new_from_file(preview_path)
+                                if animation.is_static_image():
+                                    pixbuf = animation.get_static_image().scale_simple(
+                                        self.preview_width,
+                                        self.preview_height,
+                                        GdkPixbuf.InterpType.BILINEAR,
+                                    )
+                                    image = Gtk.Image.new_from_pixbuf(pixbuf)
+                                else:
+                                    # Animated GIF
+                                    iter = animation.get_iter(None)
+                                    first_frame = iter.get_pixbuf()
+                                    scale_x = self.preview_width / first_frame.get_width()
+                                    scale_y = self.preview_height / first_frame.get_height()
+                                    scale = min(scale_x, scale_y)
+
+                                    frames = []
+                                    iter = animation.get_iter(None)
+                                    while True:
+                                        pixbuf = iter.get_pixbuf()
+                                        new_width = int(pixbuf.get_width() * scale)
+                                        new_height = int(pixbuf.get_height() * scale)
+                                        scaled_frame = pixbuf.scale_simple(
+                                            new_width, new_height, GdkPixbuf.InterpType.BILINEAR
+                                        )
+                                        frames.append(scaled_frame)
+                                        if not iter.advance():
+                                            break
+
+                                    image = Gtk.Image()
+                                    current_frame = 0
+
+                                    def update_frame(_frames=frames, _image=image):
+                                        nonlocal current_frame
+                                        if len(_frames) > 0:
+                                            _image.set_from_pixbuf(_frames[current_frame])
+                                            current_frame = (current_frame + 1) % len(_frames)
+                                        return True
+
+                                    GLib.timeout_add(50, update_frame)
+                            except Exception:
+                                # Fallback to static image
+                                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                                    preview_path, self.preview_width, self.preview_height, True
                                 )
                                 image = Gtk.Image.new_from_pixbuf(pixbuf)
-                            else:
-                                # Animated GIF
-                                iter = animation.get_iter(None)
-                                first_frame = iter.get_pixbuf()
-                                scale_x = self.preview_width / first_frame.get_width()
-                                scale_y = self.preview_height / first_frame.get_height()
-                                scale = min(scale_x, scale_y)
-
-                                frames = []
-                                iter = animation.get_iter(None)
-                                while True:
-                                    pixbuf = iter.get_pixbuf()
-                                    new_width = int(pixbuf.get_width() * scale)
-                                    new_height = int(pixbuf.get_height() * scale)
-                                    scaled_frame = pixbuf.scale_simple(
-                                        new_width, new_height, GdkPixbuf.InterpType.BILINEAR
-                                    )
-                                    frames.append(scaled_frame)
-                                    if not iter.advance():
-                                        break
-
-                                image = Gtk.Image()
-                                current_frame = 0
-
-                                def update_frame():
-                                    nonlocal current_frame
-                                    if len(frames) > 0:
-                                        image.set_from_pixbuf(frames[current_frame])
-                                        current_frame = (current_frame + 1) % len(frames)
-                                    return True
-
-                                GLib.timeout_add(50, update_frame)
-                        except Exception:
-                            # Fallback to static image
+                        else:
+                            # Static images
                             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                                 preview_path, self.preview_width, self.preview_height, True
                             )
                             image = Gtk.Image.new_from_pixbuf(pixbuf)
-                    else:
-                        # Static images
-                        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                            preview_path, self.preview_width, self.preview_height, True
+
+                        box.add(image)
+                        box.wallpaper_id = wallpaper_id
+                        self.flowbox.add(box)
+                        box.show_all()
+
+                        if wallpaper_id == self.engine.current_wallpaper:
+                            self.highlight_current_wallpaper(box)
+
+                        chosen = preview_path
+                        break
+                    except Exception as e:
+                        last_exc = e
+                        bad.add(preview_path)
+                        continue
+
+                if chosen is None:
+                    # One line per wallpaper per session (avoid log spam on every refresh).
+                    if not hasattr(self, "_bad_preview_wallpapers"):
+                        self._bad_preview_wallpapers = set()
+                    if wallpaper_id not in self._bad_preview_wallpapers:
+                        self._bad_preview_wallpapers.add(wallpaper_id)
+                        tail = f": {last_exc}" if last_exc else ""
+                        self.log.error(
+                            f"Failed to load any preview for {wallpaper_id} (candidates={len(candidates)}){tail}"
                         )
-                        image = Gtk.Image.new_from_pixbuf(pixbuf)
-
-                    box.add(image)
-                    box.wallpaper_id = wallpaper_id
-                    self.flowbox.add(box)
-                    box.show_all()
-
-                    if wallpaper_id == self.engine.current_wallpaper:
-                        self.highlight_current_wallpaper(box)
-
-                except Exception as e:
-                    self.log.error(f"Failed to load preview {preview_path}: {e}")
 
             GLib.idle_add(add_preview)
 
@@ -1822,14 +2553,29 @@ class WallpaperWindow(Gtk.Window):
         wallpapers = self.engine.get_wallpaper_list()
         self.status_label.set_text(f"Loading {len(wallpapers)} wallpapers...")
 
+        # Track GLib timeout sources so we can cancel during quit/reload.
+        if hasattr(self, "_preview_timeout_ids"):
+            try:
+                for sid in self._preview_timeout_ids or []:
+                    try:
+                        GLib.source_remove(sid)
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+        self._preview_timeout_ids = []
+
         for i, wallpaper_id in enumerate(wallpapers):
 
             def load_with_delay(wid):
+                if getattr(self, "_quitting", False):
+                    return
                 thread = threading.Thread(target=load_preview, args=(wid,))
                 thread.daemon = True
                 thread.start()
 
-            GLib.timeout_add(i * 5, lambda wid=wallpaper_id: load_with_delay(wid) or False)
+            sid = GLib.timeout_add(i * 5, lambda wid=wallpaper_id: load_with_delay(wid) or False)
+            self._preview_timeout_ids.append(sid)
 
     def reload_wallpapers(self):
         """Reload wallpapers with current preview size"""
@@ -1882,10 +2628,66 @@ class WallpaperWindow(Gtk.Window):
             if cmd:
                 self.update_command_status(cmd)
         else:
-            self.status_label.set_text("Failed to load wallpaper")
+            self.status_label.set_text(
+                "Wallpaper not started (cancelled, incomplete Workshop files, or engine error)"
+            )
 
-    def _load_wallpaper(self, wallpaper_id):
-        """Load wallpaper with current settings"""
+    def _workshop_assets_allow_load(self, wallpaper_id):
+        """
+        If Workshop folder is incomplete, prompt before starting the engine.
+        Returns True to proceed, False to abort (user cancelled or chose to open repair dialog).
+        """
+        root = self.engine.wallpaper_dir
+        if not root or not wallpaper_id:
+            return True
+        ok, msg = workshop_item_local_status(root, wallpaper_id)
+        if ok:
+            return True
+
+        # Default behavior: do not nag with modal dialogs. This verifier can be a false-positive
+        # for items that still render fine; users can opt-in to verbose warnings.
+        if not bool(self.settings.get("verbose_workshop_warnings", False)):
+            self.log.warning(f"Workshop verify warning for {wallpaper_id}: {msg}")
+            self.status_label.set_text(
+                f"Workshop verify warning for {wallpaper_id} (enable verbose warnings in Settings for details)"
+            )
+            return True
+
+        md = Gtk.MessageDialog(
+            transient_for=self,
+            modal=True,
+            message_type=Gtk.MessageType.WARNING,
+            buttons=Gtk.ButtonsType.NONE,
+            text="Workshop files missing or incomplete",
+        )
+        md.format_secondary_text(
+            msg + "\n\nThis item probably will not render until Steam re-downloads it "
+            "(Wallpaper Engine on your account)."
+        )
+        md.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        md.add_button("_Try anyway", Gtk.ResponseType.NO)
+        md.add_button("Repair…", Gtk.ResponseType.APPLY)
+        md.set_default_response(Gtk.ResponseType.APPLY)
+        resp = md.run()
+        md.destroy()
+
+        if resp == Gtk.ResponseType.NO:
+            return True
+        if resp == Gtk.ResponseType.APPLY:
+            dlg = SteamWorkshopDialog(self, preset_item_id=str(wallpaper_id))
+            dlg.run()
+            dlg.destroy()
+            self.status_label.set_text(
+                "Use Steam Workshop dialog to verify or repair, then select this wallpaper again."
+            )
+            return False
+        return False
+
+    def _load_wallpaper(self, wallpaper_id, skip_workshop_asset_check=False):
+        """Load wallpaper with current settings."""
+        if not skip_workshop_asset_check:
+            if not self._workshop_assets_allow_load(wallpaper_id):
+                return False, None
         return self.engine.run_wallpaper(
             wallpaper_id,
             use_container=bool(self.settings.get("enable_containerization", False)),
@@ -1949,6 +2751,12 @@ class WallpaperWindow(Gtk.Window):
         self.load_wallpapers()
         self.status_label.set_text("Wallpaper list refreshed")
 
+    def on_steam_workshop_clicked(self, button):
+        """Steam Workshop verify / SteamCMD download (Valve tooling)."""
+        dlg = SteamWorkshopDialog(self)
+        dlg.run()
+        dlg.destroy()
+
     def on_setup_clicked(self, button):
         """Open setup dialog for path configuration"""
         dialog = SettingsDialog(self)
@@ -2005,7 +2813,18 @@ class WallpaperWindow(Gtk.Window):
     def on_settings_clicked(self, button):
         """Open settings dialog"""
         dialog = SettingsDialog(self)
+        # Keep a handle so quitting can break modal dialog loops.
+        self._settings_dialog = dialog
+        dialog.connect("destroy", lambda *_a: setattr(self, "_settings_dialog", None))
         response = dialog.run()
+
+        # If we initiated quit while the dialog was open, do not attempt to apply settings.
+        if getattr(self, "_quitting", False):
+            try:
+                dialog.destroy()
+            except Exception:
+                pass
+            return
 
         if response != Gtk.ResponseType.OK:
             dialog.destroy()  # Destroy dialog first to prevent GTK warnings
@@ -2031,6 +2850,7 @@ class WallpaperWindow(Gtk.Window):
                 "enable_ld_preload": dialog.ld_preload_switch.get_active(),
                 "enable_containerization": dialog.containerization_switch.get_active(),
                 "enable_gnome_compat": dialog.gnome_compat_switch.get_active(),
+                "verbose_workshop_warnings": dialog.verbose_workshop_warnings_switch.get_active(),
                 # radeonsi driver workarounds
                 "enable_radeonsi_workarounds": dialog.radeonsi_workarounds_switch.get_active(),
                 "radeonsi_sync_to_vblank": dialog.radeonsi_sync_switch.get_active(),
@@ -2078,6 +2898,7 @@ class WallpaperWindow(Gtk.Window):
             self.log.error(f"Failed to apply settings: {e}")
         finally:
             dialog.destroy()  # Destroy dialog
+            self._settings_dialog = None
 
     def apply_settings(self, settings):
         """Apply settings to current and future wallpapers"""
@@ -2087,23 +2908,8 @@ class WallpaperWindow(Gtk.Window):
 
         # Update current wallpaper if running
         if self.engine.current_wallpaper:
-            success, cmd = self.engine.run_wallpaper(
-                self.engine.current_wallpaper,
-                use_container=bool(settings.get("enable_containerization", False)),
-                gnome_compat=bool(settings.get("enable_gnome_compat", True)),
-                fps=settings["fps"],
-                volume=settings["volume"],
-                mute=settings["mute"],
-                no_automute=settings["no_automute"],
-                no_audio_processing=settings["no_audio_processing"],
-                disable_mouse=settings["mouse_enabled"],
-                invert_mouse_y=settings.get("invert_mouse_y", False),
-                no_fullscreen_pause=settings["no_fullscreen_pause"],
-                scaling=settings["scaling"],
-                clamp=settings["clamp"],
-                enable_custom_args=settings["enable_custom_args"],
-                custom_args=settings["custom_args"],
-                enable_ld_preload=settings["enable_ld_preload"],
+            success, cmd = self._load_wallpaper(
+                self.engine.current_wallpaper, skip_workshop_asset_check=True
             )
             if success and cmd:
                 self.update_command_status(cmd)
@@ -2121,7 +2927,8 @@ class WallpaperWindow(Gtk.Window):
 
         def rotate_wallpaper():
             if wallpaper_id := self.engine.get_next_wallpaper():
-                if self.engine.run_wallpaper(wallpaper_id):
+                success, _cmd = self._load_wallpaper(wallpaper_id)
+                if success:
                     self.update_current_wallpaper(wallpaper_id)
             return True
 
@@ -2219,6 +3026,10 @@ class WallpaperWindow(Gtk.Window):
         settings_item.connect("activate", lambda w: self.on_settings_clicked(None))
         menu.append(settings_item)
 
+        steam_item = Gtk.MenuItem(label="Steam Workshop…")
+        steam_item.connect("activate", lambda w: self.on_steam_workshop_clicked(None))
+        menu.append(steam_item)
+
         menu.append(Gtk.SeparatorMenuItem())
 
         # Quit
@@ -2254,14 +3065,9 @@ class WallpaperWindow(Gtk.Window):
         self.update_current_wallpaper(None)
 
     def on_quit(self, widget):
-        """Quit the application"""
-        self.log.info("Quitting application...")
-        # Stop wallpaper before quitting
-        self.engine.stop_wallpaper()
-        # Set flag to allow actual quit
-        self._quitting = True
-        self.destroy()
-        Gtk.main_quit()
+        """Quit the application (robust even with nested dialog loops)."""
+        # Always schedule on the GTK main loop.
+        GLib.idle_add(self._quit_now)
 
     def on_destroy(self, window, event=None):
         """Handle window close - hide to tray instead of quitting"""
@@ -2277,32 +3083,214 @@ class WallpaperWindow(Gtk.Window):
             # Return True to prevent default destroy behavior
             return True
 
+    def _on_window_destroyed(self, *_args):
+        # If something destroyed the window (or we destroyed it ourselves), ensure the
+        # main loop(s) are told to exit. This prevents “blank window / stuck tray icon”
+        # states when a nested Gtk.Dialog.run() loop is active.
+        if hasattr(self, "_quitting") and self._quitting:
+            self._quit_main_loops()
+
+    def _quit_main_loops(self):
+        try:
+            while Gtk.main_level() > 0:
+                Gtk.main_quit()
+        except Exception:
+            # If Gtk.main_level isn't available for some reason, fall back to one quit.
+            try:
+                Gtk.main_quit()
+            except Exception:
+                pass
+
+    def _drain_mainloops_step(self):
+        # Graceful, repeated attempts to unwind nested Gtk.Dialog.run() loops.
+        # Returns True to keep trying, False to stop.
+        try:
+            lvl = Gtk.main_level()
+        except Exception:
+            try:
+                Gtk.main_quit()
+            except Exception:
+                pass
+            return False
+
+        if lvl <= 0:
+            return False
+
+        try:
+            Gtk.main_quit()
+        except Exception:
+            return False
+        return True
+
+    def _quit_now(self):
+        # Idempotent: multiple quit triggers should be safe.
+        if getattr(self, "_quitting", False):
+            self._quit_main_loops()
+            return False
+
+        self.log.info("Quitting application...")
+        self._quitting = True
+
+        # Start draining Gtk main loops repeatedly while we shut down.
+        # This is intentionally gentle: no hard-exit, just ensure Gtk.main() returns.
+        try:
+            GLib.timeout_add(50, self._drain_mainloops_step)
+        except Exception:
+            pass
+
+        # Cancel any pending preview-load timeouts so they don't keep the main loop busy.
+        try:
+            for sid in getattr(self, "_preview_timeout_ids", []) or []:
+                try:
+                    GLib.source_remove(sid)
+                except Exception:
+                    pass
+            self._preview_timeout_ids = []
+        except Exception:
+            pass
+
+        # Break any modal dialog loops (e.g. Settings) that would otherwise hang quit.
+        try:
+            dlg = getattr(self, "_settings_dialog", None)
+            if dlg:
+                try:
+                    dlg.response(Gtk.ResponseType.CANCEL)
+                except Exception:
+                    pass
+                try:
+                    dlg.destroy()
+                except Exception:
+                    pass
+                self._settings_dialog = None
+        except Exception:
+            pass
+
+        # Stop wallpaper before quitting (best-effort).
+        try:
+            self.engine.stop_wallpaper()
+        except Exception as e:
+            self.log.debug(f"stop_wallpaper during quit failed: {e}")
+
+        # Graceful staged shutdown:
+        # - Withdraw tray icon first
+        # - Let the main loop spin briefly so the DE observes the change
+        # - Then destroy windows and quit the GTK main loop(s)
+        def _destroy_windows_and_quit():
+            try:
+                for w in Gtk.Window.list_toplevels() or []:
+                    try:
+                        w.destroy()
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+            try:
+                self.destroy()
+            except Exception:
+                pass
+
+            self._quit_main_loops()
+            return False
+
+        def _withdraw_tray_then_destroy():
+            try:
+                if hasattr(self, "tray_icon") and self.tray_icon:
+                    if getattr(self, "tray_icon_type", "") == "appindicator":
+                        try:
+                            self.tray_icon.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
+                        except Exception:
+                            pass
+                    else:
+                        self.tray_icon.set_visible(False)
+            except Exception:
+                pass
+
+            # Delay teardown slightly to avoid “stuck icon” artifacts.
+            GLib.timeout_add(200, _destroy_windows_and_quit)
+            return False
+
+        # Withdraw tray now, then proceed to teardown.
+        GLib.idle_add(_withdraw_tray_then_destroy)
+        return False
+
+    def _on_engine_wallpaper_exit(self, wallpaper_id, exit_status, stderr_output):
+        # UI-thread only: GLib child watch runs on main loop.
+        if getattr(self, "_quitting", False):
+            return
+
+        msg = "Wallpaper exited"
+        if wallpaper_id:
+            msg += f" ({wallpaper_id})"
+        if exit_status is not None:
+            msg += f" status={exit_status}"
+        self.status_label.set_text(msg)
+
+        tail = (stderr_output or "").strip()
+        if tail:
+            tail_lines = tail.splitlines()[-12:]
+            sec = "\n".join(tail_lines)
+        else:
+            sec = "No stderr captured. Check wallpaper-engine.log for details."
+
+        md = Gtk.MessageDialog(
+            transient_for=self,
+            modal=False,
+            message_type=Gtk.MessageType.WARNING,
+            buttons=Gtk.ButtonsType.OK,
+            text="Wallpaper engine stopped",
+        )
+        md.format_secondary_text(sec)
+        md.connect("response", lambda d, _r: d.destroy())
+        md.show_all()
+
     def on_mute_toggled(self, button):
         """Handle mute button toggle"""
+        if getattr(self, "_suppress_volume_callbacks", False):
+            return
+
         is_muted = button.get_active()
 
         # Update settings
-        self.settings["mute"] = is_muted
+        self.settings["mute"] = bool(is_muted)
 
         if is_muted:
-            # Store current volume and set to 0
-            self.last_volume = self.volume_scale.get_value()
-            self.volume_scale.set_value(0)
+            # Store current preferred volume and set UI to 0 without persisting volume=0.
+            current = float(self.settings.get("volume", 100) or 100)
+            if current > 0:
+                self.last_volume = current
+            self._suppress_volume_callbacks = True
+            try:
+                self.volume_scale.set_value(0)
+            finally:
+                self._suppress_volume_callbacks = False
             icon_name = "audio-volume-muted-symbolic"
         else:
             # Restore last volume
-            self.volume_scale.set_value(self.last_volume)
+            restored = float(self.last_volume or float(self.settings.get("volume", 100) or 100))
+            self.settings["volume"] = restored
+            self._suppress_volume_callbacks = True
+            try:
+                self.volume_scale.set_value(restored)
+            finally:
+                self._suppress_volume_callbacks = False
             icon_name = "audio-volume-high-symbolic"
 
         self.volume_icon.set_from_icon_name(icon_name, Gtk.IconSize.SMALL_TOOLBAR)
+        self.save_settings()
 
         if self.engine.current_wallpaper:
-            success, cmd = self._load_wallpaper(self.engine.current_wallpaper)
+            success, cmd = self._load_wallpaper(
+                self.engine.current_wallpaper, skip_workshop_asset_check=True
+            )
             if success and cmd:
                 self.update_command_status(cmd)
 
     def on_volume_changed(self, scale):
         """Handle volume scale changes"""
+        if getattr(self, "_suppress_volume_callbacks", False):
+            return
+
         volume = scale.get_value()
 
         # Update settings
@@ -2325,9 +3313,12 @@ class WallpaperWindow(Gtk.Window):
                 self.mute_button.set_active(False)
 
         self.volume_icon.set_from_icon_name(icon_name, Gtk.IconSize.SMALL_TOOLBAR)
+        self.save_settings()
 
         if self.engine.current_wallpaper:
-            success, cmd = self._load_wallpaper(self.engine.current_wallpaper)
+            success, cmd = self._load_wallpaper(
+                self.engine.current_wallpaper, skip_workshop_asset_check=True
+            )
             if success and cmd:
                 self.update_command_status(cmd)
 
@@ -2343,7 +3334,7 @@ class WallpaperWindow(Gtk.Window):
 
         try:
             if os.path.exists(config_file):
-                with open(config_file) as f:
+                with open(config_file, "r") as f:
                     saved_settings = json.load(f)
                     # Update defaults with saved settings
                     self.settings.update(saved_settings)
@@ -2605,6 +3596,18 @@ class SettingsDialog(Gtk.Dialog):
         paths_grid.attach(desktop_shortcut_label, 0, 2, 1, 1)
         paths_grid.attach(desktop_shortcut_box, 1, 2, 1, 1)
 
+        self.verbose_workshop_warnings_switch = Gtk.Switch()
+        self.verbose_workshop_warnings_switch.set_active(
+            bool(self.current_settings.get("verbose_workshop_warnings", False))
+        )
+        verbose_workshop_label = Gtk.Label(label="Verbose Workshop warnings:", halign=Gtk.Align.END)
+        verbose_workshop_label.set_tooltip_text(
+            "When enabled, selecting wallpapers will show modal dialogs for missing/incomplete Workshop files. "
+            "Default is non-modal status warnings only."
+        )
+        paths_grid.attach(verbose_workshop_label, 0, 3, 1, 1)
+        paths_grid.attach(self.verbose_workshop_warnings_switch, 1, 3, 1, 1)
+
         # Help text
         help_label = Gtk.Label()
         help_label.set_markup(
@@ -2612,7 +3615,7 @@ class SettingsDialog(Gtk.Dialog):
         )
         help_label.set_line_wrap(True)
         help_label.set_max_width_chars(50)
-        paths_grid.attach(help_label, 0, 3, 2, 1)
+        paths_grid.attach(help_label, 0, 4, 2, 1)
 
         # Add Advanced CEF Arguments tab (after paths configuration)
         advanced_grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
@@ -2864,9 +3867,9 @@ class SettingsDialog(Gtk.Dialog):
                 text="Menu shortcut installed",
             )
             dialog.format_secondary_text(
-                f"A launcher was written to:\n{result}\n\n"
+                "A launcher was written to:\n{}\n\n"
                 "It should appear in Activities and the Applications list shortly "
-                "(or after logging out and back in)."
+                "(or after logging out and back in).".format(result)
             )
         else:
             dialog = Gtk.MessageDialog(
@@ -2935,15 +3938,91 @@ class WallpaperContextMenu(Gtk.Menu):
         playlist_item.connect("activate", self.on_playlist_clicked)
         self.append(playlist_item)
 
+        steam_item = Gtk.MenuItem(label="Steam Workshop…")
+        steam_item.connect("activate", self.on_steam_workshop_clicked)
+        self.append(steam_item)
+
+        remove_item = Gtk.MenuItem(label="Remove local files…")
+        remove_item.connect("activate", self.on_remove_local_clicked)
+        self.append(remove_item)
+
         self.show_all()
 
     def on_apply_clicked(self, widget):
-        if self.parent.engine.run_wallpaper(self.wallpaper_id):
+        success, cmd = self.parent._load_wallpaper(self.wallpaper_id)
+        if success:
             self.parent.update_current_wallpaper(self.wallpaper_id)
+            if cmd:
+                self.parent.update_command_status(cmd)
 
     def on_playlist_clicked(self, widget):
         # TODO: Implement playlist management
         pass
+
+    def on_steam_workshop_clicked(self, widget):
+        dlg = SteamWorkshopDialog(self.parent, preset_item_id=self.wallpaper_id)
+        dlg.run()
+        dlg.destroy()
+
+    def on_remove_local_clicked(self, _widget):
+        root = self.parent.engine.wallpaper_dir
+        folder = os.path.join(root or "", str(self.wallpaper_id).strip())
+        if not os.path.isdir(folder):
+            md = Gtk.MessageDialog(
+                transient_for=self.parent,
+                modal=True,
+                message_type=Gtk.MessageType.INFO,
+                buttons=Gtk.ButtonsType.OK,
+                text="Workshop folder not found",
+            )
+            md.format_secondary_text(folder)
+            md.run()
+            md.destroy()
+            return
+
+        md = Gtk.MessageDialog(
+            transient_for=self.parent,
+            modal=True,
+            message_type=Gtk.MessageType.WARNING,
+            buttons=Gtk.ButtonsType.NONE,
+            text="Remove local Workshop files?",
+        )
+        md.format_secondary_text(
+            "This deletes the local folder for this wallpaper:\n"
+            f"{folder}\n\n"
+            "It does not unsubscribe you in Steam. You can re-download later via SteamCMD repair."
+        )
+        md.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        md.add_button("Remove", Gtk.ResponseType.OK)
+        md.add_button("Remove + Repair via SteamCMD…", Gtk.ResponseType.APPLY)
+        md.set_default_response(Gtk.ResponseType.CANCEL)
+        resp = md.run()
+        md.destroy()
+        if resp not in (Gtk.ResponseType.OK, Gtk.ResponseType.APPLY):
+            return
+
+        # If currently running, stop first.
+        if str(self.parent.engine.current_wallpaper or "") == str(self.wallpaper_id):
+            self.parent.engine.stop_wallpaper()
+            self.parent.update_current_wallpaper(None)
+
+        try:
+            shutil.rmtree(folder)
+            self.parent.status_label.set_text(f"Removed local files for {self.wallpaper_id}.")
+        except Exception as e:
+            self.parent.status_label.set_text(f"Failed to remove {self.wallpaper_id}: {e}")
+            return
+
+        # Refresh list so it disappears.
+        try:
+            self.parent.load_wallpapers()
+        except Exception:
+            pass
+
+        if resp == Gtk.ResponseType.APPLY:
+            dlg = SteamWorkshopDialog(self.parent, preset_item_id=self.wallpaper_id)
+            dlg.run()
+            dlg.destroy()
 
 
 def setup_dev_environment():
@@ -3084,6 +4163,16 @@ For more information, visit:
         action="store_true",
         help="Install Freedesktop .desktop shortcut for GNOME/KDE menus (~/.local/share/applications) and exit",
     )
+    dev_group.add_argument(
+        "--self-test",
+        action="store_true",
+        help="Run headless self-test (no GTK main loop) and exit",
+    )
+    dev_group.add_argument(
+        "--e2e-quit-test",
+        action="store_true",
+        help="Run a non-interactive GTK quit test under a display server (opens Settings, then quits) and exit",
+    )
 
     # Performance Options
     perf_group = parser.add_argument_group(
@@ -3155,10 +4244,17 @@ For more information, visit:
     if args.install_desktop:
         ok, result = install_desktop_entry()
         if ok:
-            print(f"Installed menu shortcut:\n  {result}")
+            print("Installed menu shortcut:\n  {}".format(result))
             sys.exit(0)
-        print(f"Failed to install menu shortcut: {result}", file=sys.stderr)
+        print("Failed to install menu shortcut: {}".format(result), file=sys.stderr)
         sys.exit(1)
+
+    if args.self_test:
+        success, error_msg = check_dependencies()
+        if not success:
+            print(error_msg, file=sys.stderr)
+            sys.exit(1)
+        sys.exit(run_self_test())
 
     # Check dependencies first, before any GTK imports
     success, error_msg = check_dependencies()
@@ -3197,6 +4293,25 @@ For more information, visit:
     # Don't connect destroy here - let the window handle it (hide to tray)
     # win.connect("destroy", Gtk.main_quit)
     win.show_all()
+
+    if args.e2e_quit_test:
+        # Non-interactive end-to-end quit test:
+        # - open Settings (modal run loop)
+        # - then request quit while the dialog is open
+        # This catches regressions where nested dialog loops prevent exit.
+        def _open_settings_dialog():
+            try:
+                dlg = SettingsDialog(win)
+                win._settings_dialog = dlg
+                dlg.connect("destroy", lambda *_a: setattr(win, "_settings_dialog", None))
+                GLib.timeout_add(200, lambda: win.on_quit(None) or False)
+                dlg.run()
+                dlg.destroy()
+            except Exception as exc:
+                logging.getLogger("GUI").error(f"e2e quit test failed: {exc}")
+            return False
+
+        GLib.idle_add(_open_settings_dialog)
 
     # Start GTK main loop
     logging.info("Entering GTK main loop")
