@@ -16,6 +16,7 @@
 !.github/**
 !.github/workflows/
 !.github/workflows/**
+!THIRD_PARTY_LICENSES.md
 
 # Bundled upstream engine (git submodule)
 !upstream/

@@ -391,7 +391,14 @@ DEBUG=1 ./linux-wallpaperengine-gtk.py
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+This repository contains multiple components with different licenses:
+
+- **`linux-wallpaperengine-gtk.py` (this GTK frontend)**: **MIT** — see [LICENSE](LICENSE).
+- **`upstream/linux-wallpaperengine` (vendored submodule)**: **GPL-3.0** — see `upstream/linux-wallpaperengine/LICENSE`.
+
+If you distribute builds that bundle the engine with the GUI, ensure your distribution complies with the upstream GPL-3.0 terms.
+
+See [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) for a short summary and links.
 
 ## Acknowledgments
 
