@@ -104,11 +104,9 @@ PY
       -d "${release_json}" "${repo_api}/releases")"
   fi
 
-  release_id="$(python3 - <<'PY' <<<"${release_resp}"
-import json,sys
-print(json.loads(sys.stdin.read())["id"])
-PY
-)"
+  release_id="$(
+    python3 -c 'import json,sys; print(json.loads(sys.stdin.read())["id"])' <<<"${release_resp}"
+  )"
 
   upload() {
     local file="$1"
@@ -134,4 +132,3 @@ case "${RELEASE_HOST}" in
 esac
 
 echo "[assets] done"
-
