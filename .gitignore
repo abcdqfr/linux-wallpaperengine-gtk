@@ -22,6 +22,9 @@
 # Automated smoke tests (byte-compile / no GTK)
 !tests/
 !tests/**
+# Local CI mirror + helpers
+!scripts/
+!scripts/**
 !THIRD_PARTY_LICENSES.md
 
 # Bundled upstream engine (git submodule)

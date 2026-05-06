@@ -261,7 +261,7 @@ def workshop_item_local_status(wallpaper_root, item_id):
     path = os.path.join(folder, fname)
     if os.path.isfile(path):
         return True, f"OK — asset present:\n{path}"
-    return False, f"Missing main asset file:\n{path}\n(expected from project.json \"file\")"
+    return False, f'Missing main asset file:\n{path}\n(expected from project.json "file")'
 
 
 def steamcmd_sidecar_paths():
@@ -369,7 +369,9 @@ class SteamWorkshopDialog(Gtk.Dialog):
 
         grid.attach(Gtk.Label(label="Steam username:", halign=Gtk.Align.END), 0, 2, 1, 1)
         self.user_entry = Gtk.Entry()
-        self.user_entry.set_placeholder_text("For SteamCMD +login — password typed in terminal only")
+        self.user_entry.set_placeholder_text(
+            "For SteamCMD +login — password typed in terminal only"
+        )
         self.user_entry.set_text((parent.settings.get("steam_username") or "").strip())
         grid.attach(self.user_entry, 1, 2, 2, 1)
 
@@ -379,7 +381,9 @@ class SteamWorkshopDialog(Gtk.Dialog):
 
         btn_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         self.verify_btn = Gtk.Button(label="Verify local files")
-        self.verify_btn.set_tooltip_text("Check project.json and main asset file on disk (no network)")
+        self.verify_btn.set_tooltip_text(
+            "Check project.json and main asset file on disk (no network)"
+        )
         self.verify_btn.connect("clicked", self._on_verify_clicked)
         self.bootstrap_btn = Gtk.Button(label="Install SteamCMD")
         self.bootstrap_btn.set_tooltip_text(f"Download Valve SteamCMD into {_STEAMCMD_INSTALL_DIR}")
@@ -393,7 +397,7 @@ class SteamWorkshopDialog(Gtk.Dialog):
         self.show_steam_log_btn = Gtk.Button(label="Show last SteamCMD log")
         self.show_steam_log_btn.set_tooltip_text(
             "Load exit code and transcript tail from the last terminal repair "
-            f"(under ~/.config/linux-wallpaperengine-gtk/)"
+            "(under ~/.config/linux-wallpaperengine-gtk/)"
         )
         self.show_steam_log_btn.connect("clicked", self._on_show_last_steamcmd_log_clicked)
         btn_row.pack_start(self.verify_btn, False, False, 0)
@@ -500,7 +504,9 @@ class SteamWorkshopDialog(Gtk.Dialog):
             )
             self._append_log_line(f"Exit code will be saved to: {exit_f}")
             self._append_log_line(f"Transcript (if script is installed): {transcript}")
-            self._append_log_line('Then click “Show last SteamCMD log” or “Verify local files” again.')
+            self._append_log_line(
+                "Then click “Show last SteamCMD log” or “Verify local files” again."
+            )
             if self.remember_user.get_active():
                 self.main_window.settings["steam_username"] = user
                 self.main_window.save_settings()
@@ -520,7 +526,9 @@ class SteamWorkshopDialog(Gtk.Dialog):
             except OSError as exc:
                 self._append_log_line(f"Could not read exit file: {exc}")
         else:
-            self._append_log_line(f"No exit code file yet ({exit_f}). Run a repair in terminal first.")
+            self._append_log_line(
+                f"No exit code file yet ({exit_f}). Run a repair in terminal first."
+            )
         if os.path.isfile(transcript):
             try:
                 with open(transcript, encoding="utf-8", errors="replace") as fp:
@@ -1547,9 +1555,7 @@ class WallpaperEngine:
         except ProcessLookupError:
             return False
         except PermissionError:
-            self.log.warning(
-                "Cannot verify wallpaper child PID (permission); assuming running"
-            )
+            self.log.warning("Cannot verify wallpaper child PID (permission); assuming running")
             return True
 
     def run_wallpaper(self, wallpaper_id, **options):
@@ -2383,7 +2389,9 @@ class WallpaperWindow(Gtk.Window):
             if cmd:
                 self.update_command_status(cmd)
         else:
-            self.status_label.set_text("Wallpaper not started (cancelled, incomplete Workshop files, or engine error)")
+            self.status_label.set_text(
+                "Wallpaper not started (cancelled, incomplete Workshop files, or engine error)"
+            )
 
     def _workshop_assets_allow_load(self, wallpaper_id):
         """
@@ -2405,8 +2413,7 @@ class WallpaperWindow(Gtk.Window):
             text="Workshop files missing or incomplete",
         )
         md.format_secondary_text(
-            msg
-            + "\n\nThis item probably will not render until Steam re-downloads it "
+            msg + "\n\nThis item probably will not render until Steam re-downloads it "
             "(Wallpaper Engine on your account)."
         )
         md.add_button("_Cancel", Gtk.ResponseType.CANCEL)

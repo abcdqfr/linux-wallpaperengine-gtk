@@ -1,6 +1,8 @@
 ---
 # Canonical Forgejo Actions workflow (Forgejo checks `.forgejo/workflows` first,
 # then falls back to `.github/workflows`).
+#
+# Local smoke (no Actions matrix): `./scripts/ci-local.sh` (venv `.venv-ci/`).
 name: CI
 
 on:
@@ -24,6 +26,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
 
       - name: Install core CI dependencies
         run: |
@@ -35,7 +38,7 @@ jobs:
         run: python -m py_compile linux-wallpaperengine-gtk.py
 
       - name: Pytest smoke tests
-        run: pytest tests/test_smoke.py -v
+        run: pytest tests/smoke_test.py -v
 
       - name: Install extended analysis dependencies
         run: |
@@ -44,8 +47,11 @@ jobs:
       - name: Run Ruff
         run: ruff check linux-wallpaperengine-gtk.py --output-format=github
 
+      # Scope to our sources only — skip bundled `upstream/` engine tree (noise + slow).
       - name: Run Bandit (Security)
-        run: bandit -r . -ll -f json -o bandit-report.json || true
+        run: >-
+          bandit -r linux-wallpaperengine-gtk.py scripts tests
+          -ll -f json -o bandit-report.json || true
         continue-on-error: true
 
       - name: Run Pylint
@@ -81,4 +87,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
       - uses: pre-commit/action@v3.0.0
