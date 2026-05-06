@@ -59,8 +59,9 @@ if [[ ! -r "${TOKEN_FILE}" ]]; then
 fi
 TOKEN="$(cat "${TOKEN_FILE}")"
 
-if [[ -n "$(git status --porcelain || true)" ]]; then
-  echo "working tree not clean; commit/stash first" >&2
+# Require no tracked changes (untracked files are allowed).
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "tracked changes present; commit/stash first" >&2
   exit 2
 fi
 
