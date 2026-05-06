@@ -233,6 +233,77 @@ See README.md for complete installation instructions:
     return True, None
 
 
+def run_self_test():
+    """Headless self-test: no Gtk.main(), no window, no wallpaper subprocess."""
+    cfg_dir = os.path.expanduser("~/.config/linux-wallpaperengine-gtk")
+    cfg_file = os.path.join(cfg_dir, "settings.json")
+    wpe_path = (os.environ.get("LWPEG_SELFTEST_WPE_PATH") or "").strip() or None
+    wallpaper_dir = (os.environ.get("LWPEG_SELFTEST_WALLPAPER_DIR") or "").strip() or None
+    if os.path.isfile(cfg_file):
+        try:
+            with open(cfg_file, encoding="utf-8") as f:
+                s = json.load(f)
+            wpe_path = wpe_path or (s.get("wpe_path") or "").strip() or None
+            wallpaper_dir = wallpaper_dir or (s.get("wallpaper_dir") or "").strip() or None
+        except Exception as e:
+            print(f"[self-test] cannot read settings.json: {e}", file=sys.stderr)
+            return 1
+
+    if not wpe_path:
+        print("[self-test] wpe_path not set in settings.json", file=sys.stderr)
+        return 1
+    if not os.path.isfile(wpe_path):
+        print(f"[self-test] wpe_path does not exist:\n{wpe_path}", file=sys.stderr)
+        return 1
+
+    if not wallpaper_dir:
+        print("[self-test] wallpaper_dir not set in settings.json", file=sys.stderr)
+        return 1
+    if not os.path.isdir(wallpaper_dir):
+        print(f"[self-test] wallpaper_dir does not exist:\n{wallpaper_dir}", file=sys.stderr)
+        return 1
+
+    # Enumerate candidate workshop items (numeric directories).
+    try:
+        entries = sorted(os.listdir(wallpaper_dir))
+    except OSError as e:
+        print(f"[self-test] cannot list wallpaper_dir: {e}", file=sys.stderr)
+        return 1
+
+    ids = [e for e in entries if e.isdigit() and os.path.isdir(os.path.join(wallpaper_dir, e))]
+    if not ids:
+        print(
+            f"[self-test] no numeric workshop item folders found under:\n{wallpaper_dir}",
+            file=sys.stderr,
+        )
+        return 1
+
+    # Perform one local workshop verification: choose the first item that verifies cleanly.
+    verified = None
+    verified_msg = None
+    for item_id in ids[:200]:
+        ok, msg = workshop_item_local_status(wallpaper_dir, item_id)
+        if ok:
+            verified = item_id
+            verified_msg = msg
+            break
+
+    if not verified:
+        ok, msg = workshop_item_local_status(wallpaper_dir, ids[0])
+        print("[self-test] could not find a locally-verifiable item.", file=sys.stderr)
+        print("[self-test] example verification result:", file=sys.stderr)
+        print(msg, file=sys.stderr)
+        return 1
+
+    print("[self-test] OK")
+    print(f"[self-test] wpe_path: {wpe_path}")
+    print(f"[self-test] wallpaper_dir: {wallpaper_dir}")
+    print(f"[self-test] wallpapers: {len(ids)}")
+    print(f"[self-test] verified_item: {verified}")
+    print(verified_msg)
+    return 0
+
+
 # Steam Workshop (Wallpaper Engine) — GUI wraps Valve SteamCMD; auth is their stack.
 STEAM_WALLPAPER_ENGINE_APP_ID = "431960"
 _STEAMCMD_INSTALL_DIR = os.path.join(os.path.expanduser("~"), "steamcmd-local")
@@ -3820,6 +3891,11 @@ For more information, visit:
         action="store_true",
         help="Install Freedesktop .desktop shortcut for GNOME/KDE menus (~/.local/share/applications) and exit",
     )
+    dev_group.add_argument(
+        "--self-test",
+        action="store_true",
+        help="Run headless self-test (no GTK main loop) and exit",
+    )
 
     # Performance Options
     perf_group = parser.add_argument_group(
@@ -3895,6 +3971,13 @@ For more information, visit:
             sys.exit(0)
         print("Failed to install menu shortcut: {}".format(result), file=sys.stderr)
         sys.exit(1)
+
+    if args.self_test:
+        success, error_msg = check_dependencies()
+        if not success:
+            print(error_msg, file=sys.stderr)
+            sys.exit(1)
+        sys.exit(run_self_test())
 
     # Check dependencies first, before any GTK imports
     success, error_msg = check_dependencies()

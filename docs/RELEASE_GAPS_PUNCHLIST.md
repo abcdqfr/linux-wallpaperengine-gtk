@@ -47,7 +47,7 @@ to safely enable automated releases. This file tracks what remains.
 
 ### 2. Coverage gaps (reduce manual testing load)
 
-- [ ] **Headless integration smoke beyond import**
+- [x] **Headless integration smoke beyond import**
   - **Why**: current tests cover syntax + process probe; regressions still show up in practical use (tray, quit, dialogs).
   - **Acceptance options** (pick one):
     - Add a `--self-test` CLI mode that runs without a display:

@@ -151,4 +151,25 @@ jobs:
           python -m pip install PyGObject
           python -c "import gi; gi.require_version('Gtk', '3.0'); gi.require_version('Gdk', '3.0'); gi.require_version('GdkPixbuf', '2.0'); gi.require_version('GLib', '2.0'); from gi.repository import Gtk; print('gtk-ok', Gtk.get_major_version())"
 
+      - name: App self-test (headless)
+        run: |
+          set -euo pipefail
+
+          # Minimal fixture wallpaper_dir + stub "engine" executable.
+          mkdir -p /tmp/lwpeg-fixture/431960/123
+          cat >/tmp/lwpeg-fixture/431960/123/project.json <<'EOF'
+          {"file":"video.mp4"}
+          EOF
+          : >/tmp/lwpeg-fixture/431960/123/video.mp4
+
+          cat >/tmp/lwpeg-stub-engine <<'EOF'
+          #!/usr/bin/env sh
+          exit 0
+          EOF
+          chmod +x /tmp/lwpeg-stub-engine
+
+          export LWPEG_SELFTEST_WPE_PATH=/tmp/lwpeg-stub-engine
+          export LWPEG_SELFTEST_WALLPAPER_DIR=/tmp/lwpeg-fixture/431960
+          python linux-wallpaperengine-gtk.py --self-test
+
       - uses: pre-commit/action@v3.0.0
