@@ -26,8 +26,51 @@ import sys
 import threading
 import time
 
-from wallpaper_process_probe import pid_exists as _pid_exists
-from wallpaper_process_probe import wallpaper_subprocess_running
+try:
+    # Optional: keep a tiny stdlib module for pytest/CI. The app remains runnable as a
+    # single-file script if this module is missing (e.g. when users download only
+    # `linux-wallpaperengine-gtk.py` from a release asset).
+    from wallpaper_process_probe import pid_exists as _pid_exists
+    from wallpaper_process_probe import wallpaper_subprocess_running
+except Exception:
+
+    def _pid_exists(pid: int) -> bool:
+        if pid <= 0:
+            return False
+        if sys.platform.startswith("linux"):
+            return os.path.isdir(os.path.join("/proc", str(pid)))
+        try:
+            os.kill(pid, 0)
+            return True
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return False
+
+    def wallpaper_subprocess_running(process, *, on_kill_permission_denied=None) -> bool:
+        rc = process.poll()
+        if rc is not None:
+            return False
+        pid = process.pid
+        if sys.platform.startswith("linux"):
+            proc_dir = os.path.join("/proc", str(pid))
+            if not os.path.isdir(proc_dir):
+                process.poll()
+                return False
+            rc = process.poll()
+            if rc is not None:
+                return False
+            return True
+        try:
+            os.kill(pid, 0)
+            return True
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            if on_kill_permission_denied:
+                on_kill_permission_denied()
+            return True
+
 
 from gi.repository import Gdk, GdkPixbuf, GLib, Gtk
 
