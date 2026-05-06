@@ -75,3 +75,19 @@ git diff origin/main..HEAD --stat
 ```
 
 **Do not push** until policy allows; keep this document with the branch if you want reviewers to see the same narrative.
+
+---
+
+## E. End-to-end verification (submodule path — executed)
+
+**Environment:** Debian-family host, `linux-wallpaperengine-gtk` checkout with `upstream/linux-wallpaperengine` submodule.
+
+| Step | Result |
+|------|--------|
+| `git submodule update --init --recursive` | Required nested checkouts; **`src/External/json`** initially failed with empty tree / “Unable to find current revision” until **deinit + `rm -rf` + re-init** (documented in README). |
+| Install distro `-dev` packages | CMake failed until **GLEW/GLFW/GLUT** (and related) packages present; follow Almamu README / Ubuntu package list. |
+| `cmake -DCMAKE_BUILD_TYPE=Release ..` | **Downloads CEF** into `build/cef/` (large; needs network). |
+| `cmake --build . -j$(nproc)` | **Succeeded**; binary at `upstream/linux-wallpaperengine/build/output/linux-wallpaperengine`. |
+| `PATH=…/build/output:$PATH` + `./linux-wallpaperengine-gtk.py` | Log shows **`Resolved WPE path: …/linux-wallpaperengine`** (backend discovered). |
+
+**README changes after this run:** Section “Clone and build the full stack” was rewritten to match the above (no shallow clone warning, json recovery, CEF download note, `-j$(nproc)`, PATH from GTK repo root, `command -v` check).

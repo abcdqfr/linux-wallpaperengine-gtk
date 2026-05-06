@@ -121,47 +121,92 @@ git submodule update --init --recursive
 
 This repository vendors **[linux-wallpaperengine](https://github.com/Almamu/linux-wallpaperengine)** as a Git submodule at **`upstream/linux-wallpaperengine`**.
 
-Upstream ships **nested submodules** (shader compilers, headers, etc.). You **must** use **recursive** submodule initialization or CMake will fail with missing dependencies.
+Upstream ships **nested submodules** (CEF build helpers, glslang, `nlohmann/json`, etc.). You **must** initialize submodules **recursively** or CMake fails with missing sources.
 
-### 1. Clone
+**Do not use a shallow clone** (`git clone --depth 1 …`) for this workflow unless you know how to deepen history for submodules; shallow parents often break submodule checkouts.
+
+### 1. Clone and sync submodules
 
 ```bash
 git clone --recurse-submodules https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
 cd linux-wallpaperengine-gtk
 ```
 
-Already cloned without submodules:
+If the repo was cloned without submodules:
 
 ```bash
 git submodule update --init --recursive
 ```
 
+Ensure nested checkouts finished (no leading `-` in status):
+
+```bash
+cd upstream/linux-wallpaperengine
+git submodule status   # every line should start with a space or +, not -
+cd ../..
+```
+
+If `git submodule update` stops with **`Unable to find current revision in submodule path 'src/External/json'`** (or the `json` directory is empty), reset that submodule and retry (tested recovery path):
+
+```bash
+cd upstream/linux-wallpaperengine
+git submodule deinit -f src/External/json
+rm -rf src/External/json .git/modules/src/External/json
+git submodule update --init --recursive
+cd ../..
+```
+
 ### 2. Install build dependencies
 
-Follow the upstream README for your distro (Ubuntu 22.04 / 24.04 package lists, Fedora, etc.):
+Install the compiler stack **before** CMake. Copy the block for your distro from upstream (maintained there):
 
-[Almamu/linux-wallpaperengine — README (build & deps)](https://github.com/Almamu/linux-wallpaperengine/blob/main/README.md)
+[Almamu/linux-wallpaperengine — README (system packages)](https://github.com/Almamu/linux-wallpaperengine/blob/main/README.md)
 
-### 3. Compile the engine
+**Ubuntu 24.04** (reference — run the exact `apt-get install …` line from upstream; names track Ubuntu):
+
+```bash
+sudo apt-get update
+sudo apt-get install build-essential cmake libxrandr-dev libxinerama-dev libxcursor-dev \
+  libxi-dev libgl-dev libglew-dev freeglut3-dev libsdl2-dev liblz4-dev libavcodec-dev \
+  libavformat-dev libavutil-dev libswscale-dev libxxf86vm-dev libglm-dev libglfw3-dev \
+  libmpv-dev mpv libmpv2 libpulse-dev libpulse0 libfftw3-dev
+```
+
+**Debian / other:** use the same package names where available, or install the closest `-dev` equivalents (you need **OpenGL, GLEW, GLFW, GLUT, GLM, SDL2, FFmpeg, LZ4, PulseAudio, FFTW, MPV**, and X11/Wayland headers — CMake will error with the first missing piece).
+
+### 3. Configure and compile the engine
+
+**Network:** the first successful `cmake ..` run **downloads Chromium Embedded Framework (CEF)** into `upstream/linux-wallpaperengine/build/cef/` (large download).
 
 ```bash
 cd upstream/linux-wallpaperengine
 mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build .
+cmake --build . -j"$(nproc)"
 ```
 
-The `linux-wallpaperengine` binary is written to **`build/output/`** (upstream sets CMake `RUNTIME_OUTPUT_DIRECTORY` to `output` inside the build directory).
+The `linux-wallpaperengine` binary is **`upstream/linux-wallpaperengine/build/output/linux-wallpaperengine`** (CMake sets the runtime output directory to `output/` inside `build/`).
 
-### 4. Point the GTK app at the binary
-
-Either:
+Sanity check:
 
 ```bash
-export PATH="$PWD/output:$PATH"
+./output/linux-wallpaperengine --help
 ```
 
-(run from `upstream/linux-wallpaperengine/build`), **or** in **Settings → Paths**, set **Wallpaper Engine Path** to the absolute path of `linux-wallpaperengine` inside `build/output/`.
+### 4. Run the GTK frontend with that binary
+
+From the **GTK repository root** (`linux-wallpaperengine-gtk/`, next to `linux-wallpaperengine-gtk.py`):
+
+```bash
+chmod +x linux-wallpaperengine-gtk.py
+export PATH="$PWD/upstream/linux-wallpaperengine/build/output:$PATH"
+command -v linux-wallpaperengine   # should print .../build/output/linux-wallpaperengine
+./linux-wallpaperengine-gtk.py
+```
+
+The log line **`Resolved WPE path: …/linux-wallpaperengine`** confirms the UI found the backend.
+
+**Alternative:** leave `PATH` alone and set **Settings → Paths → Wallpaper Engine Path** to the absolute path of `build/output/linux-wallpaperengine`.
 
 ### 5. Optional: Applications menu entry
 
@@ -175,7 +220,7 @@ Use **Settings → Paths → Install menu shortcut…**, or:
 
 ### Basic Usage
 
-1. **Launch the application**
+1. **Launch the application** (from a full-stack build, export `PATH` as in [§4](#4-run-the-gtk-frontend-with-that-binary) or configure the engine path in Settings)
 
    ```bash
    ./linux-wallpaperengine-gtk.py
