@@ -136,6 +136,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install --no-install-recommends -y \
             libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0
+          sudo apt-get install --no-install-recommends -y xvfb
 
       - name: PyGObject import smoke (headless)
         run: |
@@ -162,5 +163,11 @@ jobs:
           export LWPEG_SELFTEST_WPE_PATH=/tmp/lwpeg-stub-engine
           export LWPEG_SELFTEST_WALLPAPER_DIR=/tmp/lwpeg-fixture/431960
           python linux-wallpaperengine-gtk.py --self-test
+
+      - name: E2E quit test (Xvfb, no interaction)
+        run: |
+          set -euo pipefail
+          python -m pip install pytest
+          python -m pytest tests/e2e_quit_test.py -q
 
       - uses: pre-commit/action@v3.0.0

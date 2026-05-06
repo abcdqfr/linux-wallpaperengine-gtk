@@ -2221,6 +2221,8 @@ class WallpaperWindow(Gtk.Window):
             "radeonsi_disable_aggressive_opts": True,
             # Steam Workshop helper — optional remembered Steam username (no secrets)
             "steam_username": "",
+            # Workshop verification UX
+            "verbose_workshop_warnings": False,
         }
 
         # Merge initial settings with defaults
@@ -2264,6 +2266,8 @@ class WallpaperWindow(Gtk.Window):
 
     def _setup_ui(self):
         """Setup main UI components"""
+        # Avoid persisting default UI values during startup / programmatic updates.
+        self._suppress_volume_callbacks = True
         # Main container
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         self.add(self.main_box)
@@ -2288,6 +2292,13 @@ class WallpaperWindow(Gtk.Window):
         self.statusbar.set_margin_bottom(2)
         self.command_context = self.statusbar.get_context_id("command")
         self.main_box.pack_end(self.statusbar, False, False, 0)
+
+        # Now that widgets exist, apply saved mute/volume state (callbacks suppressed above).
+        try:
+            self.volume_scale.set_value(float(self.settings.get("volume", 100) or 100))
+            self.mute_button.set_active(bool(self.settings.get("mute", False)))
+        finally:
+            self._suppress_volume_callbacks = False
 
     def _create_toolbar(self):
         """Create the toolbar with controls"""
@@ -2318,9 +2329,14 @@ class WallpaperWindow(Gtk.Window):
         vol_box.pack_start(self.mute_button, False, False, 0)
 
         # Volume slider
-        self.last_volume = 100  # Store last volume before mute
+        self.last_volume = float(self.settings.get("volume", 100) or 100)
         adjustment = Gtk.Adjustment(
-            value=100, lower=0, upper=100, step_increment=1, page_increment=10, page_size=0
+            value=float(self.settings.get("volume", 100) or 100),
+            lower=0,
+            upper=100,
+            step_increment=1,
+            page_increment=10,
+            page_size=0,
         )
         self.volume_scale = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL, adjustment=adjustment)
         self.volume_scale.set_size_request(100, -1)
@@ -2389,107 +2405,137 @@ class WallpaperWindow(Gtk.Window):
         """Load and display wallpaper previews"""
 
         def load_preview(wallpaper_id):
+            if getattr(self, "_quitting", False):
+                return
             wallpaper_path = os.path.join(self.engine.wallpaper_dir, wallpaper_id)
 
             # Skip if directory doesn't exist
             if not os.path.exists(wallpaper_path):
                 return
 
-            preview_path = None
+            candidates: list[str] = []
 
-            # Look for preview image
+            # Prefer preview.* in our expected order.
             for ext in [".gif", ".png", ".jpg", ".webp", ".jpeg"]:
                 path = os.path.join(wallpaper_path, f"preview{ext}")
                 if os.path.exists(path):
-                    preview_path = path
-                    break
+                    candidates.append(path)
 
-            # If no preview.* file found, look for any image file as fallback
-            if not preview_path:
+            # Fall back to any image in the item root.
+            try:
                 for filename in os.listdir(wallpaper_path):
                     if filename.lower().endswith((".gif", ".png", ".jpg", ".jpeg", ".webp")):
-                        preview_path = os.path.join(wallpaper_path, filename)
-                        break
+                        path = os.path.join(wallpaper_path, filename)
+                        if path not in candidates:
+                            candidates.append(path)
+            except OSError:
+                return
 
-            # Skip if no image found at all
-            if not preview_path:
+            if not candidates:
                 return
 
             # Load actual image preview
             def add_preview():
-                try:
-                    box = Gtk.Box()
-                    box.set_margin_start(2)
-                    box.set_margin_end(2)
-                    box.set_margin_top(2)
-                    box.set_margin_bottom(2)
+                # Avoid repeatedly retrying paths that we already know are broken for this session.
+                bad = getattr(self, "_bad_preview_paths", None)
+                if bad is None:
+                    self._bad_preview_paths = set()
+                    bad = self._bad_preview_paths
 
-                    # Handle GIF animations
-                    if preview_path.lower().endswith(".gif"):
-                        try:
-                            animation = GdkPixbuf.PixbufAnimation.new_from_file(preview_path)
-                            if animation.is_static_image():
-                                pixbuf = animation.get_static_image().scale_simple(
-                                    self.preview_width,
-                                    self.preview_height,
-                                    GdkPixbuf.InterpType.BILINEAR,
+                last_exc: Exception | None = None
+                chosen: str | None = None
+
+                for preview_path in candidates:
+                    if preview_path in bad:
+                        continue
+                    try:
+                        box = Gtk.Box()
+                        box.set_margin_start(2)
+                        box.set_margin_end(2)
+                        box.set_margin_top(2)
+                        box.set_margin_bottom(2)
+
+                        # Handle GIF animations
+                        if preview_path.lower().endswith(".gif"):
+                            try:
+                                animation = GdkPixbuf.PixbufAnimation.new_from_file(preview_path)
+                                if animation.is_static_image():
+                                    pixbuf = animation.get_static_image().scale_simple(
+                                        self.preview_width,
+                                        self.preview_height,
+                                        GdkPixbuf.InterpType.BILINEAR,
+                                    )
+                                    image = Gtk.Image.new_from_pixbuf(pixbuf)
+                                else:
+                                    # Animated GIF
+                                    iter = animation.get_iter(None)
+                                    first_frame = iter.get_pixbuf()
+                                    scale_x = self.preview_width / first_frame.get_width()
+                                    scale_y = self.preview_height / first_frame.get_height()
+                                    scale = min(scale_x, scale_y)
+
+                                    frames = []
+                                    iter = animation.get_iter(None)
+                                    while True:
+                                        pixbuf = iter.get_pixbuf()
+                                        new_width = int(pixbuf.get_width() * scale)
+                                        new_height = int(pixbuf.get_height() * scale)
+                                        scaled_frame = pixbuf.scale_simple(
+                                            new_width, new_height, GdkPixbuf.InterpType.BILINEAR
+                                        )
+                                        frames.append(scaled_frame)
+                                        if not iter.advance():
+                                            break
+
+                                    image = Gtk.Image()
+                                    current_frame = 0
+
+                                    def update_frame(_frames=frames, _image=image):
+                                        nonlocal current_frame
+                                        if len(_frames) > 0:
+                                            _image.set_from_pixbuf(_frames[current_frame])
+                                            current_frame = (current_frame + 1) % len(_frames)
+                                        return True
+
+                                    GLib.timeout_add(50, update_frame)
+                            except Exception:
+                                # Fallback to static image
+                                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                                    preview_path, self.preview_width, self.preview_height, True
                                 )
                                 image = Gtk.Image.new_from_pixbuf(pixbuf)
-                            else:
-                                # Animated GIF
-                                iter = animation.get_iter(None)
-                                first_frame = iter.get_pixbuf()
-                                scale_x = self.preview_width / first_frame.get_width()
-                                scale_y = self.preview_height / first_frame.get_height()
-                                scale = min(scale_x, scale_y)
-
-                                frames = []
-                                iter = animation.get_iter(None)
-                                while True:
-                                    pixbuf = iter.get_pixbuf()
-                                    new_width = int(pixbuf.get_width() * scale)
-                                    new_height = int(pixbuf.get_height() * scale)
-                                    scaled_frame = pixbuf.scale_simple(
-                                        new_width, new_height, GdkPixbuf.InterpType.BILINEAR
-                                    )
-                                    frames.append(scaled_frame)
-                                    if not iter.advance():
-                                        break
-
-                                image = Gtk.Image()
-                                current_frame = 0
-
-                                def update_frame():
-                                    nonlocal current_frame
-                                    if len(frames) > 0:
-                                        image.set_from_pixbuf(frames[current_frame])
-                                        current_frame = (current_frame + 1) % len(frames)
-                                    return True
-
-                                GLib.timeout_add(50, update_frame)
-                        except Exception:
-                            # Fallback to static image
+                        else:
+                            # Static images
                             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                                 preview_path, self.preview_width, self.preview_height, True
                             )
                             image = Gtk.Image.new_from_pixbuf(pixbuf)
-                    else:
-                        # Static images
-                        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                            preview_path, self.preview_width, self.preview_height, True
+
+                        box.add(image)
+                        box.wallpaper_id = wallpaper_id
+                        self.flowbox.add(box)
+                        box.show_all()
+
+                        if wallpaper_id == self.engine.current_wallpaper:
+                            self.highlight_current_wallpaper(box)
+
+                        chosen = preview_path
+                        break
+                    except Exception as e:
+                        last_exc = e
+                        bad.add(preview_path)
+                        continue
+
+                if chosen is None:
+                    # One line per wallpaper per session (avoid log spam on every refresh).
+                    if not hasattr(self, "_bad_preview_wallpapers"):
+                        self._bad_preview_wallpapers = set()
+                    if wallpaper_id not in self._bad_preview_wallpapers:
+                        self._bad_preview_wallpapers.add(wallpaper_id)
+                        tail = f": {last_exc}" if last_exc else ""
+                        self.log.error(
+                            f"Failed to load any preview for {wallpaper_id} (candidates={len(candidates)}){tail}"
                         )
-                        image = Gtk.Image.new_from_pixbuf(pixbuf)
-
-                    box.add(image)
-                    box.wallpaper_id = wallpaper_id
-                    self.flowbox.add(box)
-                    box.show_all()
-
-                    if wallpaper_id == self.engine.current_wallpaper:
-                        self.highlight_current_wallpaper(box)
-
-                except Exception as e:
-                    self.log.error(f"Failed to load preview {preview_path}: {e}")
 
             GLib.idle_add(add_preview)
 
@@ -2500,14 +2546,29 @@ class WallpaperWindow(Gtk.Window):
         wallpapers = self.engine.get_wallpaper_list()
         self.status_label.set_text(f"Loading {len(wallpapers)} wallpapers...")
 
+        # Track GLib timeout sources so we can cancel during quit/reload.
+        if hasattr(self, "_preview_timeout_ids"):
+            try:
+                for sid in self._preview_timeout_ids or []:
+                    try:
+                        GLib.source_remove(sid)
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+        self._preview_timeout_ids = []
+
         for i, wallpaper_id in enumerate(wallpapers):
 
             def load_with_delay(wid):
+                if getattr(self, "_quitting", False):
+                    return
                 thread = threading.Thread(target=load_preview, args=(wid,))
                 thread.daemon = True
                 thread.start()
 
-            GLib.timeout_add(i * 5, lambda wid=wallpaper_id: load_with_delay(wid) or False)
+            sid = GLib.timeout_add(i * 5, lambda wid=wallpaper_id: load_with_delay(wid) or False)
+            self._preview_timeout_ids.append(sid)
 
     def reload_wallpapers(self):
         """Reload wallpapers with current preview size"""
@@ -2574,6 +2635,15 @@ class WallpaperWindow(Gtk.Window):
             return True
         ok, msg = workshop_item_local_status(root, wallpaper_id)
         if ok:
+            return True
+
+        # Default behavior: do not nag with modal dialogs. This verifier can be a false-positive
+        # for items that still render fine; users can opt-in to verbose warnings.
+        if not bool(self.settings.get("verbose_workshop_warnings", False)):
+            self.log.warning(f"Workshop verify warning for {wallpaper_id}: {msg}")
+            self.status_label.set_text(
+                f"Workshop verify warning for {wallpaper_id} (enable verbose warnings in Settings for details)"
+            )
             return True
 
         md = Gtk.MessageDialog(
@@ -2736,7 +2806,18 @@ class WallpaperWindow(Gtk.Window):
     def on_settings_clicked(self, button):
         """Open settings dialog"""
         dialog = SettingsDialog(self)
+        # Keep a handle so quitting can break modal dialog loops.
+        self._settings_dialog = dialog
+        dialog.connect("destroy", lambda *_a: setattr(self, "_settings_dialog", None))
         response = dialog.run()
+
+        # If we initiated quit while the dialog was open, do not attempt to apply settings.
+        if getattr(self, "_quitting", False):
+            try:
+                dialog.destroy()
+            except Exception:
+                pass
+            return
 
         if response != Gtk.ResponseType.OK:
             dialog.destroy()  # Destroy dialog first to prevent GTK warnings
@@ -2762,6 +2843,7 @@ class WallpaperWindow(Gtk.Window):
                 "enable_ld_preload": dialog.ld_preload_switch.get_active(),
                 "enable_containerization": dialog.containerization_switch.get_active(),
                 "enable_gnome_compat": dialog.gnome_compat_switch.get_active(),
+                "verbose_workshop_warnings": dialog.verbose_workshop_warnings_switch.get_active(),
                 # radeonsi driver workarounds
                 "enable_radeonsi_workarounds": dialog.radeonsi_workarounds_switch.get_active(),
                 "radeonsi_sync_to_vblank": dialog.radeonsi_sync_switch.get_active(),
@@ -2809,6 +2891,7 @@ class WallpaperWindow(Gtk.Window):
             self.log.error(f"Failed to apply settings: {e}")
         finally:
             dialog.destroy()  # Destroy dialog
+            self._settings_dialog = None
 
     def apply_settings(self, settings):
         """Apply settings to current and future wallpapers"""
@@ -3011,6 +3094,27 @@ class WallpaperWindow(Gtk.Window):
             except Exception:
                 pass
 
+    def _drain_mainloops_step(self):
+        # Graceful, repeated attempts to unwind nested Gtk.Dialog.run() loops.
+        # Returns True to keep trying, False to stop.
+        try:
+            lvl = Gtk.main_level()
+        except Exception:
+            try:
+                Gtk.main_quit()
+            except Exception:
+                pass
+            return False
+
+        if lvl <= 0:
+            return False
+
+        try:
+            Gtk.main_quit()
+        except Exception:
+            return False
+        return True
+
     def _quit_now(self):
         # Idempotent: multiple quit triggers should be safe.
         if getattr(self, "_quitting", False):
@@ -3020,26 +3124,87 @@ class WallpaperWindow(Gtk.Window):
         self.log.info("Quitting application...")
         self._quitting = True
 
+        # Start draining Gtk main loops repeatedly while we shut down.
+        # This is intentionally gentle: no hard-exit, just ensure Gtk.main() returns.
+        try:
+            GLib.timeout_add(50, self._drain_mainloops_step)
+        except Exception:
+            pass
+
+        # Cancel any pending preview-load timeouts so they don't keep the main loop busy.
+        try:
+            for sid in getattr(self, "_preview_timeout_ids", []) or []:
+                try:
+                    GLib.source_remove(sid)
+                except Exception:
+                    pass
+            self._preview_timeout_ids = []
+        except Exception:
+            pass
+
+        # Break any modal dialog loops (e.g. Settings) that would otherwise hang quit.
+        try:
+            dlg = getattr(self, "_settings_dialog", None)
+            if dlg:
+                try:
+                    dlg.response(Gtk.ResponseType.CANCEL)
+                except Exception:
+                    pass
+                try:
+                    dlg.destroy()
+                except Exception:
+                    pass
+                self._settings_dialog = None
+        except Exception:
+            pass
+
         # Stop wallpaper before quitting (best-effort).
         try:
             self.engine.stop_wallpaper()
         except Exception as e:
             self.log.debug(f"stop_wallpaper during quit failed: {e}")
 
-        # Remove tray icon if it exists so the DE doesn't keep a stale item.
-        try:
-            if hasattr(self, "tray_icon") and self.tray_icon:
-                self.tray_icon.set_visible(False)
-        except Exception:
-            pass
+        # Graceful staged shutdown:
+        # - Withdraw tray icon first
+        # - Let the main loop spin briefly so the DE observes the change
+        # - Then destroy windows and quit the GTK main loop(s)
+        def _destroy_windows_and_quit():
+            try:
+                for w in Gtk.Window.list_toplevels() or []:
+                    try:
+                        w.destroy()
+                    except Exception:
+                        pass
+            except Exception:
+                pass
 
-        # Destroy the window if it's still around.
-        try:
-            self.destroy()
-        except Exception:
-            pass
+            try:
+                self.destroy()
+            except Exception:
+                pass
 
-        self._quit_main_loops()
+            self._quit_main_loops()
+            return False
+
+        def _withdraw_tray_then_destroy():
+            try:
+                if hasattr(self, "tray_icon") and self.tray_icon:
+                    if getattr(self, "tray_icon_type", "") == "appindicator":
+                        try:
+                            self.tray_icon.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
+                        except Exception:
+                            pass
+                    else:
+                        self.tray_icon.set_visible(False)
+            except Exception:
+                pass
+
+            # Delay teardown slightly to avoid “stuck icon” artifacts.
+            GLib.timeout_add(200, _destroy_windows_and_quit)
+            return False
+
+        # Withdraw tray now, then proceed to teardown.
+        GLib.idle_add(_withdraw_tray_then_destroy)
         return False
 
     def _on_engine_wallpaper_exit(self, wallpaper_id, exit_status, stderr_output):
@@ -3074,10 +3239,13 @@ class WallpaperWindow(Gtk.Window):
 
     def on_mute_toggled(self, button):
         """Handle mute button toggle"""
+        if getattr(self, "_suppress_volume_callbacks", False):
+            return
+
         is_muted = button.get_active()
 
         # Update settings
-        self.settings["mute"] = is_muted
+        self.settings["mute"] = bool(is_muted)
 
         if is_muted:
             # Store current volume and set to 0
@@ -3090,6 +3258,7 @@ class WallpaperWindow(Gtk.Window):
             icon_name = "audio-volume-high-symbolic"
 
         self.volume_icon.set_from_icon_name(icon_name, Gtk.IconSize.SMALL_TOOLBAR)
+        self.save_settings()
 
         if self.engine.current_wallpaper:
             success, cmd = self._load_wallpaper(
@@ -3100,6 +3269,9 @@ class WallpaperWindow(Gtk.Window):
 
     def on_volume_changed(self, scale):
         """Handle volume scale changes"""
+        if getattr(self, "_suppress_volume_callbacks", False):
+            return
+
         volume = scale.get_value()
 
         # Update settings
@@ -3122,6 +3294,7 @@ class WallpaperWindow(Gtk.Window):
                 self.mute_button.set_active(False)
 
         self.volume_icon.set_from_icon_name(icon_name, Gtk.IconSize.SMALL_TOOLBAR)
+        self.save_settings()
 
         if self.engine.current_wallpaper:
             success, cmd = self._load_wallpaper(
@@ -3404,6 +3577,18 @@ class SettingsDialog(Gtk.Dialog):
         paths_grid.attach(desktop_shortcut_label, 0, 2, 1, 1)
         paths_grid.attach(desktop_shortcut_box, 1, 2, 1, 1)
 
+        self.verbose_workshop_warnings_switch = Gtk.Switch()
+        self.verbose_workshop_warnings_switch.set_active(
+            bool(self.current_settings.get("verbose_workshop_warnings", False))
+        )
+        verbose_workshop_label = Gtk.Label(label="Verbose Workshop warnings:", halign=Gtk.Align.END)
+        verbose_workshop_label.set_tooltip_text(
+            "When enabled, selecting wallpapers will show modal dialogs for missing/incomplete Workshop files. "
+            "Default is non-modal status warnings only."
+        )
+        paths_grid.attach(verbose_workshop_label, 0, 3, 1, 1)
+        paths_grid.attach(self.verbose_workshop_warnings_switch, 1, 3, 1, 1)
+
         # Help text
         help_label = Gtk.Label()
         help_label.set_markup(
@@ -3411,7 +3596,7 @@ class SettingsDialog(Gtk.Dialog):
         )
         help_label.set_line_wrap(True)
         help_label.set_max_width_chars(50)
-        paths_grid.attach(help_label, 0, 3, 2, 1)
+        paths_grid.attach(help_label, 0, 4, 2, 1)
 
         # Add Advanced CEF Arguments tab (after paths configuration)
         advanced_grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
@@ -3964,6 +4149,11 @@ For more information, visit:
         action="store_true",
         help="Run headless self-test (no GTK main loop) and exit",
     )
+    dev_group.add_argument(
+        "--e2e-quit-test",
+        action="store_true",
+        help="Run a non-interactive GTK quit test under a display server (opens Settings, then quits) and exit",
+    )
 
     # Performance Options
     perf_group = parser.add_argument_group(
@@ -4084,6 +4274,25 @@ For more information, visit:
     # Don't connect destroy here - let the window handle it (hide to tray)
     # win.connect("destroy", Gtk.main_quit)
     win.show_all()
+
+    if args.e2e_quit_test:
+        # Non-interactive end-to-end quit test:
+        # - open Settings (modal run loop)
+        # - then request quit while the dialog is open
+        # This catches regressions where nested dialog loops prevent exit.
+        def _open_settings_dialog():
+            try:
+                dlg = SettingsDialog(win)
+                win._settings_dialog = dlg
+                dlg.connect("destroy", lambda *_a: setattr(win, "_settings_dialog", None))
+                GLib.timeout_add(200, lambda: win.on_quit(None) or False)
+                dlg.run()
+                dlg.destroy()
+            except Exception as exc:
+                logging.getLogger("GUI").error(f"e2e quit test failed: {exc}")
+            return False
+
+        GLib.idle_add(_open_settings_dialog)
 
     # Start GTK main loop
     logging.info("Entering GTK main loop")

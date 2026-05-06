@@ -44,6 +44,8 @@ scripts/redownload-workshop-item.sh
 # In-repo documentation (reviews, internal notes)
 !docs/
 !docs/**
+docs/dev/
+docs/dev/**
 
 # Python artifacts (if any)
 __pycache__/
