@@ -60,13 +60,13 @@ jobs:
 
       - name: Release (tag + Forgejo release + assets)
         env:
-          FORGEJO_TOKEN: ${{ secrets.FORGEJO_TOKEN }}
+          FORGEJO_TOKEN: ${{ secrets.FORGEJO_RELEASE_TOKEN }}
           FORGEJO_BASE_URL: http://127.0.0.1:3080
           FORGEJO_OWNER: abcdqfr
           FORGEJO_REPO: linux-wallpaperengine-gtk
         run: |
           if [ -z "${FORGEJO_TOKEN}" ]; then
-            echo "::error::Missing Forgejo secret FORGEJO_TOKEN"
+            echo "::error::Missing Forgejo secret FORGEJO_RELEASE_TOKEN"
             exit 2
           fi
           if [ -n "${{ inputs.version }}" ]; then
@@ -74,4 +74,3 @@ jobs:
           else
             ./scripts/release.sh
           fi
-

@@ -81,4 +81,3 @@ to safely enable automated releases. This file tracks what remains.
 2. Add `release.yml` workflow that is manual-dispatch and depends on green CI.
 3. Add `--self-test` mode (no GUI) and run it in CI.
 4. Only then consider auto-release (still recommend manual dispatch).
-
