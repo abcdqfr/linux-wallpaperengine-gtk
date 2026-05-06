@@ -2086,6 +2086,8 @@ class WallpaperWindow(Gtk.Window):
 
         # Connect delete-event instead of destroy to intercept close
         self.connect("delete-event", self.on_destroy)
+        # Also observe actual destroy, so a programmatic destroy still terminates cleanly.
+        self.connect("destroy", self._on_window_destroyed)
 
         # Add CSS provider for styling
         css_provider = Gtk.CssProvider()
@@ -2821,14 +2823,9 @@ class WallpaperWindow(Gtk.Window):
         self.update_current_wallpaper(None)
 
     def on_quit(self, widget):
-        """Quit the application"""
-        self.log.info("Quitting application...")
-        # Stop wallpaper before quitting
-        self.engine.stop_wallpaper()
-        # Set flag to allow actual quit
-        self._quitting = True
-        self.destroy()
-        Gtk.main_quit()
+        """Quit the application (robust even with nested dialog loops)."""
+        # Always schedule on the GTK main loop.
+        GLib.idle_add(self._quit_now)
 
     def on_destroy(self, window, event=None):
         """Handle window close - hide to tray instead of quitting"""
@@ -2843,6 +2840,55 @@ class WallpaperWindow(Gtk.Window):
             self.hide()
             # Return True to prevent default destroy behavior
             return True
+
+    def _on_window_destroyed(self, *_args):
+        # If something destroyed the window (or we destroyed it ourselves), ensure the
+        # main loop(s) are told to exit. This prevents “blank window / stuck tray icon”
+        # states when a nested Gtk.Dialog.run() loop is active.
+        if hasattr(self, "_quitting") and self._quitting:
+            self._quit_main_loops()
+
+    def _quit_main_loops(self):
+        try:
+            while Gtk.main_level() > 0:
+                Gtk.main_quit()
+        except Exception:
+            # If Gtk.main_level isn't available for some reason, fall back to one quit.
+            try:
+                Gtk.main_quit()
+            except Exception:
+                pass
+
+    def _quit_now(self):
+        # Idempotent: multiple quit triggers should be safe.
+        if getattr(self, "_quitting", False):
+            self._quit_main_loops()
+            return False
+
+        self.log.info("Quitting application...")
+        self._quitting = True
+
+        # Stop wallpaper before quitting (best-effort).
+        try:
+            self.engine.stop_wallpaper()
+        except Exception as e:
+            self.log.debug(f"stop_wallpaper during quit failed: {e}")
+
+        # Remove tray icon if it exists so the DE doesn't keep a stale item.
+        try:
+            if hasattr(self, "tray_icon") and self.tray_icon:
+                self.tray_icon.set_visible(False)
+        except Exception:
+            pass
+
+        # Destroy the window if it's still around.
+        try:
+            self.destroy()
+        except Exception:
+            pass
+
+        self._quit_main_loops()
+        return False
 
     def on_mute_toggled(self, button):
         """Handle mute button toggle"""
