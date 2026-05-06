@@ -1,0 +1,15 @@
+---
+description: Commit message convention for automated version bumps
+alwaysApply: true
+---
+
+# Commit messages (versioning)
+
+Use Conventional Commit style: `<type>[:! ]<summary>`.
+
+- `feat:` ⇒ minor bump
+- `fix:` ⇒ patch bump
+- `feat!:` / `fix!:` or footer `BREAKING CHANGE:` ⇒ major bump
+- Prefer: `chore:`, `ci:`, `build:`, `test:`, `docs:` for non-bump work
+
+No filler. One clear intent per commit.

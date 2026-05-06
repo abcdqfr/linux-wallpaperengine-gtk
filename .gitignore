@@ -29,6 +29,10 @@
 !scripts/**
 !THIRD_PARTY_LICENSES.md
 
+# Cursor project rules (keep tiny; alwaysApply rules should stay lean)
+!.cursor/
+!.cursor/**
+
 # Bundled upstream engine (git submodule)
 !upstream/
 !upstream/**
