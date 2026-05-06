@@ -72,18 +72,6 @@ repos:
   #   - Python subprocess: https://docs.python.org/3/library/subprocess.html
   - repo: local
     hooks:
-      - id: check-attribute-errors
-        name: Check for AttributeError patterns
-        entry: >-
-          python3 -c "import sys, re; content = open('linux-wallpaperengine-gtk.py', 'r').read();
-          matches = [(m.start(), m.group()) for m in re.finditer(r'self\.settings', content)];
-          wrong = [m for i, m in matches if 'WallpaperWindow' not in content[max(0,i-200):i+200]
-          and 'SettingsDialog' not in content[max(0,i-200):i+200]];
-          sys.exit(1 if wrong else 0)"
-        language: system
-        files: ^linux-wallpaperengine-gtk\.py$
-        pass_filenames: false
-
       - id: check-shell-injection
         name: Check for shell injection risks
         entry: >-

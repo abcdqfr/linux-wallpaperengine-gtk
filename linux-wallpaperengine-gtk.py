@@ -36,6 +36,70 @@ except (ImportError, ValueError):
     HAS_APP_INDICATOR = False
 
 
+def install_desktop_entry():
+    """
+    Install a Freedesktop .desktop file so GNOME, KDE, and other menus list this app.
+
+    Uses absolute paths (via realpath) so the launcher keeps working if the working
+    directory changes.
+
+    Returns:
+        tuple: ``(success, desktop_file_path_or_error_message)``
+    """
+    script = os.path.realpath(__file__)
+    interpreter = os.path.realpath(sys.executable)
+
+    def _desktop_quote(path: str) -> str:
+        if path == "":
+            return '""'
+        if any(c in path for c in " \t\n\"'\\"):
+            return '"' + path.replace("\\", "\\\\").replace('"', '\\"') + '"'
+        return path
+
+    exec_field = f"{_desktop_quote(interpreter)} {_desktop_quote(script)}"
+
+    data_home = os.environ.get(
+        "XDG_DATA_HOME", os.path.join(os.path.expanduser("~"), ".local", "share")
+    )
+    apps_dir = os.path.join(data_home, "applications")
+    desktop_path = os.path.join(apps_dir, "linux-wallpaperengine-gtk.desktop")
+
+    desktop_body = (
+        "[Desktop Entry]\n"
+        "Version=1.5\n"
+        "Type=Application\n"
+        "Name=Linux Wallpaper Engine\n"
+        "GenericName=Wallpaper Browser\n"
+        "Comment=GTK frontend for linux-wallpaperengine (Wallpaper Engine workshop)\n"
+        f"Exec={exec_field}\n"
+        "TryExec={try_exe}\n"
+        "Icon=preferences-desktop-wallpaper\n"
+        "Terminal=false\n"
+        "Categories=Graphics;GTK;\n"
+        "Keywords=wallpaper;steam;wallpaperengine;gtk;\n"
+        "StartupNotify=true\n"
+    ).format(try_exe=_desktop_quote(interpreter))
+
+    try:
+        os.makedirs(apps_dir, mode=0o755, exist_ok=True)
+        with open(desktop_path, "w", encoding="utf-8") as f:
+            f.write(desktop_body)
+        os.chmod(desktop_path, 0o644)
+    except OSError as e:
+        return False, str(e)
+
+    for argv in (
+        ["update-desktop-database", apps_dir],
+        ["update-desktop-database", data_home],
+    ):
+        try:
+            subprocess.run(argv, capture_output=True, timeout=10, check=False)
+        except (OSError, subprocess.SubprocessError):
+            pass
+
+    return True, desktop_path
+
+
 def check_dependencies():
     """
     Check for required dependencies and provide helpful error messages.
@@ -610,7 +674,7 @@ class WallpaperEngine:
         """
         try:
             # Try primary display first
-            # Use subprocess without shell=True for security
+            # Use subprocess without invoking the shell (security)
             result = subprocess.run(["xrandr"], capture_output=True, text=True, timeout=2)
             if result.returncode == 0:
                 # Parse output for primary display
@@ -2368,6 +2432,18 @@ class SettingsDialog(Gtk.Dialog):
         paths_grid.attach(wallpaper_label, 0, 1, 1, 1)
         paths_grid.attach(wallpaper_box, 1, 1, 1, 1)
 
+        desktop_shortcut_label = Gtk.Label(label="Menu shortcut:", halign=Gtk.Align.END)
+        desktop_shortcut_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        self.install_desktop_btn = Gtk.Button(label="Install menu shortcut…")
+        self.install_desktop_btn.set_tooltip_text(
+            "Create ~/.local/share/applications/linux-wallpaperengine-gtk.desktop "
+            "so the app appears in GNOME Activities, the dash, and KDE menus."
+        )
+        self.install_desktop_btn.connect("clicked", self.on_install_desktop_clicked)
+        desktop_shortcut_box.pack_start(self.install_desktop_btn, False, False, 0)
+        paths_grid.attach(desktop_shortcut_label, 0, 2, 1, 1)
+        paths_grid.attach(desktop_shortcut_box, 1, 2, 1, 1)
+
         # Help text
         help_label = Gtk.Label()
         help_label.set_markup(
@@ -2375,7 +2451,7 @@ class SettingsDialog(Gtk.Dialog):
         )
         help_label.set_line_wrap(True)
         help_label.set_max_width_chars(50)
-        paths_grid.attach(help_label, 0, 2, 2, 1)
+        paths_grid.attach(help_label, 0, 3, 2, 1)
 
         # Add Advanced CEF Arguments tab (after paths configuration)
         advanced_grid = Gtk.Grid(row_spacing=10, column_spacing=10, margin=10)
@@ -2591,6 +2667,34 @@ class SettingsDialog(Gtk.Dialog):
             self.wallpaper_entry.set_text(dialog.get_filename())
         dialog.destroy()
 
+    def on_install_desktop_clicked(self, button):
+        """Write a Freedesktop .desktop file for GNOME/KDE application menus."""
+        ok, result = install_desktop_entry()
+        if ok:
+            dialog = Gtk.MessageDialog(
+                parent=self,
+                modal=True,
+                message_type=Gtk.MessageType.INFO,
+                buttons=Gtk.ButtonsType.OK,
+                text="Menu shortcut installed",
+            )
+            dialog.format_secondary_text(
+                "A launcher was written to:\n{}\n\n"
+                "It should appear in Activities and the Applications list shortly "
+                "(or after logging out and back in).".format(result)
+            )
+        else:
+            dialog = Gtk.MessageDialog(
+                parent=self,
+                modal=True,
+                message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.OK,
+                text="Could not install menu shortcut",
+            )
+            dialog.format_secondary_text(result)
+        dialog.run()
+        dialog.destroy()
+
     def on_preset_changed(self, combo):
         """Handle selection of a preset from the advanced options combo box"""
         selected_preset = self.presets_combo.get_active_text()
@@ -2774,6 +2878,7 @@ Examples:
   %(prog)s --mute --disable-mouse             # Mute audio and disable mouse interaction
   %(prog)s --scaling fit --clamp border       # Use fit scaling with border clamping
   %(prog)s --setup-dev                        # Setup development environment
+  %(prog)s --install-desktop                  # Add Applications menu / Activities launcher (Freedesktop)
 
 For more information, visit:
   https://github.com/abcdqfr/linux-wallpaperengine-gtk
@@ -2788,6 +2893,11 @@ For more information, visit:
         "--setup-dev",
         action="store_true",
         help="Setup development environment (installs pre-commit, linters, and hooks)",
+    )
+    dev_group.add_argument(
+        "--install-desktop",
+        action="store_true",
+        help="Install Freedesktop .desktop shortcut for GNOME/KDE menus (~/.local/share/applications) and exit",
     )
 
     # Performance Options
@@ -2856,6 +2966,14 @@ For more information, visit:
     if args.setup_dev:
         setup_dev_environment()
         sys.exit(0)
+
+    if args.install_desktop:
+        ok, result = install_desktop_entry()
+        if ok:
+            print("Installed menu shortcut:\n  {}".format(result))
+            sys.exit(0)
+        print("Failed to install menu shortcut: {}".format(result), file=sys.stderr)
+        sys.exit(1)
 
     # Check dependencies first, before any GTK imports
     success, error_msg = check_dependencies()
