@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = ROOT / "linux-wallpaperengine-gtk.py"
 
@@ -81,4 +80,3 @@ def test_e2e_quit_with_settings_open_under_xvfb(tmp_path: Path):
         env=env,
         check=True,
     )
-

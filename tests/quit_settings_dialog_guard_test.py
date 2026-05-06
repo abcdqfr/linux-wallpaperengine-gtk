@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import ast
-import pathlib
+from pathlib import Path
 
-
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[1]
 MAIN = ROOT / "linux-wallpaperengine-gtk.py"
 
 
@@ -70,4 +69,3 @@ def test_opening_settings_tracks_dialog_for_quit():
         "Expected WallpaperWindow.on_settings_clicked() to assign self._settings_dialog "
         "so quit can break the modal loop."
     )
-

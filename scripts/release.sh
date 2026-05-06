@@ -212,15 +212,25 @@ tar -czf "dist/source-minimal.tar.gz" \
 sha256sum dist/* > dist/SHA256SUMS.txt
 
 # Create release
-release_json="$(python3 - <<PY
+# Use environment variables to avoid bash expanding Python syntax (and to avoid JSON quoting bugs).
+release_json="$(
+  BODY="${body}" TAG="${tag}" python3 - <<'PY'
 import json
-print(json.dumps({
-  "tag_name": "${tag}",
-  "name": "${tag}",
-  "body": ${body!r},
-  "draft": False,
-  "prerelease": False
-}))
+import os
+
+tag = os.environ["TAG"]
+body = os.environ["BODY"]
+print(
+    json.dumps(
+        {
+            "tag_name": tag,
+            "name": tag,
+            "body": body,
+            "draft": False,
+            "prerelease": False,
+        }
+    )
+)
 PY
 )"
 

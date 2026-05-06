@@ -2295,8 +2295,15 @@ class WallpaperWindow(Gtk.Window):
 
         # Now that widgets exist, apply saved mute/volume state (callbacks suppressed above).
         try:
-            self.volume_scale.set_value(float(self.settings.get("volume", 100) or 100))
-            self.mute_button.set_active(bool(self.settings.get("mute", False)))
+            preferred = float(self.settings.get("volume", 100) or 100)
+            muted = bool(self.settings.get("mute", False))
+
+            self.last_volume = preferred
+            self.volume_scale.set_value(preferred)
+            self.mute_button.set_active(muted)
+            if muted:
+                # UI shows muted as 0, but we keep preferred volume persisted.
+                self.volume_scale.set_value(0)
         finally:
             self._suppress_volume_callbacks = False
 
@@ -3248,13 +3255,25 @@ class WallpaperWindow(Gtk.Window):
         self.settings["mute"] = bool(is_muted)
 
         if is_muted:
-            # Store current volume and set to 0
-            self.last_volume = self.volume_scale.get_value()
-            self.volume_scale.set_value(0)
+            # Store current preferred volume and set UI to 0 without persisting volume=0.
+            current = float(self.settings.get("volume", 100) or 100)
+            if current > 0:
+                self.last_volume = current
+            self._suppress_volume_callbacks = True
+            try:
+                self.volume_scale.set_value(0)
+            finally:
+                self._suppress_volume_callbacks = False
             icon_name = "audio-volume-muted-symbolic"
         else:
             # Restore last volume
-            self.volume_scale.set_value(self.last_volume)
+            restored = float(self.last_volume or float(self.settings.get("volume", 100) or 100))
+            self.settings["volume"] = restored
+            self._suppress_volume_callbacks = True
+            try:
+                self.volume_scale.set_value(restored)
+            finally:
+                self._suppress_volume_callbacks = False
             icon_name = "audio-volume-high-symbolic"
 
         self.volume_icon.set_from_icon_name(icon_name, Gtk.IconSize.SMALL_TOOLBAR)
