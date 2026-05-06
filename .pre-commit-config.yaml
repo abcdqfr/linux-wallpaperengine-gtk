@@ -1,4 +1,12 @@
 ---
+# Fast, deterministic checks on every commit. Includes bytecode + pytest (no DISPLAY).
+# Full PyGObject import is enforced in Forgejo CI (apt + smoke step), not in this file,
+# so laptops without gir1.2-gtk-3.0 are not blocked locally.
+default_language_version:
+  python: python3
+
+minimum_pre_commit_version: "3.2.0"
+
 repos:
   # Ruff - Fast Python linter and formatter (always enabled)
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -19,9 +27,10 @@ repos:
         language_version: python3
         args: [--line-length=100]
 
-  # NOTE: Heavier analyzers (bandit/pylint/mypy/xenon/vulture) are run in CI
-  # under `.forgejo/workflows/ci.yml` (many are continue-on-error). We keep
-  # pre-commit focused on fast, deterministic, offline-friendly checks.
+  # Heavier analyzers (bandit/pylint/mypy/…) stay in `.forgejo/workflows/ci.yml`
+  # (many continue-on-error). Pre-commit carries: byte-compile, pytest tests/,
+  # ruff, black, hygiene hooks — plus Forgejo pre-commit job installs PyGObject
+  # and runs a Gtk import smoke before `pre-commit/action`.
 
   # Custom hook: Check for common bugs (Python-based, not bash!)
   # References:
@@ -29,10 +38,31 @@ repos:
   #   - Python subprocess: https://docs.python.org/3/library/subprocess.html
   - repo: local
     hooks:
+      - id: byte-compile-entrypoints
+        name: Byte-compile entrypoints (syntax, no GTK import)
+        language: python
+        entry: python
+        args:
+          - -m
+          - py_compile
+          - linux-wallpaperengine-gtk.py
+          - wallpaper_process_probe.py
+        pass_filenames: false
+        always_run: true
+
+      - id: pytest-wallpaper
+        name: pytest tests/ (smoke, process probe, run_wallpaper guard)
+        language: python
+        entry: pytest
+        args: [tests/, -v, --tb=short]
+        pass_filenames: false
+        always_run: true
+        additional_dependencies: [pytest]
+
       - id: check-shell-injection
         name: Check for shell injection risks
         entry: >-
-          python3 -c "import sys; content = open('linux-wallpaperengine-gtk.py', 'r').read();
+          python3 -c "import sys; content = open('linux-wallpaperengine-gtk.py', 'r', encoding='utf-8').read();
           sys.exit(1 if 'shell=True' in content else 0)"
         language: system
         files: ^linux-wallpaperengine-gtk\.py$
@@ -41,7 +71,7 @@ repos:
       - id: check-broad-exceptions
         name: Check for bare except clauses
         entry: >-
-          python3 -c "import sys, re; content = open('linux-wallpaperengine-gtk.py', 'r').read();
+          python3 -c "import sys, re; content = open('linux-wallpaperengine-gtk.py', 'r', encoding='utf-8').read();
           bare_except = re.findall(r'^\s*except\s*:', content, re.MULTILINE);
           sys.exit(1 if bare_except else 0)"
         language: system

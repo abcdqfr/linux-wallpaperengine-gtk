@@ -88,4 +88,17 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
+
+      # Typelibs + build deps so `pip install PyGObject` matches setup-python (closes GTK import gap vs system-only python3-gi).
+      - name: Install GTK / GObject introspection deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install --no-install-recommends -y \
+            libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0
+
+      - name: PyGObject import smoke (headless)
+        run: |
+          python -m pip install PyGObject
+          python -c "import gi; gi.require_version('Gtk', '3.0'); gi.require_version('Gdk', '3.0'); gi.require_version('GdkPixbuf', '2.0'); gi.require_version('GLib', '2.0'); from gi.repository import Gtk; print('gtk-ok', Gtk.get_major_version())"
+
       - uses: pre-commit/action@v3.0.0

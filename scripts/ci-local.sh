@@ -18,22 +18,7 @@ python -m pip install \
   ruff pytest bandit pylint mypy radon vulture black pre-commit pytest-cov pytest-mock \
   -q
 
-echo "==> Byte-compile entrypoints"
-python -m py_compile linux-wallpaperengine-gtk.py wallpaper_process_probe.py
-
-echo "==> Pytest (smoke + process lifecycle)"
-python -m pytest tests/ -v
-
-echo "==> Ruff"
-ruff check linux-wallpaperengine-gtk.py
-
-echo "==> Shell injection grep"
-if grep -n "shell=True" linux-wallpaperengine-gtk.py; then
-  echo "error: shell=True found" >&2
-  exit 1
-fi
-
-echo "==> Pre-commit (all files)"
+echo "==> Pre-commit (byte-compile, pytest, ruff, black, shell/bare-except checks, …)"
 pre-commit run --all-files
 
 echo "==> Optional analyzers (informational; match CI continue-on-error)"

@@ -7,11 +7,12 @@ PY := $(shell if [ -x .venv-ci/bin/python ]; then echo .venv-ci/bin/python; else
 
 help:
 	@echo "Targets:"
-	@echo "  make ci        Full local suite: venv, py_compile, pytest tests/, ruff, grep, pre-commit, optional analyzers"
+	@echo "  make ci        venv + pre-commit --all-files (byte-compile, pytest, ruff, black, …) + optional analyzers"
 	@echo "  make test      Pytest only (uses .venv-ci if present, else python3 — needs pytest installed)"
 	@echo "  make fmt-check Ruff check only (needs ruff)"
 	@echo ""
-	@echo "There is no Makefile recipe yet for launching the GTK app under Xvfb with a real engine binary."
+	@echo "Install hooks once:  .venv-ci/bin/pre-commit install"
+	@echo "No Makefile recipe yet for Xvfb + real linux-wallpaperengine binary E2E."
 
 ci:
 	@./scripts/ci-local.sh
