@@ -1,3 +1,18 @@
+# [1.4.0](https://github.com/abcdqfr/linux-wallpaperengine-gtk/compare/v1.3.0...v1.4.0) (2026-05-06)
+
+
+### Bug Fixes
+
+* address bugbot release/mute issues ([611d193](https://github.com/abcdqfr/linux-wallpaperengine-gtk/commit/611d1938e53ff218090e4dd46eb78d01489413e0))
+* make quit deterministic and add e2e coverage ([39a45de](https://github.com/abcdqfr/linux-wallpaperengine-gtk/commit/39a45de3875c13b33f6b158cd5bbe0fafa1cf93d))
+* robust quit even with nested GTK loops ([6199909](https://github.com/abcdqfr/linux-wallpaperengine-gtk/commit/6199909c64bd5d9ee3851744f0edebe921eaa19d))
+
+
+### Features
+
+* notify on wallpaper process exit; release notes metadata ([da59d73](https://github.com/abcdqfr/linux-wallpaperengine-gtk/commit/da59d735aee36647ac74db975bee84fb6b7afcc9))
+* verify scene.json only when referenced; context menu remove local files ([7db0c66](https://github.com/abcdqfr/linux-wallpaperengine-gtk/commit/7db0c6675dcc9a16bcb4a3c427cc65fdc5d8f299))
+
 # [1.3.0](https://github.com/abcdqfr/linux-wallpaperengine-gtk/compare/v1.2.2...v1.3.0) (2026-05-06)
 
 
