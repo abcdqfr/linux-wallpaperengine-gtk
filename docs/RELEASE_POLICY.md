@@ -13,4 +13,3 @@ This GTK frontend cannot be end-to-end validated in CI without access to the mai
 
 - GitHub Actions may run `scripts/ci-core.sh` and other non-secret checks.
 - Release credentials/tokens and release publication actions are **Forgejo-only**.
-

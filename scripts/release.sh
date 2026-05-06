@@ -59,6 +59,13 @@ require tar
 require rg
 require base64
 
+# Release tooling uses Python's built-in TOML parser (`tomllib`), available in Python 3.11+.
+if ! python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3,11) else 1)' >/dev/null 2>&1; then
+  pyv="$(python3 -V 2>&1 || true)"
+  echo "release tooling requires python3 >= 3.11 (tomllib). Current: ${pyv}" >&2
+  exit 2
+fi
+
 case "${RELEASE_HOST}" in
   forgejo)
     API_BASE="${BASE_URL}/api/v1"
