@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Forgejo-only release helper:
+# Release helper (Forgejo or GitHub):
 # - derives next version from Conventional Commit prefixes since last v* tag
-# - bumps pyproject.toml, commits, tags vX.Y.Z, pushes to Forgejo
-# - creates a Forgejo Release and uploads:
+# - bumps pyproject.toml, commits, tags vX.Y.Z, pushes to chosen host
+# - creates a Release and uploads:
 #   1) linux-wallpaperengine-gtk.py (standalone script)
 #   2) source-minimal.tar.gz (small archive of tracked essentials)
 #
@@ -16,6 +16,7 @@ cd "${ROOT}"
 
 OWNER="${FORGEJO_OWNER:-abcdqfr}"
 REPO="${FORGEJO_REPO:-linux-wallpaperengine-gtk}"
+RELEASE_HOST="${RELEASE_HOST:-forgejo}" # forgejo | github
 BASE_URL="${FORGEJO_BASE_URL:-http://127.0.0.1:3080}"
 TOKEN_FILE="${FORGEJO_TOKEN_FILE:-${HOME}/.config/forgejo/api-token}"
 TOKEN_ENV="${FORGEJO_TOKEN:-}"
@@ -29,11 +30,13 @@ Usage:
   scripts/release.sh [--dry-run] [--version X.Y.Z]
 
 Env (optional):
-  FORGEJO_OWNER, FORGEJO_REPO, FORGEJO_BASE_URL, FORGEJO_TOKEN_FILE
+  RELEASE_HOST=forgejo|github
+  FORGEJO_OWNER, FORGEJO_REPO, FORGEJO_BASE_URL, FORGEJO_TOKEN_FILE, FORGEJO_TOKEN
+  GITHUB_TOKEN (when RELEASE_HOST=github)
 
 Notes:
-  - Pushes ONLY to the Forgejo remote via token URL.
-  - Creates a Forgejo Release and uploads assets.
+  - Uses an access token (Forgejo token file by default, or env token).
+  - Creates a Release and uploads assets for the chosen host.
 EOF
 }
 
@@ -56,13 +59,32 @@ require tar
 require rg
 require base64
 
+case "${RELEASE_HOST}" in
+  forgejo)
+    API_BASE="${BASE_URL}/api/v1"
+    WEB_BASE="${BASE_URL}"
+    GIT_BASE="http://127.0.0.1:3080"
+    TOKEN_ENV="${FORGEJO_TOKEN:-}"
+    ;;
+  github)
+    API_BASE="https://api.github.com"
+    WEB_BASE="https://github.com"
+    GIT_BASE="https://github.com"
+    TOKEN_ENV="${GITHUB_TOKEN:-}"
+    ;;
+  *)
+    echo "invalid RELEASE_HOST: ${RELEASE_HOST} (expected forgejo|github)" >&2
+    exit 2
+    ;;
+esac
+
 TOKEN=""
 if [[ -n "${TOKEN_ENV}" ]]; then
   TOKEN="${TOKEN_ENV}"
 elif [[ -r "${TOKEN_FILE}" ]]; then
   TOKEN="$(cat "${TOKEN_FILE}")"
 else
-  echo "Forgejo token missing: set FORGEJO_TOKEN or provide ${TOKEN_FILE}" >&2
+  echo "token missing: set FORGEJO_TOKEN (forgejo) or GITHUB_TOKEN (github), or provide ${TOKEN_FILE}" >&2
   exit 2
 fi
 
@@ -126,7 +148,7 @@ ${range}
 ${head_sha}
 
 ## Compare
-${BASE_URL}/${OWNER}/${REPO}/compare/${latest_tag:-none}...${tag}
+${WEB_BASE}/${OWNER}/${REPO}/compare/${latest_tag:-none}...${tag}
 
 EOF
 )"
@@ -150,11 +172,15 @@ git add pyproject.toml
 git commit -m "chore(release): ${tag}"
 git tag -a "${tag}" -m "${tag}"
 
-push_url="http://oauth2:${TOKEN}@127.0.0.1:3080/${OWNER}/${REPO}.git"
-push_url="http://127.0.0.1:3080/${OWNER}/${REPO}.git"
+push_url="${GIT_BASE}/${OWNER}/${REPO}.git"
 
 # Avoid token-in-URL (leaks via logs / argv). Use per-command HTTP header instead.
-auth_b64="$(printf 'oauth2:%s' "${TOKEN}" | base64 -w0 2>/dev/null || printf 'oauth2:%s' "${TOKEN}" | base64)"
+case "${RELEASE_HOST}" in
+  forgejo) auth_user="oauth2" ;;
+  github) auth_user="x-access-token" ;;
+  *) echo "invalid RELEASE_HOST: ${RELEASE_HOST}" >&2; exit 2 ;;
+esac
+auth_b64="$(printf '%s:%s' "${auth_user}" "${TOKEN}" | base64 -w0 2>/dev/null || printf '%s:%s' "${auth_user}" "${TOKEN}" | base64)"
 auth_header="Authorization: Basic ${auth_b64}"
 
 git -c "http.extraHeader=${auth_header}" push "${push_url}" main
@@ -173,7 +199,7 @@ tar -czf "dist/source-minimal.tar.gz" \
 
 sha256sum dist/* > dist/SHA256SUMS.txt
 
-# Create Forgejo release
+# Create release
 release_json="$(python3 - <<PY
 import json
 print(json.dumps({
@@ -190,7 +216,7 @@ release_resp="$(curl -fsS \
   -H "Authorization: token ${TOKEN}" \
   -H "Content-Type: application/json" \
   -d "${release_json}" \
-  "${BASE_URL}/api/v1/repos/${OWNER}/${REPO}/releases")"
+  "${API_BASE}/repos/${OWNER}/${REPO}/releases")"
 
 release_id="$(python3 -c 'import json,sys; print(json.loads(sys.stdin.read())["id"])' <<<"${release_resp}")"
 
@@ -201,11 +227,11 @@ upload() {
     -H "Authorization: token ${TOKEN}" \
     -H "Content-Type: application/octet-stream" \
     --data-binary @"${file}" \
-    "${BASE_URL}/api/v1/repos/${OWNER}/${REPO}/releases/${release_id}/assets?name=${name}" >/dev/null
+    "${API_BASE}/repos/${OWNER}/${REPO}/releases/${release_id}/assets?name=${name}" >/dev/null
 }
 
 upload "dist/linux-wallpaperengine-gtk.py" "linux-wallpaperengine-gtk.py"
 upload "dist/source-minimal.tar.gz" "source-minimal.tar.gz"
 upload "dist/SHA256SUMS.txt" "SHA256SUMS.txt"
 
-echo "release created: ${BASE_URL}/${OWNER}/${REPO}/releases/tag/${tag}"
+echo "release created: ${WEB_BASE}/${OWNER}/${REPO}/releases/tag/${tag}"
