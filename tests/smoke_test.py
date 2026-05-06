@@ -13,19 +13,28 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 MAIN = ROOT / "linux-wallpaperengine-gtk.py"
+PROBE = ROOT / "wallpaper_process_probe.py"
 
 
 def test_main_script_exists():
     assert MAIN.is_file(), f"Expected {MAIN}"
 
 
+def test_probe_module_exists():
+    assert PROBE.is_file(), f"Expected {PROBE}"
+
+
 def test_main_script_byte_compiles():
     py_compile.compile(str(MAIN), doraise=True)
 
 
+def test_probe_module_byte_compiles():
+    py_compile.compile(str(PROBE), doraise=True)
+
+
 def test_py_compile_cli_matches_byte_compile():
     subprocess.run(
-        [sys.executable, "-m", "py_compile", str(MAIN)],
+        [sys.executable, "-m", "py_compile", str(MAIN), str(PROBE)],
         cwd=str(ROOT),
         check=True,
     )

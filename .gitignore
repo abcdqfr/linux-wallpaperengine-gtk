@@ -6,6 +6,7 @@
 
 # But track these essential files
 !linux-wallpaperengine-gtk.py
+!wallpaper_process_probe.py
 !README.md
 !.gitignore
 !LICENSE

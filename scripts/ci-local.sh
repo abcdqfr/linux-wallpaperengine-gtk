@@ -18,11 +18,11 @@ python -m pip install \
   ruff pytest bandit pylint mypy radon vulture black pre-commit pytest-cov pytest-mock \
   -q
 
-echo "==> Byte-compile main script"
-python -m py_compile linux-wallpaperengine-gtk.py
+echo "==> Byte-compile entrypoints"
+python -m py_compile linux-wallpaperengine-gtk.py wallpaper_process_probe.py
 
-echo "==> Pytest smoke tests"
-python -m pytest tests/smoke_test.py -v
+echo "==> Pytest (smoke + process lifecycle)"
+python -m pytest tests/ -v
 
 echo "==> Ruff"
 ruff check linux-wallpaperengine-gtk.py
@@ -37,7 +37,7 @@ echo "==> Pre-commit (all files)"
 pre-commit run --all-files
 
 echo "==> Optional analyzers (informational; match CI continue-on-error)"
-bandit -r linux-wallpaperengine-gtk.py scripts tests -ll -f txt 2>/dev/null || true
+bandit -r linux-wallpaperengine-gtk.py wallpaper_process_probe.py scripts tests -ll -f txt 2>/dev/null || true
 pylint linux-wallpaperengine-gtk.py --max-line-length=100 -f text || true
 mypy linux-wallpaperengine-gtk.py --ignore-missing-imports || true
 radon cc linux-wallpaperengine-gtk.py --min B || true

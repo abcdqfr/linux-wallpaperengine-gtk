@@ -28,6 +28,9 @@ import time
 
 from gi.repository import Gdk, GdkPixbuf, GLib, Gtk
 
+from wallpaper_process_probe import pid_exists as _pid_exists
+from wallpaper_process_probe import wallpaper_subprocess_running
+
 # Try to import AppIndicator3 for better tray integration (optional)
 try:
     gi.require_version("AppIndicator3", "0.1")
@@ -1016,25 +1019,6 @@ class EnvironmentDetector:
         return capabilities
 
 
-def _pid_exists(pid: int) -> bool:
-    """Return True if ``pid`` exists in this kernel namespace.
-
-    Uses ``/proc/<pid>`` on Linux (no signals). Else ``os.kill(pid, 0)``.
-    """
-    if pid <= 0:
-        return False
-    if sys.platform.startswith("linux"):
-        return os.path.isdir(os.path.join("/proc", str(pid)))
-    try:
-        os.kill(pid, 0)
-        return True
-    except ProcessLookupError:
-        return False
-    except PermissionError:
-        # Cannot observe this PID — do not block waits forever (matches prior kill(0) skip)
-        return False
-
-
 class WallpaperEngine:
     """Core wallpaper engine functionality"""
 
@@ -1538,25 +1522,13 @@ class WallpaperEngine:
             self.log.error("Process failed to start (no error output available)")
 
     def _wallpaper_child_is_running(self, process) -> bool:
-        """Whether the child is still running — ``poll()`` + kernel PID facts (no wall-clock wait).
-
-        ``poll()`` reaps zombies and returns exit status. On Linux, ``/proc/<pid>``
-        reflects whether the kernel still has that PID; otherwise ``kill(0)``.
-        """
-        rc = process.poll()
-        if rc is not None:
-            return False
-        pid = process.pid
-        if sys.platform.startswith("linux"):
-            return os.path.isdir(os.path.join("/proc", str(pid)))
-        try:
-            os.kill(pid, 0)
-            return True
-        except ProcessLookupError:
-            return False
-        except PermissionError:
-            self.log.warning("Cannot verify wallpaper child PID (permission); assuming running")
-            return True
+        """Whether the child is still running — ``poll()`` + kernel PID facts (no wall-clock wait)."""
+        return wallpaper_subprocess_running(
+            process,
+            on_kill_permission_denied=lambda: self.log.warning(
+                "Cannot verify wallpaper child PID (permission); assuming running"
+            ),
+        )
 
     def run_wallpaper(self, wallpaper_id, **options):
         """Run wallpaper with specified options"""
