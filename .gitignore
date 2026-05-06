@@ -16,6 +16,12 @@
 !.github/**
 !.github/workflows/
 !.github/workflows/**
+# Forgejo Actions (canonical CI workflow path); `.github/workflows/ci.yml` symlinks here
+!.forgejo/
+!.forgejo/**
+# Automated smoke tests (byte-compile / no GTK)
+!tests/
+!tests/**
 !THIRD_PARTY_LICENSES.md
 
 # Bundled upstream engine (git submodule)

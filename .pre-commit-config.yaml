@@ -20,7 +20,7 @@ repos:
         args: [--line-length=100]
 
   # NOTE: Heavier analyzers (bandit/pylint/mypy/xenon/vulture) are run in CI
-  # under `.github/workflows/ci.yml` (many are continue-on-error). We keep
+  # under `.forgejo/workflows/ci.yml` (many are continue-on-error). We keep
   # pre-commit focused on fast, deterministic, offline-friendly checks.
 
   # Custom hook: Check for common bugs (Python-based, not bash!)
