@@ -16,7 +16,7 @@ cd "${ROOT}"
 
 OWNER="${FORGEJO_OWNER:-abcdqfr}"
 REPO="${FORGEJO_REPO:-linux-wallpaperengine-gtk}"
-RELEASE_HOST="${RELEASE_HOST:-forgejo}" # forgejo | github
+RELEASE_HOST="${RELEASE_HOST:-forgejo}" # forgejo | github (github is non-authoritative here)
 BASE_URL="${FORGEJO_BASE_URL:-http://127.0.0.1:3080}"
 TOKEN_FILE="${FORGEJO_TOKEN_FILE:-${HOME}/.config/forgejo/api-token}"
 TOKEN_ENV="${FORGEJO_TOKEN:-}"
@@ -67,6 +67,7 @@ case "${RELEASE_HOST}" in
     TOKEN_ENV="${FORGEJO_TOKEN:-}"
     ;;
   github)
+    echo "note: RELEASE_HOST=github is supported, but this repo's policy is Forgejo-only authority." >&2
     API_BASE="https://api.github.com"
     WEB_BASE="https://github.com"
     GIT_BASE="https://github.com"
