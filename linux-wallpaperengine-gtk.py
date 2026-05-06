@@ -470,6 +470,24 @@ class EnvironmentDetector:
         # Method 4: Common build locations (relative to script)
         script_dir = os.path.dirname(os.path.abspath(__file__))
         relative_paths = [
+            # This repository's bundled upstream submodule build output
+            os.path.join(
+                script_dir,
+                "upstream",
+                "linux-wallpaperengine",
+                "build",
+                "output",
+                "linux-wallpaperengine",
+            ),
+            os.path.join(
+                script_dir,
+                "..",
+                "upstream",
+                "linux-wallpaperengine",
+                "build",
+                "output",
+                "linux-wallpaperengine",
+            ),
             os.path.join(
                 script_dir,
                 "..",

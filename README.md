@@ -181,8 +181,8 @@ sudo apt-get install build-essential cmake libxrandr-dev libxinerama-dev libxcur
 ```bash
 cd upstream/linux-wallpaperengine
 mkdir -p build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build . -j"$(nproc)"
+cmake -DCMAKE_BUILD_TYPE='Release' ..
+make -j"$(nproc)"
 ```
 
 The `linux-wallpaperengine` binary is **`upstream/linux-wallpaperengine/build/output/linux-wallpaperengine`** (CMake sets the runtime output directory to `output/` inside `build/`).
