@@ -31,4 +31,3 @@ PY
 python -m py_compile linux-wallpaperengine-gtk.py wallpaper_process_probe.py
 pytest tests/ -v
 ruff check linux-wallpaperengine-gtk.py wallpaper_process_probe.py tests/
-
