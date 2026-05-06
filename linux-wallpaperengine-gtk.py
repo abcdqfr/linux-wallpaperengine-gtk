@@ -197,11 +197,34 @@ class EnvironmentDetector:
             "distro": self._detect_distro(),
             "compositor": self._detect_compositor(),
             "display_server": self._detect_display_server(),
+            "desktop": self._detect_desktop_environment(),
             "gpu": self._detect_gpu(),
             "steam_paths": self._detect_steam_paths(),
             "wpe_paths": self._detect_wpe_paths(),
             "capabilities": self._detect_capabilities(),
         }
+
+    def _detect_desktop_environment(self):
+        """Detect desktop environment/session (best-effort)."""
+        # Common environment variables
+        xdg_current = (os.environ.get("XDG_CURRENT_DESKTOP") or "").lower()
+        desktop_session = (os.environ.get("DESKTOP_SESSION") or "").lower()
+        gdm_session = (os.environ.get("GDMSESSION") or "").lower()
+
+        combined = " ".join([xdg_current, desktop_session, gdm_session])
+
+        if "gnome" in combined or "ubuntu" in combined:
+            return "gnome"
+        if "kde" in combined or "plasma" in combined:
+            return "kde"
+        if "xfce" in combined:
+            return "xfce"
+        if "cinnamon" in combined:
+            return "cinnamon"
+        if "mate" in combined:
+            return "mate"
+
+        return "unknown"
 
     def _detect_distro(self):
         """Detect Linux distribution using multiple methods"""
@@ -687,6 +710,96 @@ class WallpaperEngine:
         # GPU-specific workarounds (default based on detection)
         self.default_workarounds = self._get_gpu_workarounds(self.env["gpu"])
 
+    def _get_x11_screen_geometry(self):
+        """Best-effort screen geometry for X11 window mode."""
+        try:
+            # Prefer xrandr if available (matches our display naming)
+            result = subprocess.run(["xrandr"], capture_output=True, text=True, timeout=2)
+            if result.returncode == 0 and self.display:
+                for line in result.stdout.splitlines():
+                    if line.startswith(self.display) and " connected" in line:
+                        # Example: DisplayPort-0 connected primary 2560x1440+0+0 ...
+                        parts = line.split()
+                        for p in parts:
+                            if "x" in p and "+" in p and p.count("+") >= 2:
+                                res = p.split("+", 1)[0]
+                                w, h = res.split("x", 1)
+                                return int(w), int(h)
+        except Exception:
+            pass
+
+        # Fallback: ask GDK (works for X11 apps)
+        try:
+            from gi.repository import Gdk
+
+            screen = Gdk.Screen.get_default()
+            if screen:
+                return int(screen.get_width()), int(screen.get_height())
+        except Exception:
+            pass
+
+        return 1920, 1080
+
+    def _apply_gnome_window_hints(self, pid):
+        """Try to make a window-mode wallpaper behave like a desktop background on GNOME/X11."""
+        # Requires external tools; if unavailable, we still have a normal window preview.
+        for tool in ("xdotool", "wmctrl", "xprop"):
+            if subprocess.run(["which", tool], capture_output=True, text=True).returncode != 0:
+                self.log.debug(f"GNOME hints skipped: missing {tool}")
+                return
+
+        # Wait briefly for the engine to create an X11 window, then set hints.
+        deadline = time.time() + 2.0
+        wid = None
+        while time.time() < deadline:
+            try:
+                # xdotool search returns decimal window ids
+                res = subprocess.run(
+                    ["xdotool", "search", "--onlyvisible", "--pid", str(pid)],
+                    capture_output=True,
+                    text=True,
+                    timeout=1,
+                )
+                if res.returncode == 0 and res.stdout.strip():
+                    wid = res.stdout.strip().splitlines()[0]
+                    break
+            except Exception:
+                pass
+            time.sleep(0.1)
+
+        if not wid:
+            self.log.debug("GNOME hints skipped: could not find window for pid")
+            return
+
+        # Mark as desktop/sticky/below and keep it off taskbar/pager where possible.
+        try:
+            subprocess.run(["wmctrl", "-ir", wid, "-b", "add,below,sticky,skip_taskbar,skip_pager"], timeout=2)
+        except Exception:
+            pass
+        try:
+            # Attempt to set window type to DESKTOP
+            subprocess.run(
+                [
+                    "xprop",
+                    "-id",
+                    wid,
+                    "-f",
+                    "_NET_WM_WINDOW_TYPE",
+                    "32a",
+                    "-set",
+                    "_NET_WM_WINDOW_TYPE",
+                    "_NET_WM_WINDOW_TYPE_DESKTOP",
+                ],
+                timeout=2,
+            )
+        except Exception:
+            pass
+        try:
+            # Fullscreen as belt-and-suspenders
+            subprocess.run(["wmctrl", "-ir", wid, "-b", "add,fullscreen"], timeout=2)
+        except Exception:
+            pass
+
     def _detect_display_x11(self):
         """Detect primary display using xrandr (X11)
 
@@ -1030,8 +1143,21 @@ class WallpaperEngine:
                     except ValueError as e:
                         self.log.error(f"Invalid custom arguments syntax: {e}")
 
-            # Add display and wallpaper ID
-            cmd.extend(["--screen-root", self.display, wallpaper_id])
+            # GNOME/X11 compatibility: GNOME often draws the desktop background itself,
+            # so the engine's screen-root mode can be invisible. In that case, run in
+            # window mode fullscreen and apply desktop-like window hints.
+            gnome_compat = bool(options.get("gnome_compat", False))
+            if (
+                gnome_compat
+                and self.env.get("desktop") == "gnome"
+                and self.env.get("display_server") in ["x11", "xwayland"]
+                and not use_container
+            ):
+                w, h = self._get_x11_screen_geometry()
+                cmd.extend(["--window", f"0x0x{w}x{h}", wallpaper_id])
+            else:
+                # Default: screen-root mode
+                cmd.extend(["--screen-root", self.display, wallpaper_id])
 
             self.log.info(f"Running command: {' '.join(map(str, cmd))}")
 
@@ -1123,6 +1249,13 @@ class WallpaperEngine:
                 self.current_wallpaper = wallpaper_id
                 self.current_process = process
                 self.log.info(f"Wallpaper process started successfully (PID: {process.pid})")
+                if (
+                    gnome_compat
+                    and self.env.get("desktop") == "gnome"
+                    and self.env.get("display_server") in ["x11", "xwayland"]
+                    and not use_container
+                ):
+                    self._apply_gnome_window_hints(process.pid)
                 return True, cmd
             else:
                 # Process exited immediately - read stderr to see why
@@ -1407,6 +1540,7 @@ class WallpaperWindow(Gtk.Window):
             "enable_ld_preload": False,
             # Containerization (DEV/DEBUG): opt-in only
             "enable_containerization": False,
+            "enable_gnome_compat": True,
             # radeonsi driver crash workarounds
             "enable_radeonsi_workarounds": True,  # Default enabled for safety
             "radeonsi_sync_to_vblank": True,
@@ -1757,6 +1891,7 @@ class WallpaperWindow(Gtk.Window):
         return self.engine.run_wallpaper(
             wallpaper_id,
             use_container=bool(self.settings.get("enable_containerization", False)),
+            gnome_compat=bool(self.settings.get("enable_gnome_compat", True)),
             fps=self.settings["fps"],
             volume=self.settings["volume"],
             mute=self.settings["mute"],
@@ -1897,6 +2032,7 @@ class WallpaperWindow(Gtk.Window):
                 "custom_args": dialog.custom_args_entry.get_text().strip(),
                 "enable_ld_preload": dialog.ld_preload_switch.get_active(),
                 "enable_containerization": dialog.containerization_switch.get_active(),
+                "enable_gnome_compat": dialog.gnome_compat_switch.get_active(),
                 # radeonsi driver workarounds
                 "enable_radeonsi_workarounds": dialog.radeonsi_workarounds_switch.get_active(),
                 "radeonsi_sync_to_vblank": dialog.radeonsi_sync_switch.get_active(),
@@ -1956,6 +2092,7 @@ class WallpaperWindow(Gtk.Window):
             success, cmd = self.engine.run_wallpaper(
                 self.engine.current_wallpaper,
                 use_container=bool(settings.get("enable_containerization", False)),
+                gnome_compat=bool(settings.get("enable_gnome_compat", True)),
                 fps=settings["fps"],
                 volume=settings["volume"],
                 mute=settings["mute"],
@@ -2539,15 +2676,26 @@ class SettingsDialog(Gtk.Dialog):
         advanced_grid.attach(container_label, 0, 4, 1, 1)
         advanced_grid.attach(self.containerization_switch, 1, 4, 1, 1)
 
+        # GNOME/X11 compatibility (uses window mode + desktop hints)
+        self.gnome_compat_switch = Gtk.Switch()
+        self.gnome_compat_switch.set_active(self.current_settings.get("enable_gnome_compat", True))
+        gnome_label = Gtk.Label(label="GNOME X11 Compatibility:", halign=Gtk.Align.END)
+        gnome_label.set_tooltip_text(
+            "On GNOME/Xorg the backend often can't draw behind the desktop. "
+            "This runs wallpapers in fullscreen window mode and applies desktop-like hints."
+        )
+        advanced_grid.attach(gnome_label, 0, 5, 1, 1)
+        advanced_grid.attach(self.gnome_compat_switch, 1, 5, 1, 1)
+
         # Separator for GPU driver workarounds
         separator = Gtk.Separator()
-        advanced_grid.attach(separator, 0, 5, 2, 1)
+        advanced_grid.attach(separator, 0, 6, 2, 1)
 
         # GPU Driver Crash Workarounds Section
         workaround_header = Gtk.Label()
         workaround_header.set_markup("<b>GPU Driver Crash Workarounds (radeonsi)</b>")
         workaround_header.set_halign(Gtk.Align.START)
-        advanced_grid.attach(workaround_header, 0, 6, 2, 1)
+        advanced_grid.attach(workaround_header, 0, 7, 2, 1)
 
         # Enable workarounds master switch
         self.radeonsi_workarounds_switch = Gtk.Switch()
@@ -2558,8 +2706,8 @@ class SettingsDialog(Gtk.Dialog):
         workarounds_label.set_tooltip_text(
             "Apply Mesa environment variables to prevent GPU driver crashes (SIGSEGV in radeonsi_dri.so). Recommended: ON"
         )
-        advanced_grid.attach(workarounds_label, 0, 7, 1, 1)
-        advanced_grid.attach(self.radeonsi_workarounds_switch, 1, 7, 1, 1)
+        advanced_grid.attach(workarounds_label, 0, 8, 1, 1)
+        advanced_grid.attach(self.radeonsi_workarounds_switch, 1, 8, 1, 1)
 
         # Individual workaround options (only enabled when master switch is on)
         self.radeonsi_sync_switch = Gtk.Switch()
@@ -2571,8 +2719,8 @@ class SettingsDialog(Gtk.Dialog):
         sync_label.set_tooltip_text(
             "Force synchronous OpenGL operations (prevents race conditions)"
         )
-        advanced_grid.attach(sync_label, 0, 8, 1, 1)
-        advanced_grid.attach(self.radeonsi_sync_switch, 1, 8, 1, 1)
+        advanced_grid.attach(sync_label, 0, 9, 1, 1)
+        advanced_grid.attach(self.radeonsi_sync_switch, 1, 9, 1, 1)
 
         self.radeonsi_gl_version_switch = Gtk.Switch()
         self.radeonsi_gl_version_switch.set_active(
@@ -2581,8 +2729,8 @@ class SettingsDialog(Gtk.Dialog):
         self.radeonsi_gl_version_switch.set_sensitive(self.radeonsi_workarounds_switch.get_active())
         gl_version_label = Gtk.Label(label="  Use OpenGL 4.5 (stable):", halign=Gtk.Align.END)
         gl_version_label.set_tooltip_text("Override to OpenGL 4.5 API (avoids bugs in 4.6)")
-        advanced_grid.attach(gl_version_label, 0, 9, 1, 1)
-        advanced_grid.attach(self.radeonsi_gl_version_switch, 1, 9, 1, 1)
+        advanced_grid.attach(gl_version_label, 0, 10, 1, 1)
+        advanced_grid.attach(self.radeonsi_gl_version_switch, 1, 10, 1, 1)
 
         self.radeonsi_shader_cache_switch = Gtk.Switch()
         self.radeonsi_shader_cache_switch.set_active(
@@ -2593,8 +2741,8 @@ class SettingsDialog(Gtk.Dialog):
         )
         shader_cache_label = Gtk.Label(label="  Disable Shader Cache:", halign=Gtk.Align.END)
         shader_cache_label.set_tooltip_text("Disable shader cache to prevent corruption issues")
-        advanced_grid.attach(shader_cache_label, 0, 10, 1, 1)
-        advanced_grid.attach(self.radeonsi_shader_cache_switch, 1, 10, 1, 1)
+        advanced_grid.attach(shader_cache_label, 0, 11, 1, 1)
+        advanced_grid.attach(self.radeonsi_shader_cache_switch, 1, 11, 1, 1)
 
         self.radeonsi_error_check_switch = Gtk.Switch()
         self.radeonsi_error_check_switch.set_active(
@@ -2605,8 +2753,8 @@ class SettingsDialog(Gtk.Dialog):
         )
         error_check_label = Gtk.Label(label="  Enable Error Checking:", halign=Gtk.Align.END)
         error_check_label.set_tooltip_text("Enable OpenGL error checking (catches issues early)")
-        advanced_grid.attach(error_check_label, 0, 11, 1, 1)
-        advanced_grid.attach(self.radeonsi_error_check_switch, 1, 11, 1, 1)
+        advanced_grid.attach(error_check_label, 0, 12, 1, 1)
+        advanced_grid.attach(self.radeonsi_error_check_switch, 1, 12, 1, 1)
 
         self.radeonsi_aggressive_opts_switch = Gtk.Switch()
         self.radeonsi_aggressive_opts_switch.set_active(
@@ -2617,8 +2765,8 @@ class SettingsDialog(Gtk.Dialog):
         )
         aggressive_opts_label = Gtk.Label(label="  Disable Aggressive Opts:", halign=Gtk.Align.END)
         aggressive_opts_label.set_tooltip_text("Disable problematic driver optimizations")
-        advanced_grid.attach(aggressive_opts_label, 0, 12, 1, 1)
-        advanced_grid.attach(self.radeonsi_aggressive_opts_switch, 1, 12, 1, 1)
+        advanced_grid.attach(aggressive_opts_label, 0, 13, 1, 1)
+        advanced_grid.attach(self.radeonsi_aggressive_opts_switch, 1, 13, 1, 1)
 
         # Connect master switch to enable/disable individual options
         self.radeonsi_workarounds_switch.connect(
@@ -2641,7 +2789,7 @@ class SettingsDialog(Gtk.Dialog):
         advanced_help.set_line_wrap(True)
         advanced_help.set_max_width_chars(60)
         advanced_help.set_halign(Gtk.Align.START)
-        advanced_grid.attach(advanced_help, 0, 13, 2, 1)
+        advanced_grid.attach(advanced_help, 0, 14, 2, 1)
 
         # Connect switch to enable/disable entry
         self.custom_args_switch.connect("notify::active", self.on_custom_args_toggled)
