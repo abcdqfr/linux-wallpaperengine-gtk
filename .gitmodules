@@ -1,0 +1,3 @@
+[submodule "upstream/linux-wallpaperengine"]
+	path = upstream/linux-wallpaperengine
+	url = https://github.com/Almamu/linux-wallpaperengine.git

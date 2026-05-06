@@ -17,6 +17,14 @@
 !.github/workflows/
 !.github/workflows/**
 
+# Bundled upstream engine (git submodule)
+!upstream/
+!upstream/**
+
+# In-repo documentation (reviews, internal notes)
+!docs/
+!docs/**
+
 # Python artifacts (if any)
 __pycache__/
 *.py[cod]

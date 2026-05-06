@@ -10,9 +10,9 @@
 
 # 🎨 Linux Wallpaper Engine GTK
 
-A beautiful, deterministic GTK frontend for [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine), designed to work everywhere on Linux.
+A beautiful, deterministic GTK frontend for [linux-wallpaperengine](https://github.com/Almamu/linux-wallpaperengine), designed to work everywhere on Linux.
 
-**Standalone Operation**: Single Python file, no external dependencies. NixOS-style determinism.
+**GTK frontend**: The UI is a single Python file with no extra Python packages beyond PyGObject/GTK. **Playback requires** the separate `linux-wallpaperengine` **binary** (the upstream C++ engine). **Clone this repo with submodules** to vendor upstream source under `upstream/linux-wallpaperengine`, then build it—see [Clone and build the full stack](#clone-and-build-the-full-stack-gtk--upstream-engine).
 
 ## Features
 
@@ -45,7 +45,9 @@ chmod +x linux-wallpaperengine-gtk.py
 ./linux-wallpaperengine-gtk.py
 ```
 
-**That's it!** The standalone file is all you need. If any dependencies are missing, the application will detect your distribution and provide specific installation commands. All other files in this repository are for developers only.
+**That's it for the GUI file.** If any GTK/Python dependencies are missing, the application will suggest distro packages.
+
+> **Wallpaper engine binary:** Downloading only `linux-wallpaperengine-gtk.py` does **not** install the C++ backend. You must install or build [`linux-wallpaperengine`](https://github.com/Almamu/linux-wallpaperengine) ([Arch AUR](https://aur.archlinux.org/), distro packages where available, or **build from source**—including from the submodule path [`upstream/linux-wallpaperengine`](#clone-and-build-the-full-stack-gtk--upstream-engine) after a recursive clone).
 
 <details>
 <summary><strong>📦 System Dependencies (Auto-Detected)</strong></summary>
@@ -94,23 +96,80 @@ sudo zypper install python3-gobject gtk3
 <details>
 <summary><strong>🔧 Developer Setup</strong></summary>
 
-If you're contributing or developing:
-
 ```bash
-# Clone the full repository
-git clone https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
+git clone --recurse-submodules https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
 cd linux-wallpaperengine-gtk
 
-# Make executable
 chmod +x linux-wallpaperengine-gtk.py
 
-# Run
+# Build upstream linux-wallpaperengine (required for playback); see section below
+# Then run:
 ./linux-wallpaperengine-gtk.py
 ```
 
-**Note:** Other files (`.gitignore`, `.github/`, `.pre-commit-config.yaml`, `.releaserc.json`) are developer tooling and not needed for end users.
+If you cloned **without** `--recurse-submodules`, fetch everything with:
+
+```bash
+git submodule update --init --recursive
+```
+
+**Note:** Other files (`.gitignore`, `.github/`, `.pre-commit-config.yaml`, `.releaserc.json`) are developer tooling; end users who only `curl` the `.py` file do not need them.
 
 </details>
+
+## Clone and build the full stack (GTK + upstream engine)
+
+This repository vendors **[linux-wallpaperengine](https://github.com/Almamu/linux-wallpaperengine)** as a Git submodule at **`upstream/linux-wallpaperengine`**.
+
+Upstream ships **nested submodules** (shader compilers, headers, etc.). You **must** use **recursive** submodule initialization or CMake will fail with missing dependencies.
+
+### 1. Clone
+
+```bash
+git clone --recurse-submodules https://github.com/abcdqfr/linux-wallpaperengine-gtk.git
+cd linux-wallpaperengine-gtk
+```
+
+Already cloned without submodules:
+
+```bash
+git submodule update --init --recursive
+```
+
+### 2. Install build dependencies
+
+Follow the upstream README for your distro (Ubuntu 22.04 / 24.04 package lists, Fedora, etc.):
+
+[Almamu/linux-wallpaperengine — README (build & deps)](https://github.com/Almamu/linux-wallpaperengine/blob/main/README.md)
+
+### 3. Compile the engine
+
+```bash
+cd upstream/linux-wallpaperengine
+mkdir -p build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build .
+```
+
+The `linux-wallpaperengine` binary is written to **`build/output/`** (upstream sets CMake `RUNTIME_OUTPUT_DIRECTORY` to `output` inside the build directory).
+
+### 4. Point the GTK app at the binary
+
+Either:
+
+```bash
+export PATH="$PWD/output:$PATH"
+```
+
+(run from `upstream/linux-wallpaperengine/build`), **or** in **Settings → Paths**, set **Wallpaper Engine Path** to the absolute path of `linux-wallpaperengine` inside `build/output/`.
+
+### 5. Optional: Applications menu entry
+
+Use **Settings → Paths → Install menu shortcut…**, or:
+
+```bash
+./linux-wallpaperengine-gtk.py --install-desktop
+```
 
 ## Usage
 
@@ -257,7 +316,7 @@ DEBUG=1 ./linux-wallpaperengine-gtk.py
 
 #### 🚧 Partial/Planned Features
 
-- 🖥️ **Desktop Icon & Menu Entry**: .desktop file for application menu integration _(needs portable path fix)_
+- 🖥️ **Desktop Icon & Menu Entry**: Freedesktop launcher via Settings or `--install-desktop`
 - 📋 **Playlist Management**: Create and manage wallpaper playlists _(planned)_
 
 **Note**: The main Features section (top of README) only lists implemented features for clarity. Partial and planned features are tracked here in the Roadmap and in the FEATURES list (`linux-wallpaperengine-gtk.py`).
@@ -278,7 +337,7 @@ DEBUG=1 ./linux-wallpaperengine-gtk.py
 ### Guidelines
 
 - **Keep it monolithic**: Single file structure
-- **Keep it standalone**: No external file dependencies
+- **Keep it standalone for distribution**: The downloadable `.py` stays self-contained; **git clones** may bundle upstream via submodules (see [Clone and build the full stack](#clone-and-build-the-full-stack-gtk--upstream-engine))
 - **Test everywhere**: Try on different distros/compositors
 - **Document assumptions**: If you assume something, detect it instead
 - **Use XDG standards**: For paths and configuration
@@ -291,7 +350,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- [linux-wallpaperengine](https://github.com/linux-wallpaperengine/engine) - The core wallpaper engine (maintained by [almamu](https://github.com/almamu))
+- [linux-wallpaperengine](https://github.com/Almamu/linux-wallpaperengine) — upstream wallpaper engine ([almamu](https://github.com/almamu))
 - GTK community for the excellent UI framework
 
 ---
