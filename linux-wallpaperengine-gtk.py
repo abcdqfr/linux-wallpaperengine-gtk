@@ -26,10 +26,10 @@ import sys
 import threading
 import time
 
-from gi.repository import Gdk, GdkPixbuf, GLib, Gtk
-
 from wallpaper_process_probe import pid_exists as _pid_exists
 from wallpaper_process_probe import wallpaper_subprocess_running
+
+from gi.repository import Gdk, GdkPixbuf, GLib, Gtk
 
 # Try to import AppIndicator3 for better tray integration (optional)
 try:
@@ -246,6 +246,10 @@ def ensure_steamcmd_installed():
 def workshop_item_local_status(wallpaper_root, item_id):
     """
     Check project.json main asset exists on disk. Returns (ok: bool, message: str).
+
+    Be conservative about sidecar assumptions: do NOT treat `scene.json` as mandatory
+    unless `project.json` references it somewhere. Many Workshop items are video-only
+    and never ship a scene file.
     """
     folder = os.path.join(wallpaper_root or "", str(item_id).strip())
     pj = os.path.join(folder, "project.json")
@@ -263,7 +267,48 @@ def workshop_item_local_status(wallpaper_root, item_id):
         return False, "project.json has no top-level file entry."
     path = os.path.join(folder, fname)
     if os.path.isfile(path):
-        return True, f"OK — asset present:\n{path}"
+        referenced_scene_paths = set()
+
+        def _walk(x):
+            if isinstance(x, dict):
+                for v in x.values():
+                    _walk(v)
+                return
+            if isinstance(x, list):
+                for v in x:
+                    _walk(v)
+                return
+            if isinstance(x, str):
+                s = x.strip()
+                s = s.lstrip("./")
+                if s.lower().endswith("scene.json"):
+                    referenced_scene_paths.add(s)
+
+        _walk(meta)
+
+        missing = []
+        for rel in sorted(referenced_scene_paths):
+            candidate = os.path.join(folder, rel)
+            if not os.path.isfile(candidate):
+                missing.append(candidate)
+
+        if missing:
+            return (
+                False,
+                "Main asset present, but project.json references missing scene files:\n"
+                + "\n".join(missing)
+                + "\n\nIf Steam never downloads these files, the item may simply not include them "
+                "(broken upload or removed content). Try SteamCMD repair; if it persists, "
+                "treat this wallpaper as incomplete and skip it.",
+            )
+
+        ok_msg = f"OK — asset present:\n{path}"
+        if not referenced_scene_paths and not os.path.isfile(os.path.join(folder, "scene.json")):
+            ok_msg += (
+                "\n\nNote: no scene.json referenced by project.json (common for video wallpapers)."
+            )
+        return True, ok_msg
+
     return False, f'Missing main asset file:\n{path}\n(expected from project.json "file")'
 
 
@@ -3465,6 +3510,10 @@ class WallpaperContextMenu(Gtk.Menu):
         steam_item.connect("activate", self.on_steam_workshop_clicked)
         self.append(steam_item)
 
+        remove_item = Gtk.MenuItem(label="Remove local files…")
+        remove_item.connect("activate", self.on_remove_local_clicked)
+        self.append(remove_item)
+
         self.show_all()
 
     def on_apply_clicked(self, widget):
@@ -3482,6 +3531,66 @@ class WallpaperContextMenu(Gtk.Menu):
         dlg = SteamWorkshopDialog(self.parent, preset_item_id=self.wallpaper_id)
         dlg.run()
         dlg.destroy()
+
+    def on_remove_local_clicked(self, _widget):
+        root = self.parent.engine.wallpaper_dir
+        folder = os.path.join(root or "", str(self.wallpaper_id).strip())
+        if not os.path.isdir(folder):
+            md = Gtk.MessageDialog(
+                transient_for=self.parent,
+                modal=True,
+                message_type=Gtk.MessageType.INFO,
+                buttons=Gtk.ButtonsType.OK,
+                text="Workshop folder not found",
+            )
+            md.format_secondary_text(folder)
+            md.run()
+            md.destroy()
+            return
+
+        md = Gtk.MessageDialog(
+            transient_for=self.parent,
+            modal=True,
+            message_type=Gtk.MessageType.WARNING,
+            buttons=Gtk.ButtonsType.NONE,
+            text="Remove local Workshop files?",
+        )
+        md.format_secondary_text(
+            "This deletes the local folder for this wallpaper:\n"
+            f"{folder}\n\n"
+            "It does not unsubscribe you in Steam. You can re-download later via SteamCMD repair."
+        )
+        md.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        md.add_button("Remove", Gtk.ResponseType.OK)
+        md.add_button("Remove + Repair via SteamCMD…", Gtk.ResponseType.APPLY)
+        md.set_default_response(Gtk.ResponseType.CANCEL)
+        resp = md.run()
+        md.destroy()
+        if resp not in (Gtk.ResponseType.OK, Gtk.ResponseType.APPLY):
+            return
+
+        # If currently running, stop first.
+        if str(self.parent.engine.current_wallpaper or "") == str(self.wallpaper_id):
+            self.parent.engine.stop_wallpaper()
+            self.parent.update_current_wallpaper(None)
+
+        try:
+            shutil.rmtree(folder)
+            self.parent.status_label.set_text(f"Removed local files for {self.wallpaper_id}.")
+        except Exception as e:
+            self.parent.status_label.set_text(f"Failed to remove {self.wallpaper_id}: {e}")
+            return
+
+        # Refresh list so it disappears.
+        try:
+            self.parent.load_wallpapers()
+        except Exception:
+            pass
+
+        if resp == Gtk.ResponseType.APPLY:
+            dlg = SteamWorkshopDialog(self.parent, preset_item_id=self.wallpaper_id)
+            dlg.run()
+            dlg.destroy()
 
 
 def setup_dev_environment():
