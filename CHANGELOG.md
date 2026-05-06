@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/abcdqfr/linux-wallpaperengine-gtk/compare/v1.4.0...v1.4.1) (2026-05-06)
+
+
+### Bug Fixes
+
+* publish-tag-assets parses Forgejo JSON safely ([e5216cc](https://github.com/abcdqfr/linux-wallpaperengine-gtk/commit/e5216cc9166ed1533d7da3ade4510fe8bd99fc86))
+
 # [1.4.0](https://github.com/abcdqfr/linux-wallpaperengine-gtk/compare/v1.3.0...v1.4.0) (2026-05-06)
 
 
