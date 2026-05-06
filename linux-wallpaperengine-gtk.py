@@ -679,7 +679,10 @@ class WallpaperEngine:
 
         # Capability-based features
         docker_caps = self.env["capabilities"]["docker"]
-        self.use_container = docker_caps["available"] and docker_caps["can_run"]
+        # Containerization is DEV/DEBUG only: opt-in via GUI settings.
+        # We still detect capabilities so the UI can inform users, but never
+        # enable container execution implicitly during normal use.
+        self.use_container = False
 
         # GPU-specific workarounds (default based on detection)
         self.default_workarounds = self._get_gpu_workarounds(self.env["gpu"])
@@ -1402,6 +1405,8 @@ class WallpaperWindow(Gtk.Window):
             "enable_custom_args": False,
             "custom_args": "",
             "enable_ld_preload": False,
+            # Containerization (DEV/DEBUG): opt-in only
+            "enable_containerization": False,
             # radeonsi driver crash workarounds
             "enable_radeonsi_workarounds": True,  # Default enabled for safety
             "radeonsi_sync_to_vblank": True,
@@ -1751,6 +1756,7 @@ class WallpaperWindow(Gtk.Window):
         """Load wallpaper with current settings"""
         return self.engine.run_wallpaper(
             wallpaper_id,
+            use_container=bool(self.settings.get("enable_containerization", False)),
             fps=self.settings["fps"],
             volume=self.settings["volume"],
             mute=self.settings["mute"],
@@ -1890,6 +1896,7 @@ class WallpaperWindow(Gtk.Window):
                 "enable_custom_args": dialog.custom_args_switch.get_active(),
                 "custom_args": dialog.custom_args_entry.get_text().strip(),
                 "enable_ld_preload": dialog.ld_preload_switch.get_active(),
+                "enable_containerization": dialog.containerization_switch.get_active(),
                 # radeonsi driver workarounds
                 "enable_radeonsi_workarounds": dialog.radeonsi_workarounds_switch.get_active(),
                 "radeonsi_sync_to_vblank": dialog.radeonsi_sync_switch.get_active(),
@@ -1948,6 +1955,7 @@ class WallpaperWindow(Gtk.Window):
         if self.engine.current_wallpaper:
             success, cmd = self.engine.run_wallpaper(
                 self.engine.current_wallpaper,
+                use_container=bool(settings.get("enable_containerization", False)),
                 fps=settings["fps"],
                 volume=settings["volume"],
                 mute=settings["mute"],
@@ -2518,15 +2526,28 @@ class SettingsDialog(Gtk.Dialog):
         advanced_grid.attach(ld_preload_label, 0, 3, 1, 1)
         advanced_grid.attach(self.ld_preload_switch, 1, 3, 1, 1)
 
+        # Containerization (DEV/DEBUG only) - opt-in
+        self.containerization_switch = Gtk.Switch()
+        self.containerization_switch.set_active(
+            self.current_settings.get("enable_containerization", False)
+        )
+        container_label = Gtk.Label(label="Enable Containerization (Debug):", halign=Gtk.Align.END)
+        container_label.set_tooltip_text(
+            "Run wallpapers inside Docker/Podman for isolation. OFF by default; "
+            "may fail if the container image lacks GPU/OpenGL runtime dependencies."
+        )
+        advanced_grid.attach(container_label, 0, 4, 1, 1)
+        advanced_grid.attach(self.containerization_switch, 1, 4, 1, 1)
+
         # Separator for GPU driver workarounds
         separator = Gtk.Separator()
-        advanced_grid.attach(separator, 0, 4, 2, 1)
+        advanced_grid.attach(separator, 0, 5, 2, 1)
 
         # GPU Driver Crash Workarounds Section
         workaround_header = Gtk.Label()
         workaround_header.set_markup("<b>GPU Driver Crash Workarounds (radeonsi)</b>")
         workaround_header.set_halign(Gtk.Align.START)
-        advanced_grid.attach(workaround_header, 0, 5, 2, 1)
+        advanced_grid.attach(workaround_header, 0, 6, 2, 1)
 
         # Enable workarounds master switch
         self.radeonsi_workarounds_switch = Gtk.Switch()
@@ -2537,8 +2558,8 @@ class SettingsDialog(Gtk.Dialog):
         workarounds_label.set_tooltip_text(
             "Apply Mesa environment variables to prevent GPU driver crashes (SIGSEGV in radeonsi_dri.so). Recommended: ON"
         )
-        advanced_grid.attach(workarounds_label, 0, 6, 1, 1)
-        advanced_grid.attach(self.radeonsi_workarounds_switch, 1, 6, 1, 1)
+        advanced_grid.attach(workarounds_label, 0, 7, 1, 1)
+        advanced_grid.attach(self.radeonsi_workarounds_switch, 1, 7, 1, 1)
 
         # Individual workaround options (only enabled when master switch is on)
         self.radeonsi_sync_switch = Gtk.Switch()
@@ -2550,8 +2571,8 @@ class SettingsDialog(Gtk.Dialog):
         sync_label.set_tooltip_text(
             "Force synchronous OpenGL operations (prevents race conditions)"
         )
-        advanced_grid.attach(sync_label, 0, 7, 1, 1)
-        advanced_grid.attach(self.radeonsi_sync_switch, 1, 7, 1, 1)
+        advanced_grid.attach(sync_label, 0, 8, 1, 1)
+        advanced_grid.attach(self.radeonsi_sync_switch, 1, 8, 1, 1)
 
         self.radeonsi_gl_version_switch = Gtk.Switch()
         self.radeonsi_gl_version_switch.set_active(
@@ -2560,8 +2581,8 @@ class SettingsDialog(Gtk.Dialog):
         self.radeonsi_gl_version_switch.set_sensitive(self.radeonsi_workarounds_switch.get_active())
         gl_version_label = Gtk.Label(label="  Use OpenGL 4.5 (stable):", halign=Gtk.Align.END)
         gl_version_label.set_tooltip_text("Override to OpenGL 4.5 API (avoids bugs in 4.6)")
-        advanced_grid.attach(gl_version_label, 0, 8, 1, 1)
-        advanced_grid.attach(self.radeonsi_gl_version_switch, 1, 8, 1, 1)
+        advanced_grid.attach(gl_version_label, 0, 9, 1, 1)
+        advanced_grid.attach(self.radeonsi_gl_version_switch, 1, 9, 1, 1)
 
         self.radeonsi_shader_cache_switch = Gtk.Switch()
         self.radeonsi_shader_cache_switch.set_active(
@@ -2572,8 +2593,8 @@ class SettingsDialog(Gtk.Dialog):
         )
         shader_cache_label = Gtk.Label(label="  Disable Shader Cache:", halign=Gtk.Align.END)
         shader_cache_label.set_tooltip_text("Disable shader cache to prevent corruption issues")
-        advanced_grid.attach(shader_cache_label, 0, 9, 1, 1)
-        advanced_grid.attach(self.radeonsi_shader_cache_switch, 1, 9, 1, 1)
+        advanced_grid.attach(shader_cache_label, 0, 10, 1, 1)
+        advanced_grid.attach(self.radeonsi_shader_cache_switch, 1, 10, 1, 1)
 
         self.radeonsi_error_check_switch = Gtk.Switch()
         self.radeonsi_error_check_switch.set_active(
@@ -2584,8 +2605,8 @@ class SettingsDialog(Gtk.Dialog):
         )
         error_check_label = Gtk.Label(label="  Enable Error Checking:", halign=Gtk.Align.END)
         error_check_label.set_tooltip_text("Enable OpenGL error checking (catches issues early)")
-        advanced_grid.attach(error_check_label, 0, 10, 1, 1)
-        advanced_grid.attach(self.radeonsi_error_check_switch, 1, 10, 1, 1)
+        advanced_grid.attach(error_check_label, 0, 11, 1, 1)
+        advanced_grid.attach(self.radeonsi_error_check_switch, 1, 11, 1, 1)
 
         self.radeonsi_aggressive_opts_switch = Gtk.Switch()
         self.radeonsi_aggressive_opts_switch.set_active(
@@ -2596,8 +2617,8 @@ class SettingsDialog(Gtk.Dialog):
         )
         aggressive_opts_label = Gtk.Label(label="  Disable Aggressive Opts:", halign=Gtk.Align.END)
         aggressive_opts_label.set_tooltip_text("Disable problematic driver optimizations")
-        advanced_grid.attach(aggressive_opts_label, 0, 11, 1, 1)
-        advanced_grid.attach(self.radeonsi_aggressive_opts_switch, 1, 11, 1, 1)
+        advanced_grid.attach(aggressive_opts_label, 0, 12, 1, 1)
+        advanced_grid.attach(self.radeonsi_aggressive_opts_switch, 1, 12, 1, 1)
 
         # Connect master switch to enable/disable individual options
         self.radeonsi_workarounds_switch.connect(
@@ -2620,7 +2641,7 @@ class SettingsDialog(Gtk.Dialog):
         advanced_help.set_line_wrap(True)
         advanced_help.set_max_width_chars(60)
         advanced_help.set_halign(Gtk.Align.START)
-        advanced_grid.attach(advanced_help, 0, 12, 2, 1)
+        advanced_grid.attach(advanced_help, 0, 13, 2, 1)
 
         # Connect switch to enable/disable entry
         self.custom_args_switch.connect("notify::active", self.on_custom_args_toggled)
