@@ -29,9 +29,7 @@
 !scripts/**
 !THIRD_PARTY_LICENSES.md
 
-# Cursor project rules (keep tiny; alwaysApply rules should stay lean)
-!.cursor/
-!.cursor/**
+# Cursor project rules are dev-only and must not be tracked/published.
 
 # Release artifacts
 dist/

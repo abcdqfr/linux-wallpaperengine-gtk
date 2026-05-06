@@ -206,7 +206,7 @@ tar -czf "dist/source-minimal.tar.gz" \
   linux-wallpaperengine-gtk.py wallpaper_process_probe.py pyproject.toml README.md LICENSE \
   .pre-commit-config.yaml .gitignore Makefile \
   .forgejo/workflows .github/workflows \
-  scripts/ci-core.sh scripts/ci-local.sh scripts/release.sh tests .cursor/rules \
+  scripts/ci-core.sh scripts/ci-local.sh scripts/release.sh tests \
   2>/dev/null
 
 sha256sum dist/* > dist/SHA256SUMS.txt
